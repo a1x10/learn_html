@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emmet Master Terminal // v3.0 Ultimate</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #050507;
+            --glass-surface: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-green: #0aff60;
+            --neon-red: #ff0055;
+            --neon-gold: #ffd700;
+            --text-main: #ffffff;
+            --text-dim: #8b9bb4;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Сетка на фоне */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* Декоративные пятна света */
+        .glow-orb {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+            z-index: -1;
+            animation: floatOrb 10s infinite alternate ease-in-out;
+        }
+        .orb-1 { top: -100px; left: -100px; background: var(--neon-purple); }
+        .orb-2 { bottom: -100px; right: -100px; background: var(--neon-blue); animation-delay: -5s; }
+        .orb-3 { top: 40%; left: 40%; width: 400px; height: 400px; background: var(--neon-green); opacity: 0.05; animation-duration: 15s; }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(30px, 50px); }
+        }
+
+        .container {
+            max-width: 1400px; /* Увеличили ширину для сетки */
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* HEADER */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #fff 30%, var(--text-dim));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: var(--neon-blue);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            background: rgba(0, 243, 255, 0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            display: inline-block;
+        }
+
+        /* GRID SYSTEM */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--glass-surface);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 25px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+        }
+
+        .card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+            opacity: 0.8;
+        }
+
+        /* CODE BLOCK STYLE */
+        .code-display {
+            background: #000;
+            border-radius: 12px;
+            padding: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--neon-green);
+            border: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .code-display code {
+            color: var(--neon-blue);
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid var(--text-dim);
+            color: var(--text-dim);
+            border-radius: 6px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.2s;
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+
+        .copy-btn:hover {
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+        }
+
+        /* LIVE PREVIEW AREA */
+        .preview-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            min-height: 80px;
+            margin-top: auto;
+            border: 1px dashed var(--glass-border);
+            font-size: 0.9rem;
+            overflow: hidden;
+        }
+
+        .preview-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        /* RENDERED ELEMENTS STYLES */
+        .preview-box ul, .preview-box ol { padding-left: 20px; margin-bottom: 0; }
+        .preview-box li { color: var(--text-dim); margin-bottom: 2px; }
+        .preview-box .box { 
+            background: rgba(188, 19, 254, 0.2); 
+            border: 1px solid var(--neon-purple);
+            color: white; padding: 3px 8px; 
+            border-radius: 4px; display: inline-block; margin: 2px;
+            font-size: 0.8rem;
+        }
+        .preview-box input {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #444;
+            color: white;
+            padding: 5px;
+            border-radius: 4px;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        .preview-box table { width: 100%; border-collapse: collapse; }
+        .preview-box td { border: 1px solid #444; padding: 4px; color: var(--text-dim); font-size: 0.8rem; text-align: center; }
+
+        /* BUTTONS */
+        .action-btn {
+            width: 100%;
+            background: linear-gradient(90deg, var(--neon-blue), #2a7fff);
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            color: #000;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: transform 0.2s;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .action-btn.purple { background: linear-gradient(90deg, var(--neon-purple), #ff00ff); }
+        .action-btn.red { background: linear-gradient(90deg, var(--neon-red), #ff5f56); }
+        .action-btn.green { background: linear-gradient(90deg, var(--neon-green), #00cc44); }
+        .action-btn.gold { background: linear-gradient(90deg, var(--neon-gold), #ffaa00); }
+
+        .action-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        /* TOAST NOTIFICATION */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--neon-green);
+            color: #000;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: bold;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(10, 255, 96, 0.4);
+        }
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Interactive JS Section Styles */
+        .js-console {
+            margin-top: 40px;
+            background: #0d0d12;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            height: 150px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 2px;
+        }
+        .log-time { color: var(--text-dim); margin-right: 10px; }
+        .log-msg { color: var(--neon-blue); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .grid-layout { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+
+    <div class="container">
+        <header>
+            <h1>EMMET.PRO</h1>
+            <span class="tagline">Ultimate Cheat Sheet v3.0</span>
+        </header>
+
+        <div class="grid-layout">
+            
+            <!-- 1. GROUPING -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">01. Группировка</span>
+                    <span class="card-icon">📦</span>
+                </div>
+                <div class="code-display">
+                    <code id="code1">div>(header>ul>li*2>a)+footer>p</code>
+                    <button class="copy-btn" onclick="copyCode('code1')">COPY</button>
+                </div>
+                <button class="action-btn" onclick="renderDemo(1)">Рендер HTML</button>
+                <div class="preview-box" id="preview1"><span class="preview-label">Live Preview</span></div>
+            </div>
+
+            <!-- 2. ATTRIBUTES -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">02. Атрибуты & Формы</span>
+                    <span class="card-icon">⚡</span>
+                </div>
+                <div class="code-display">
+                    <code id="code2">form:post.box>input:text+input:submit</code>
+                    <button class="copy-btn" onclick="copyCode('code2')">COPY</button>
+                </div>
+                <button class="action-btn purple" onclick="renderDemo(2)">Рендер HTML</button>
+                <div class="preview-box" id="preview2"><span class="preview-label">Live Preview</span></div>
+            </div>
+
+            <!-- 3. LOREM -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">03. Генератор текста</span>
+                    <span class="card-icon">📝</span>
+                </div>
+                <div class="code-display">
+                    <code id="code3">ul.news>li*3>p>lorem5</code>
+                    <button class="copy-btn" onclick="copyCode('code3')">COPY</button>
+                </div>
+                <button class="action-btn red" onclick="renderDemo(3)">Рендер HTML</button>
+                <div class="preview-box" id="preview3"><span class="preview-label">Live Preview</span></div>
+            </div>
+
+            <!-- 4. NUMBERING -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">04. Нумерация ($)</span>
+                    <span class="card-icon">🔢</span>
+                </div>
+                <div class="code-display">
+                    <code id="code4">ul>li.item-$*4</code>
+                    <button class="copy-btn" onclick="copyCode('code4')">COPY</button>
+                </div>
+                <button class="action-btn green" onclick="renderDemo(4)">Рендер HTML</button>
+                <div class="preview-box" id="preview4"><span class="preview-label">Live Preview</span></div>
+            </div>
+
+            <!-- 5. TEXT & SIBLINGS -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">05. Текст и Соседи</span>
+                    <span class="card-icon">🤝</span>
+                </div>
+                <div class="code-display">
+                    <code id="code5">h3{Заголовок}+p{Описание}</code>
+                    <button class="copy-btn" onclick="copyCode('code5')">COPY</button>
+                </div>
+                <button class="action-btn gold" onclick="renderDemo(5)">Рендер HTML</button>
+                <div class="preview-box" id="preview5"><span class="preview-label">Live Preview</span></div>
+            </div>
+
+            <!-- 6. TABLES -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">06. Быстрые таблицы</span>
+                    <span class="card-icon">▦</span>
+                </div>
+                <div class="code-display">
+                    <code id="code6">table>tr*2>td*3</code>
+                    <button class="copy-btn" onclick="copyCode('code6')">COPY</button>
+                </div>
+                <button class="action-btn" onclick="renderDemo(6)">Рендер HTML</button>
+                <div class="preview-box" id="preview6"><span class="preview-label">Live Preview</span></div>
+            </div>
+
+            <!-- 7. CLIMB UP -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">07. "Подъем" вверх (^)</span>
+                    <span class="card-icon">🧗</span>
+                </div>
+                <div class="code-display">
+                    <code id="code7">div>p>span+em^bq</code>
+                    <button class="copy-btn" onclick="copyCode('code7')">COPY</button>
+                </div>
+                <button class="action-btn purple" onclick="renderDemo(7)">Рендер HTML</button>
+                <div class="preview-box" id="preview7"><span class="preview-label">Live Preview</span></div>
+            </div>
+
+            <!-- 8. IMPLICIT TAGS -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">08. Скрытые теги</span>
+                    <span class="card-icon">👻</span>
+                </div>
+                <div class="code-display">
+                    <code id="code8">.wrap>.content</code>
+                    <button class="copy-btn" onclick="copyCode('code8')">COPY</button>
+                </div>
+                <button class="action-btn red" onclick="renderDemo(8)">Рендер HTML</button>
+                <div class="preview-box" id="preview8"><span class="preview-label">Live Preview</span></div>
+            </div>
+
+            <!-- 9. CUSTOM ATTRIBUTES -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">09. Спец. Атрибуты</span>
+                    <span class="card-icon">🔧</span>
+                </div>
+                <div class="code-display">
+                    <code id="code9">td[title="Hello" colspan=3]</code>
+                    <button class="copy-btn" onclick="copyCode('code9')">COPY</button>
+                </div>
+                <button class="action-btn green" onclick="renderDemo(9)">Рендер HTML</button>
+                <div class="preview-box" id="preview9"><span class="preview-label">Live Preview</span></div>
+            </div>
+
+        </div>
+
+        <!-- JS Console Area -->
+        <h3 style="margin-top: 40px; color: var(--text-dim); font-weight: normal;">// SYSTEM LOGS</h3>
+        <div class="js-console" id="console">
+            <div class="log-entry">
+                <span class="log-time">[System]</span> 
+                <span class="log-msg" style="color: var(--neon-green)">Terminal initialized. All modules loaded.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast">Copied to clipboard!</div>
+
+    <script>
+        // Функция логирования
+        function logToConsole(msg, type = 'info') {
+            const consoleBox = document.getElementById('console');
+            const now = new Date().toLocaleTimeString();
+            let color = 'var(--neon-blue)';
+            if (type === 'success') color = 'var(--neon-green)';
+            if (type === 'warn') color = 'var(--neon-gold)';
+            
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `<span class="log-time">[${now}]</span> <span class="log-msg" style="color:${color}">${msg}</span>`;
+            
+            consoleBox.prepend(entry);
+        }
+
+        // Функция копирования
+        function copyCode(elementId) {
+            const code = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                showToast();
+                logToConsole(`Copied to buffer: ${code}`);
+            });
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // Симуляция Emmet Рендеринга
+        function renderDemo(id) {
+            const preview = document.getElementById(`preview${id}`);
+            let html = '';
+            let logMsg = '';
+
+            preview.style.opacity = '0';
+
+            setTimeout(() => {
+                switch(id) {
+                    case 1:
+                        html = `<div style="border:1px solid #333; padding:5px;"><header><ul style="list-style:none; padding:0;"><li><a href="#" style="color:var(--neon-blue)">Link 1</a></li><li><a href="#" style="color:var(--neon-blue)">Link 2</a></li></ul></header><footer><small style="color:#666">Footer</small></footer></div>`;
+                        logMsg = 'Rendered complex layout structure.';
+                        break;
+                    case 2:
+                        html = `<form class="box" style="padding:10px; border:1px solid var(--neon-purple); border-radius:4px;"><input type="text" placeholder="Username..." style="width:70%"><input type="submit" value="Go" style="width:25%; background:var(--neon-purple); border:none; color:white;"></form>`;
+                        logMsg = 'Generated Form with attributes.';
+                        break;
+                    case 3:
+                        html = `<ul class="news"><li><p>Lorem ipsum dolor sit...</p></li><li><p>Consectetur adipiscing...</p></li><li><p>Sed do eiusmod temp...</p></li></ul>`;
+                        logMsg = 'Generated Lorem Ipsum list.';
+                        break;
+                    case 4:
+                        // ul>li.item-$*4
+                        html = `<ul><li class="item-1">Item 1</li><li class="item-2">Item 2</li><li class="item-3">Item 3</li><li class="item-4">Item 4</li></ul>`;
+                        logMsg = 'Rendered list with numbered classes ($).';
+                        break;
+                    case 5:
+                        // h3{Заголовок}+p{Описание}
+                        html = `<h3 style="color:var(--neon-gold); margin:0;">Заголовок</h3><p style="margin:0; color:#888;">Описание контента...</p>`;
+                        logMsg = 'Rendered siblings with custom text content.';
+                        break;
+                    case 6:
+                        // table>tr*2>td*3
+                        html = `<table><tr><td>Col 1</td><td>Col 2</td><td>Col 3</td></tr><tr><td>Col 1</td><td>Col 2</td><td>Col 3</td></tr></table>`;
+                        logMsg = 'Generated table structure (2x3).';
+                        break;
+                    case 7:
+                        // div>p>span+em^bq
+                        html = `<div><p><span>Span</span> <em style="color:var(--neon-purple)">Em</em></p><blockquote style="border-left:2px solid #555; padding-left:5px; margin:5px 0;">Quote (Sibling of P)</blockquote></div>`;
+                        logMsg = 'Applied Climb-up (^) operator correctly.';
+                        break;
+                    case 8:
+                        // .wrap>.content
+                        html = `<div class="wrap" style="border:1px dashed #444; padding:5px;"><div class="content" style="background:#222; padding:2px;">Implicit Divs</div></div>`;
+                        logMsg = 'Expanded implicit tag names based on class.';
+                        break;
+                    case 9:
+                        // td[title="Hello" colspan=3]
+                        html = `<table><tr><td title="Hello" colspan="3" style="border:1px solid var(--neon-green); color:var(--neon-green);">Custom Attrs: colspan=3</td></tr></table>`;
+                        logMsg = 'Injected custom attributes into element.';
+                        break;
+                }
+
+                preview.innerHTML = `<span class="preview-label">Result:</span>` + html;
+                preview.style.opacity = '1';
+                preview.style.transition = 'opacity 0.5s ease';
+                
+                logToConsole(logMsg, 'success');
+            }, 200);
+        }
+    </script>
+</body>
+</html>
