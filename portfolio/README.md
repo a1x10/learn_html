@@ -26,6 +26,7 @@
 portfolio/
 ├── index.html      — разметка и контент
 ├── css/style.css   — стили и адаптив
+├── deploy/         — Caddyfile и скрипт установки на сервер
 └── js/
     ├── main.js     — скролл, появление блоков, демо-анимации, курсор
     ├── hero.js     — 3D-сцена первого экрана
@@ -37,8 +38,20 @@ portfolio/
 - Замените контакты в секции «Связаться» (`index.html`, ищите `TODO`): сейчас там `hello@example.com` и пустые ссылки на Telegram и GitHub.
 - Имена учеников, цифры в макетах экранов, строки терминала и консоли — демонстрационные, их можно поменять под реальные.
 
-## Публикация
+## Публикация на свой сервер (portfolioalex.duckdns.org)
 
-Проще всего через GitHub Pages: Settings → Pages → ветка с этой папкой. Сайт будет доступен по адресу вида `https://<логин>.github.io/learn_html/portfolio/`.
+Домен в Duck DNS должен указывать на IP сервера. Дальше на сервере (Ubuntu или Debian):
+
+```bash
+git clone -b claude/optimistic-gauss-j4n5lv https://github.com/a1x10/learn_html.git
+cd learn_html/portfolio
+sudo bash deploy/setup-server.sh portfolioalex.duckdns.org
+```
+
+Скрипт ставит веб-сервер Caddy, копирует сайт в `/var/www/portfolio` и включает HTTPS (сертификат Let's Encrypt выпускается и продлевается сам). Если в панели хостинга есть файрвол, откройте в нём входящие порты TCP 80 и 443.
+
+Обновить сайт после изменений: `git pull && sudo bash deploy/setup-server.sh`.
+
+Если сервер не нужен, подойдёт GitHub Pages: Settings → Pages, адрес будет вида `https://<логин>.github.io/learn_html/portfolio/`.
 
 Учтены `prefers-reduced-motion` (анимации отключаются) и сенсорные экраны (кастомный курсор и наклоны не мешают).
