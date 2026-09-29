@@ -548,15 +548,23 @@
     if (!REDUCED) {
       const revealUp = $$('.reveal-up');
       gsap.set(revealUp, { y: 50, opacity: 0 });
-      const show = (els) =>
-        gsap.to(els.filter((e) => !e.dataset.shown && (e.dataset.shown = '1')), {
-          y: 0,
-          opacity: 1,
-          duration: 1.3,
-          ease: 'expo.out',
-          stagger: 0.09,
-          overwrite: 'auto',
-        });
+      // Блоки, которые уже проскочили вверх (быстрый скролл, переход по меню),
+      // показываем сразу, а видимые — с короткой общей задержкой.
+      const show = (els) => {
+        const fresh = els.filter((e) => !e.dataset.shown && (e.dataset.shown = '1'));
+        const passed = fresh.filter((e) => e.getBoundingClientRect().bottom < 0);
+        const visible = fresh.filter((e) => !passed.includes(e));
+        if (passed.length) gsap.set(passed, { y: 0, opacity: 1, overwrite: 'auto' });
+        if (visible.length)
+          gsap.to(visible, {
+            y: 0,
+            opacity: 1,
+            duration: 1.3,
+            ease: 'expo.out',
+            stagger: Math.min(0.09, 0.5 / visible.length),
+            overwrite: 'auto',
+          });
+      };
       ScrollTrigger.batch(revealUp, { start: 'top 90%', onEnter: show, onEnterBack: show });
 
       $$('.reveal-scale').forEach((el) => {
