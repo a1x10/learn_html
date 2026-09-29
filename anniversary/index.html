@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d0208">
+<title>20 лет вместе</title>
+</head>
+<body>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Manrope:wght@400;500;600&display=swap">
+<style>
+/* Layout: a full-screen WebGL scene. One glass panel is docked at the top of the screen at a time;
+   the 3D heart always takes the free space left under (or above) that panel. */
+:root {
+  --wine-950: #0d0208;
+  --wine-800: #2a0a19;
+  --ruby: #d0193a;
+  --rose: #f2a7b4;
+  --gold: #f1d08a;
+  --gold-deep: #e9b25f;
+  --ivory: #fff3e4;
+  --ink: #2a0612;
+  --line: rgba(241, 208, 138, .30);
+  --glass-a: rgba(48, 10, 27, .62);
+  --glass-b: rgba(22, 4, 13, .60);
+  --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-ui: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; overflow: hidden; background: var(--wine-950); color: var(--ivory);
+  font-family: var(--font-ui); -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+
+#gl { position: fixed; inset: 0; z-index: 0; touch-action: none; cursor: grab; }
+#gl canvas { display: block; width: 100%; height: 100%; }
+#gl:active { cursor: grabbing; }
+
+/* CSS heart shown only if WebGL or the 3D library is unavailable */
+#fb { position: fixed; z-index: 0; left: 50%; top: 50%; width: 10px; height: 10px; transform: translateY(-50%); display: none; pointer-events: none; }
+.no-gl #fb { display: block; }
+.no-gl body { background: radial-gradient(90% 70% at 50% 45%, #4a0f28 0%, #1a040f 55%, #0d0208 100%); }
+#fb svg { position: absolute; left: 50%; top: 50%; height: 100%; width: auto; aspect-ratio: 1.1; transform: translate(-50%, -50%);
+  animation: fbBeat 1.3s ease-in-out infinite; filter: drop-shadow(0 0 40px rgba(220, 40, 80, .55)); }
+@keyframes fbBeat { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 12% { transform: translate(-50%, -50%) scale(1.07); }
+  24% { transform: translate(-50%, -50%) scale(1); } 34% { transform: translate(-50%, -50%) scale(1.045); } 50% { transform: translate(-50%, -50%) scale(1); } }
+
+#ui { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+.scr { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
+  padding: calc(env(safe-area-inset-top, 0px) + 16px) 16px calc(env(safe-area-inset-bottom, 0px) + 20px);
+  opacity: 0; visibility: hidden; transition: opacity .7s ease, visibility 0s linear .7s; }
+.scr.on { opacity: 1; visibility: visible; transition: opacity .9s ease .2s, visibility 0s; }
+.scr[data-dock="top"] { justify-content: flex-start; }
+.scr[data-dock="bottom"] { justify-content: flex-end; }
+.scr[data-dock="center"] { justify-content: center; }
+
+.panel { pointer-events: auto; width: min(100%, 540px); padding: 20px 20px 24px; text-align: center; min-height: 0;
+  border: 1px solid var(--line); border-radius: 28px;
+  background: linear-gradient(180deg, var(--glass-a), var(--glass-b));
+  -webkit-backdrop-filter: blur(16px) saturate(1.25); backdrop-filter: blur(16px) saturate(1.25);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .09); }
+.panel.plain { background: none; border: 0; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; padding: 8px 4px; pointer-events: none; }
+
+.eyebrow { margin: 0 0 10px; font-size: .72rem; font-weight: 600; letter-spacing: .32em; text-transform: uppercase; color: var(--gold); }
+h1, h2 { margin: 0; font-family: var(--font-display); font-style: italic; font-weight: 500; text-wrap: balance; font-variant-numeric: lining-nums;
+  color: var(--ivory); text-shadow: 0 2px 30px rgba(208, 25, 58, .55), 0 1px 4px rgba(0, 0, 0, .55); }
+h1 { font-size: clamp(2.3rem, 8.4vw, 3.9rem); line-height: 1.02; }
+h2 { font-size: clamp(1.55rem, 5.4vw, 2.15rem); line-height: 1.12; }
+.sub, .lead { margin: 12px auto 0; max-width: 34ch; color: rgba(255, 243, 228, .78); font-size: .95rem; line-height: 1.5; text-wrap: balance; }
+.hint { margin: 16px 0 0; font-size: .8rem; color: rgba(255, 243, 228, .5); }
+
+.msg { min-height: 1.5em; margin: 14px auto 0; max-width: 36ch; font-size: .92rem; line-height: 1.45; color: var(--rose); text-wrap: balance; }
+.msg.good { color: var(--gold); }
+
+/* timer */
+.timer { display: inline-flex; align-items: center; gap: 12px; padding: 7px 18px 7px 8px; margin-bottom: 16px;
+  border: 1px solid var(--line); border-radius: 999px; background: rgba(0, 0, 0, .3); }
+.ring { width: 34px; height: 34px; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 3; }
+.ring-bg { stroke: rgba(255, 255, 255, .12); }
+.ring-fg { stroke: var(--gold); stroke-linecap: round; stroke-dasharray: 100.53; stroke-dashoffset: 0; }
+.tv { font: 600 1.35rem/1 var(--font-ui); font-variant-numeric: tabular-nums; letter-spacing: .04em; min-width: 3.1ch; text-align: left; }
+.tl { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255, 243, 228, .6); }
+.timer.low .tv { color: #ff8fa3; animation: blink 1s steps(2, jump-none) infinite; }
+.timer.low .ring-fg { stroke: #ff5b7a; }
+.timer.done .tv { color: var(--gold); }
+
+/* date fields */
+.date-row { display: flex; justify-content: center; align-items: flex-start; gap: clamp(6px, 2vw, 14px); margin-top: 18px; }
+.slot { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+.slot span { font-size: .66rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255, 243, 228, .55); }
+.dot { width: 5px; height: 5px; margin-top: 1.05em; border-radius: 50%; background: var(--gold); opacity: .7; flex: none; }
+input { font-family: var(--font-display); color: var(--ivory); caret-color: var(--gold); }
+.slot input { width: 2.15em; padding: .16em 0; font-size: clamp(1.9rem, 8vw, 2.8rem); font-weight: 600; text-align: center; font-variant-numeric: lining-nums;
+  border: 1px solid rgba(241, 208, 138, .38); border-radius: 18px; background: rgba(255, 255, 255, .05); outline: none;
+  transition: border-color .25s, box-shadow .25s, background .25s; }
+.slot.wide input { width: 3.5em; }
+.slot input::placeholder { color: rgba(255, 243, 228, .22); font-weight: 500; }
+.slot input:focus, #nm:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgba(241, 208, 138, .14), 0 0 34px rgba(240, 70, 110, .35); background: rgba(255, 255, 255, .08); }
+.slot input.ok { border-color: var(--gold); background: rgba(241, 208, 138, .16); color: #ffe6b0; box-shadow: 0 0 30px rgba(241, 208, 138, .32); }
+.slot input.bad { border-color: #ff6b86; animation: shake .45s; }
+@keyframes shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+@keyframes blink { 50% { opacity: .35; } }
+
+/* name */
+#nameForm { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 16px; }
+#nm { width: min(100%, 320px); padding: .5em .8em; font-size: 1.7rem; font-weight: 600; text-align: center;
+  border: 1px solid rgba(241, 208, 138, .38); border-radius: 18px; background: rgba(255, 255, 255, .05); outline: none; transition: border-color .25s, box-shadow .25s; }
+#nm::placeholder { color: rgba(255, 243, 228, .25); font-weight: 500; }
+#nm.bad { border-color: #ff6b86; animation: shake .45s; }
+
+/* buttons */
+.btn { appearance: none; position: relative; overflow: hidden; border: 1px solid rgba(255, 228, 170, .6); border-radius: 999px; padding: 16px 36px; margin-top: 18px;
+  font: 600 1rem/1 var(--font-ui); letter-spacing: .05em; color: var(--ink); cursor: pointer;
+  background: linear-gradient(180deg, #ffe7b0, var(--gold-deep)); box-shadow: 0 12px 34px rgba(240, 160, 80, .3), inset 0 1px 0 rgba(255, 255, 255, .75);
+  transition: transform .2s, box-shadow .2s; }
+#nameForm .btn { margin-top: 0; }
+.btn::after { content: ""; position: absolute; inset: 0; transform: translateX(-120%); background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, .65) 50%, transparent 70%); animation: shine 3.2s ease-in-out infinite; }
+@keyframes shine { 55%, 100% { transform: translateX(120%); } }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(240, 160, 80, .4), inset 0 1px 0 rgba(255, 255, 255, .75); }
+.btn:active { transform: translateY(0) scale(.98); }
+.btn:focus-visible, .slot input:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.btn[hidden] { display: none; }
+.btn.pop { animation: pop .7s cubic-bezier(.2, 1.4, .4, 1) both; }
+@keyframes pop { from { opacity: 0; transform: translateY(14px) scale(.85); } to { opacity: 1; transform: none; } }
+
+/* letter */
+.letter { width: min(100%, 640px); max-height: 100%; display: flex; padding: 0; text-align: left; overflow: hidden; }
+.l-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: clamp(24px, 4.5vw, 44px);
+  scrollbar-width: thin; scrollbar-color: rgba(241, 208, 138, .4) transparent; }
+.l-scroll.more { -webkit-mask-image: linear-gradient(#000 calc(100% - 56px), transparent); mask-image: linear-gradient(#000 calc(100% - 56px), transparent); }
+.l-scroll > * { animation: rise .95s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i, 0) * .8s + .4s); }
+@keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.l-head { font-size: clamp(2.1rem, 7vw, 3rem); color: var(--gold); text-shadow: 0 2px 26px rgba(241, 208, 138, .28); }
+.orn { height: 1px; margin: 16px 0 22px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: .6; }
+.letter p { margin: 0 0 1.05em; font: 500 clamp(1.14rem, 3.9vw, 1.36rem)/1.55 var(--font-display); font-variant-numeric: lining-nums; color: rgba(255, 243, 228, .94); }
+.letter p b { font-weight: 600; color: #ffe2a6; }
+.l-foot { text-align: center; }
+
+/* waiting */
+.pair { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 18px 0 0; padding: 0; list-style: none; }
+.pair li { display: flex; align-items: center; gap: 9px; padding: 10px 18px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 255, 255, .04); font-size: .92rem; }
+.pair i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, .28); animation: blink 1.4s infinite; }
+.pair small { color: rgba(255, 243, 228, .6); font-size: .8rem; }
+.pair li.on i { background: var(--gold); box-shadow: 0 0 12px var(--gold); animation: none; }
+.pair li.on small { color: var(--gold); }
+
+/* finale */
+.final { font-size: clamp(2.3rem, 9.4vw, 4.6rem); line-height: 1.08; text-shadow: 0 0 50px rgba(241, 208, 138, .35); animation: rise 1.6s ease both; }
+.final em { font-style: normal; font-weight: 600; color: var(--gold); font-size: 1.15em; font-variant-numeric: lining-nums; }
+
+#toast { position: fixed; z-index: 3; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
+  padding: 11px 20px; border: 1px solid var(--line); border-radius: 999px; background: rgba(20, 4, 12, .88); font-size: .88rem; transition: opacity .35s, transform .35s; }
+#toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .l-scroll > *, .final, .btn.pop { animation-duration: .01s; animation-delay: 0s; }
+  .btn::after, .timer.low .tv, .pair i { animation: none; }
+  .scr, .scr.on { transition-duration: .01s; transition-delay: 0s; }
+}
+</style>
+
+<div id="gl" aria-hidden="true"></div>
+<div id="fb" aria-hidden="true">
+  <svg viewBox="0 0 110 100"><defs><radialGradient id="fbg" cx="35%" cy="28%" r="80%"><stop offset="0" stop-color="#ff6f8d"/><stop offset=".55" stop-color="#d0193a"/><stop offset="1" stop-color="#6d0620"/></radialGradient></defs>
+    <path fill="url(#fbg)" d="M55 96C22 72 4 52 4 30 4 14 16 4 30 4c10 0 20 6 25 16C60 10 70 4 80 4c14 0 26 10 26 26 0 22-18 42-51 66z"/></svg>
+</div>
+
+<main id="ui">
+  <section class="scr" id="s-intro" data-dock="bottom" aria-live="polite">
+    <div class="panel plain">
+      <p class="eyebrow">Для вас двоих</p>
+      <h1>Сегодня особенный день</h1>
+      <p class="sub">Коснитесь сердца, и оно отзовётся</p>
+    </div>
+  </section>
+
+  <section class="scr" id="s-date" data-dock="top">
+    <div class="panel">
+      <div class="timer" id="timer" role="timer" aria-label="Оставшееся время">
+        <svg class="ring" viewBox="0 0 36 36" aria-hidden="true"><circle class="ring-bg" cx="18" cy="18" r="16"/><circle class="ring-fg" id="ringFg" cx="18" cy="18" r="16"/></svg>
+        <span class="tv" id="tv">02:00</span>
+        <span class="tl">на ввод даты</span>
+      </div>
+      <h2>Введите дату вашей свадьбы</h2>
+      <form id="dateForm" autocomplete="off" novalidate>
+        <div class="date-row">
+          <label class="slot"><input id="dd" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="ДД" aria-label="День" autocomplete="off"><span>день</span></label>
+          <i class="dot" aria-hidden="true"></i>
+          <label class="slot"><input id="mm" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="ММ" aria-label="Месяц" autocomplete="off"><span>месяц</span></label>
+          <i class="dot" aria-hidden="true"></i>
+          <label class="slot wide"><input id="yy" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="ГГГГ" aria-label="Год" autocomplete="off"><span>год</span></label>
+        </div>
+      </form>
+      <p class="msg" id="dmsg" aria-live="polite"></p>
+      <button class="btn" id="btnContinue" type="button" hidden>Продолжить</button>
+    </div>
+  </section>
+
+  <section class="scr" id="s-name" data-dock="top">
+    <div class="panel">
+      <h2>Как вас зовут?</h2>
+      <p class="lead">Напишите своё имя, чтобы сердце вас узнало</p>
+      <form id="nameForm" autocomplete="off">
+        <input id="nm" type="text" autocomplete="off" autocapitalize="words" spellcheck="false" maxlength="30" placeholder="Ваше имя" aria-label="Ваше имя">
+        <button class="btn" type="submit">Войти</button>
+      </form>
+      <p class="msg" id="nmsg" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="scr" id="s-letter" data-dock="center">
+    <article class="panel letter" id="letter" tabindex="-1"></article>
+  </section>
+
+  <section class="scr" id="s-wait" data-dock="top">
+    <div class="panel">
+      <h2 id="waitTitle"></h2>
+      <p class="lead" id="waitText"></p>
+      <ul class="pair" aria-live="polite">
+        <li id="chipN"><i></i><span>Наталия</span><small></small></li>
+        <li id="chipM"><i></i><span>Михаил</span><small></small></li>
+      </ul>
+      <p class="hint">Не закрывайте эту страницу, всё начнётся само</p>
+    </div>
+  </section>
+
+  <section class="scr" id="s-final" data-dock="bottom" aria-live="assertive">
+    <div class="panel plain">
+      <h1 class="final">Закройте глаза<br>и досчитайте до <em>10</em></h1>
+    </div>
+  </section>
+</main>
+<div id="toast" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" crossorigin="anonymous" integrity="sha384-CI3ELBVUz9XQO+97x6nwMDPosPR5XvsxW2ua7N1Xeygeh1IxtgqtCkGfQY9WWdHu"></script>
+<script>
+(() => {
+'use strict';
+
+/* ================= config ================= */
+const CFG = {
+  date: { d: 29, m: 9, y: 2006 },
+  timerSec: 120,
+  ttlMs: 6 * 3600 * 1000,          // how long a finished test counts for the other person
+  pollMs: 4000,
+  // Shared "mailbox" that lets two different phones see each other's progress.
+  // Only tiny flags ({"k":"done","who":"n"}) go through it. Set enabled:false to keep everything on one device.
+  remote: { enabled: true, base: 'https://ntfy.sh', topic: 'nm20-dbec3758329f32520436' },
+};
+
+const PEOPLE = {
+  n: {
+    name: 'Наталия', aliases: ['наталия', 'наталья', 'наташа'], other: 'm',
+    btn: 'Я прочитала ❤️',
+    wait: 'Теперь ждём Михаила. Как только он дойдёт до этого места, начнётся самое главное.',
+    head: 'Дорогая Наталия!',
+    paras: [
+      'Сегодня особенный и прекрасный день — <b>20 лет со дня вашей свадьбы с Михаилом</b>!<br>Ровно <b>29 сентября 2006 года</b> началась ваша общая семейная история, полная любви, радости, счастливых моментов и совместных воспоминаний.',
+      'За эти 20 лет вы прошли вместе через многое, сохранили свои чувства и доказали, что настоящая любовь с годами становится только крепче.',
+      'Наталия, хочется пожелать тебе огромного семейного счастья, тепла, заботы и как можно больше поводов улыбаться. Пусть рядом всегда будет любимый Михаил, а ваш дом наполняют уют, смех и любовь.',
+      '<b>20 лет вместе — это только красивая часть вашего большого пути.</b><br>Пусть впереди вас ждут ещё десятки счастливых лет, новые мечты, путешествия, радостные события и моменты, которые захочется хранить в сердце.',
+      '<b>С годовщиной вашей свадьбы, Наталия и Михаил!</b><br>Пусть ваша любовь с каждым годом становится ещё сильнее! ❤️🥂',
+    ],
+  },
+  m: {
+    name: 'Михаил', aliases: ['михаил', 'миша'], other: 'n',
+    btn: 'Я прочитал ❤️',
+    wait: 'Теперь ждём Наталию. Как только она дойдёт до этого места, начнётся самое главное.',
+    head: 'Дорогой Михаил!',
+    paras: [
+      'Сегодня знаменательный день — <b>20 лет вашей семейной жизни с Наталией</b>.<br>Ровно <b>29 сентября 2006 года</b> вы сделали один из самых важных шагов в своей жизни, начав ваш общий путь.',
+      'За эти 20 лет было множество счастливых моментов, семейных событий, испытаний и побед. Всё это вы прошли вместе, сохраняя рядом друг с другом самое главное — любовь, уважение, поддержку и тепло.',
+      'Михаил, от всей души хочется пожелать тебе семейного счастья, крепкого здоровья, благополучия и много радостных дней рядом с Наталией. Пусть в вашем доме всегда царят мир, взаимопонимание и любовь.',
+      'Пусть ваши <b>20 лет</b> станут не итогом, а красивым началом новой главы.<br>Желаю вам ещё долгие годы идти по жизни рука об руку, поддерживать друг друга, мечтать, путешествовать, радоваться каждому дню и создавать новые счастливые воспоминания.',
+      '<b>С юбилеем вашей свадьбы, Михаил!</b><br>Пусть любовь, которая началась 29 сентября 2006 года, с каждым годом становится только крепче. ❤️🥂',
+    ],
+  },
+};
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const coarse = matchMedia('(pointer: coarse)').matches;
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SS = {
+  get(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} },
+};
+
+/* ================= sync between the two people ================= */
+const Sync = (() => {
+  const KEY = 'nm20.events', R = CFG.remote;
+  let mem = [], remote = [], remoteOk = false, lastSend = 0;
+  const rd = () => { try { const a = JSON.parse(localStorage.getItem(KEY) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
+  const wr = a => { try { localStorage.setItem(KEY, JSON.stringify(a.slice(-40))); } catch (e) {} };
+  const url = s => R.base + '/' + R.topic + (s || '');
+  async function net(u, opt) {
+    const c = new AbortController(), to = setTimeout(() => c.abort(), 8000);
+    try { return await fetch(u, Object.assign({ signal: c.signal, cache: 'no-store' }, opt)); } finally { clearTimeout(to); }
+  }
+  async function send(ev) {
+    if (!R.enabled) return false;
+    try { const r = await net(url(), { method: 'POST', body: JSON.stringify({ k: ev.k, who: ev.who || '' }) }); return r.ok; } catch (e) { return false; }
+  }
+  async function pull() {
+    if (!R.enabled) return;
+    try {
+      const r = await net(url('/json?poll=1&since=all'));
+      if (!r.ok) throw new Error('http ' + r.status);
+      const out = [];
+      for (const line of (await r.text()).split('\n')) {
+        if (!line.trim()) continue;
+        try { const m = JSON.parse(line); if (m.event !== 'message') continue; const p = JSON.parse(m.message); if (p && p.k) out.push({ k: p.k, who: p.who, t: (m.time || 0) * 1000 }); } catch (e) {}
+      }
+      remote = out; remoteOk = true;
+    } catch (e) { remoteOk = false; }
+  }
+  const all = () => rd().concat(mem, remote);
+  const lastReset = list => list.reduce((a, e) => (e.k === 'reset' && e.t > a ? e.t : a), 0);
+  function status() {
+    const ev = all(), rs = lastReset(ev), now = Date.now(), st = { n: false, m: false };
+    for (const e of ev) if (e.k === 'done' && (e.who === 'n' || e.who === 'm') && e.t > rs && now - e.t < CFG.ttlMs) st[e.who] = true;
+    return st;
+  }
+  function add(ev) { mem.push(ev); const a = rd(); a.push(ev); wr(a); }
+  async function done(who) { const ev = { k: 'done', who, t: Date.now() }; add(ev); return send(ev); }
+  async function reset() { const ev = { k: 'reset', t: Date.now() }; add(ev); return send(ev); }
+  // If the first upload failed (bad signal), send our flag again while we wait.
+  function ensure(who) {
+    if (!R.enabled || !remoteOk || Date.now() - lastSend < 20000) return;
+    const rs = lastReset(remote);
+    if (remote.some(e => e.k === 'done' && e.who === who && e.t > rs)) return;
+    lastSend = Date.now(); send({ k: 'done', who });
+  }
+  return { status, done, reset, pull, ensure, KEY };
+})();
+
+/* ================= 3D scene ================= */
+const FX = { shake() {}, glow() {}, burst() {}, kick() {}, pulse() {}, urgency() {}, layout() {} };
+let L = { cx: innerWidth / 2, cy: innerHeight / 2, px: 240 };
+const S = { stage: 'boot', me: null, t0: performance.now() };
+let layoutDirty = true;
+
+// per-stage look: fill = share of the free area the heart occupies, z = depth, dim = calm the scene, rings = wedding rings
+const STAGE = {
+  boot:   { fill: .86, z: 0,    dim: 0,   rings: 0, bpm: 60 },
+  intro:  { fill: .88, z: 0,    dim: 0,   rings: 0, bpm: 60 },
+  date:   { fill: .86, z: 0,    dim: 0,   rings: 0, bpm: 62 },
+  name:   { fill: .86, z: 0,    dim: 0,   rings: 1, bpm: 66 },
+  letter: { fill: 1.0, z: -1.6, dim: .5,  rings: 1, bpm: 58 },
+  wait:   { fill: .86, z: 0,    dim: .1,  rings: 1, bpm: 54 },
+  final:  { fill: .82, z: -.6,  dim: .8,  rings: 0, bpm: 42 },
+};
+
+function init3D() {
+  const THREE = window.THREE;
+  if (!THREE) throw new Error('three.js is not available');
+  const C = hex => new THREE.Color(hex).convertSRGBToLinear();   // r128: hex colours must be linearised for sRGB output
+  const host = $('#gl');
+  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.08;
+  renderer.setClearColor(0x0d0208, 1);
+  host.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  const FOV = 38, DIST = 7;
+  const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 60);
+  camera.position.set(0, 0, DIST);
+
+  /* --- studio reflections (procedural environment, no image files) --- */
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const env = new THREE.Scene();
+  env.add(new THREE.Mesh(new THREE.SphereGeometry(30, 32, 16), new THREE.MeshBasicMaterial({ color: C(0x24080f), side: THREE.BackSide })));
+  const softbox = (w, h, col, k, x, y, z) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: C(col).multiplyScalar(k), side: THREE.DoubleSide }));
+    m.position.set(x, y, z); m.lookAt(0, 0, 0); env.add(m);
+  };
+  softbox(10, 6, 0xfff2e2, 3.4, -8, 6, 8);
+  softbox(5, 10, 0xffc88a, 2.2, 10, 1, 4);
+  softbox(8, 3, 0xffd58a, 3.5, 0, 9, -6);
+  softbox(6, 6, 0xff2a45, 1.0, -9, -4, -4);
+  softbox(14, 2, 0xfff6ee, 1.6, 0, -8, 6);
+  scene.environment = pmrem.fromScene(env, 0.03).texture;
+  pmrem.dispose();
+
+  scene.add(new THREE.AmbientLight(C(0xffc8d0), 0.12));
+  const key = new THREE.DirectionalLight(C(0xfff0dd), 1.4); key.position.set(-3, 4, 5); scene.add(key);
+  const rimL = new THREE.DirectionalLight(C(0xff4a72), 1.7); rimL.position.set(4, 1, -3); scene.add(rimL);
+  const goldL = new THREE.PointLight(C(0xffc36b), 1.3, 14); goldL.position.set(2.5, -1.5, 2.5); scene.add(goldL);
+
+  /* --- backdrop: wine-red glow that follows the heart --- */
+  const bgMat = new THREE.ShaderMaterial({
+    depthTest: false, depthWrite: false,
+    uniforms: { uAspect: { value: 1 }, uC: { value: new THREE.Vector2(.5, .5) }, uGlow: { value: 1 }, uDim: { value: 0 }, uTime: { value: 0 } },
+    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 1.0, 1.0); }',
+    fragmentShader: `varying vec2 vUv; uniform float uAspect, uGlow, uDim, uTime; uniform vec2 uC;
+      float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+      void main(){
+        vec2 d = vUv - uC; d.x *= uAspect; float r = length(d);
+        vec3 col = vec3(.030, .005, .018)
+          + vec3(.30, .035, .11) * exp(-r * r * 3.0) * uGlow * (1.0 - uDim * .85)
+          + vec3(.62, .10, .20) * exp(-r * r * 13.0) * .28 * uGlow * (1.0 - uDim);
+        vec2 q = vUv - .5; col *= 1.0 - dot(q, q) * .95;
+        col += (h(gl_FragCoord.xy + uTime) - .5) / 255.0;
+        gl_FragColor = vec4(col, 1.0);
+      }`,
+  });
+  const bg = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), bgMat);
+  bg.frustumCulled = false; bg.renderOrder = -100; scene.add(bg);
+
+  /* --- puffy heart: outline of the classic heart curve inflated into a cushion --- */
+  function heartGeo(nT, nP, depth) {
+    const outline = []; let minY = 1e9, maxY = -1e9;
+    for (let i = 0; i < nT; i++) {
+      const t = i / nT * Math.PI * 2;
+      const x = 16 * Math.pow(Math.sin(t), 3), y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+      outline.push([x, y]); minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+    }
+    const Hh = maxY - minY, cyMid = (maxY + minY) / 2, cRad = (2.5 - cyMid) / Hh; // scale toward a point inside the heart
+    // level curves get smoother the higher they sit, so the corners of the outline don't leave a crease on the surface
+    const lvX = [], lvY = [];
+    for (const frac of [.008, .03, .07, .125]) {
+      const r = Math.max(1, Math.round(frac * nT)); let ax = outline.map(q => q[0] / Hh), ay = outline.map(q => (q[1] - cyMid) / Hh);
+      for (let pass = 0; pass < 2; pass++) {
+        const nx = new Array(nT), ny = new Array(nT);
+        for (let i = 0; i < nT; i++) { let sx = 0, sy = 0; for (let j = -r; j <= r; j++) { const k = (i + j + nT) % nT; sx += ax[k]; sy += ay[k]; } nx[i] = sx / (2 * r + 1); ny[i] = sy / (2 * r + 1); }
+        ax = nx; ay = ny;
+      }
+      lvX.push(ax); lvY.push(ay);
+    }
+    const pos = new Float32Array((nP + 1) * nT * 3), idx = [];
+    for (let p = 0; p <= nP; p++) {
+      const phi = Math.PI * p / nP, rho = Math.sin(phi), z = depth * Math.cos(phi) / Hh;
+      const u = Math.min(3, (1 - rho) * 4.5), lo = Math.floor(u), hi = Math.min(3, lo + 1), f = u - lo;
+      for (let i = 0; i < nT; i++) {
+        const ox = lvX[lo][i] * (1 - f) + lvX[hi][i] * f, oy = lvY[lo][i] * (1 - f) + lvY[hi][i] * f;
+        const k = (p * nT + i) * 3;
+        pos[k] = ox * rho; pos[k + 1] = cRad - (cRad - oy) * rho; pos[k + 2] = z;
+      }
+    }
+    for (let p = 0; p < nP; p++) for (let i = 0; i < nT; i++) {
+      const a = p * nT + i, b = p * nT + (i + 1) % nT, c = (p + 1) * nT + i, d = (p + 1) * nT + (i + 1) % nT;
+      idx.push(a, c, b, b, c, d);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+    let nrm = g.attributes.normal;
+    if (nrm.getZ(0) < 0) { // wrong winding: flip
+      const ix = g.index.array; for (let q = 0; q < ix.length; q += 3) { const t = ix[q + 1]; ix[q + 1] = ix[q + 2]; ix[q + 2] = t; }
+      g.computeVertexNormals(); nrm = g.attributes.normal;
+    }
+    for (let i = 0; i < nT; i++) { nrm.setXYZ(i, 0, 0, 1); nrm.setXYZ(nP * nT + i, 0, 0, -1); }
+    // re-centre vertically so the pivot sits mid-heart
+    g.computeBoundingBox(); const bb = g.boundingBox; g.translate(0, -(bb.max.y + bb.min.y) / 2, 0);
+    return g;
+  }
+  const bigGeo = heartGeo(240, 72, 6.8), miniGeo = heartGeo(72, 16, 6.8);
+
+  const rig = new THREE.Group(), spin = new THREE.Group();
+  rig.add(spin); scene.add(rig);
+  const ruby = C(0xb4061f), goldE = C(0xffb94d).multiplyScalar(.16), rubyE = ruby.clone().multiplyScalar(.25);
+  const heartMat = new THREE.MeshPhysicalMaterial({ color: C(0xb0051d), metalness: .05, roughness: .2, clearcoat: 1, clearcoatRoughness: .04,
+    envMapIntensity: 1.0, emissive: C(0x4a0410), emissiveIntensity: .6 });
+  const heart = new THREE.Mesh(bigGeo, heartMat); spin.add(heart);
+
+  const rimMat = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: { uK: { value: 1 }, uCol: { value: new THREE.Color(1.0, .38, .55) } },
+    vertexShader: 'varying vec3 vN; varying vec3 vV; void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }',
+    fragmentShader: 'varying vec3 vN; varying vec3 vV; uniform float uK; uniform vec3 uCol; void main(){ float f = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 4.0); gl_FragColor = vec4(uCol * f * uK, f * uK); }',
+  });
+  const rimShell = new THREE.Mesh(bigGeo, rimMat); rimShell.scale.setScalar(1.004); spin.add(rimShell);
+
+  const dotTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d');
+    const g = x.createRadialGradient(32, 32, 0, 32, 32, 32); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.35, 'rgba(255,255,255,.55)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = g; x.fillRect(0, 0, 64, 64); const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t; })();
+  const starTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+    const g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.12, 'rgba(255,240,220,.7)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+    x.globalCompositeOperation = 'lighter';
+    for (const [w, h] of [[128, 5], [5, 128]]) { const l = x.createLinearGradient(0, 0, w > h ? 128 : 0, w > h ? 0 : 128);
+      l.addColorStop(0, 'rgba(255,255,255,0)'); l.addColorStop(.5, 'rgba(255,255,255,.95)'); l.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = l; x.fillRect(64 - w / 2, 64 - h / 2, w, h); }
+    const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t; })();
+
+  const haloRed = C(0xff2f62), haloGold = C(0xffc266);
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex, color: C(0xff2f62), blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: .5, toneMapped: false }));
+  halo.position.z = -.9; halo.scale.setScalar(3.4); rig.add(halo);
+  const halo2 = new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex, color: C(0xffb37a), blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: .18, toneMapped: false }));
+  halo2.position.z = -1.2; halo2.scale.setScalar(6); rig.add(halo2);
+
+  // twinkling glints on the rim of the heart
+  const glints = [];
+  for (let i = 0; i < 9; i++) {
+    const t = Math.random() * Math.PI * 2, x = 16 * Math.pow(Math.sin(t), 3), y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: starTex, color: 0xfff0d8, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, toneMapped: false }));
+    s.position.set(x / 28.92 * .9, (y + 2.54) / 28.92 * .9, .17); s.userData = { ph: Math.random() * 6.28, sp: .8 + Math.random() * 1.2, sc: .08 + Math.random() * .09 };
+    rig.add(s); glints.push(s);
+  }
+
+  /* --- drifting golden dust --- */
+  const DN = 760, dpos = new Float32Array(DN * 3), dsz = new Float32Array(DN), dph = new Float32Array(DN), dcol = new Float32Array(DN * 3);
+  const pal = [new THREE.Color(1, .86, .55), new THREE.Color(1, .55, .68), new THREE.Color(1, .95, .9)];
+  for (let i = 0; i < DN; i++) {
+    dpos[i * 3] = Math.random() * 2 - 1; dpos[i * 3 + 1] = Math.random() * 2 - 1; dpos[i * 3 + 2] = Math.random() * 2 - 1;
+    dsz[i] = .5 + Math.pow(Math.random(), 2.2) * 2.2; dph[i] = Math.random();
+    const c = pal[(Math.random() * 3) | 0]; dcol[i * 3] = c.r; dcol[i * 3 + 1] = c.g; dcol[i * 3 + 2] = c.b;
+  }
+  const dg = new THREE.BufferGeometry();
+  dg.setAttribute('position', new THREE.BufferAttribute(dpos, 3)); dg.setAttribute('aSize', new THREE.BufferAttribute(dsz, 1));
+  dg.setAttribute('aPhase', new THREE.BufferAttribute(dph, 1)); dg.setAttribute('aColor', new THREE.BufferAttribute(dcol, 3));
+  const dustMat = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: { uTime: { value: 0 }, uPx: { value: renderer.getPixelRatio() }, uSpread: { value: new THREE.Vector3(4, 4, 2.6) }, uK: { value: 1 } },
+    vertexShader: `attribute float aSize; attribute float aPhase; attribute vec3 aColor;
+      uniform float uTime, uPx, uK; uniform vec3 uSpread; varying vec3 vC; varying float vA;
+      void main(){
+        vec3 p = position;
+        p.y = mod(p.y + uTime * .035 * (.4 + aSize * .35) + 1.0, 2.0) - 1.0;
+        p.x += sin(uTime * .35 + aPhase * 6.2831) * .05; p.z += cos(uTime * .27 + aPhase * 6.2831) * .05;
+        vec4 mv = modelViewMatrix * vec4(p * uSpread + vec3(0., 0., -.6), 1.0);
+        gl_Position = projectionMatrix * mv;
+        float tw = .55 + .45 * sin(uTime * 1.6 + aPhase * 40.0);
+        gl_PointSize = aSize * 34.0 * uPx / -mv.z;
+        vA = tw * smoothstep(1.0, .75, abs(p.y)) * uK; vC = aColor;
+      }`,
+    fragmentShader: 'varying vec3 vC; varying float vA; void main(){ float d = length(gl_PointCoord - .5); if (d > .5) discard; float a = smoothstep(.5, 0., d); gl_FragColor = vec4(vC, a * a * vA); }',
+  });
+  const dust = new THREE.Points(dg, dustMat); dust.frustumCulled = false; scene.add(dust);
+
+  /* --- small hearts floating up --- */
+  const FN = 30;
+  const floatMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: .1, roughness: .25, clearcoat: 1, envMapIntensity: 1.1, emissive: C(0x3a0612), emissiveIntensity: .35 });
+  const floaters = new THREE.InstancedMesh(miniGeo, floatMat, FN);
+  floaters.instanceMatrix.setUsage(THREE.DynamicDrawUsage); floaters.frustumCulled = false;
+  const fcol = [0xd0193a, 0xff5a7e, 0xf2a7b4, 0xf1c46a, 0xb4061f].map(C);
+  const fl = [];
+  for (let i = 0; i < FN; i++) {
+    fl.push({ x: Math.random() * 2 - 1, y0: Math.random() * 2, z: Math.random(), v: .03 + Math.random() * .04, sc: .14 + Math.random() * .22, r: .4 + Math.random() * .8, p: Math.random() * 6.28 });
+    floaters.setColorAt(i, fcol[i % fcol.length]);
+  }
+  scene.add(floaters);
+  const dummy = new THREE.Object3D();
+
+  /* --- two interlocked wedding rings --- */
+  const rings = new THREE.Group();
+  const goldMat = new THREE.MeshPhysicalMaterial({ color: C(0xf2c14e), metalness: 1, roughness: .2, clearcoat: .5, envMapIntensity: 1.7 });
+  const rg = new THREE.TorusGeometry(.16, .028, 28, 100);
+  const rA = new THREE.Mesh(rg, goldMat); rA.position.x = -.08;
+  const rB = new THREE.Mesh(rg, goldMat); rB.position.x = .08; rB.rotation.x = Math.PI / 2;
+  rings.add(rA, rB); rings.scale.setScalar(0.0001); scene.add(rings);
+
+  /* --- bursts of sparkles --- */
+  const BN = 380, bp = new Float32Array(BN * 3), bc = new Float32Array(BN * 3), bv = new Float32Array(BN * 3), bb = new Float32Array(BN * 3), bl = new Float32Array(BN);
+  const bgeo = new THREE.BufferGeometry();
+  bgeo.setAttribute('position', new THREE.BufferAttribute(bp, 3)); bgeo.setAttribute('color', new THREE.BufferAttribute(bc, 3));
+  const bpts = new THREE.Points(bgeo, new THREE.PointsMaterial({ size: .075, map: dotTex, vertexColors: true, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, toneMapped: false }));
+  bpts.frustumCulled = false; scene.add(bpts);
+  let bcur = 0;
+  const burstPal = [new THREE.Color(1, .82, .45), new THREE.Color(1, .4, .6), new THREE.Color(1, .95, .85), new THREE.Color(.95, .2, .35)];
+
+  /* --- state --- */
+  const cur = { x: 0, y: 0, size: .4, z: 0, dim: 0, rings: 0, bpm: 60 };
+  const st = { phase: 0, shake: 0, glow: 0, glowT: 0, kick: 0, yawAcc: 0, kickVel: 0, dragYaw: 0, dragPitch: 0, urg: 0, t: 0 };
+  const P = { x: 0, y: 0, sx: 0, sy: 0, down: false, lx: 0, ly: 0, t0: 0, moved: 0 };
+  let W = 1, H = 1, visH = 1, ema = 16, adapt = 0;
+  const damp = (a, b, k, dt) => a + (b - a) * (1 - Math.exp(-k * dt));
+  const beatCurve = ph => Math.exp(-Math.pow((ph - .1) / .045, 2)) + .65 * Math.exp(-Math.pow((ph - .3) / .05, 2));
+
+  function resize() {
+    W = innerWidth; H = innerHeight;
+    renderer.setSize(W, H, false);
+    camera.aspect = W / H; camera.updateProjectionMatrix();
+    visH = 2 * DIST * Math.tan(FOV * Math.PI / 360);
+    bgMat.uniforms.uAspect.value = W / H;
+    dustMat.uniforms.uSpread.value.set(visH * W / H * .62, visH * .62, 2.6);
+    dustMat.uniforms.uPx.value = renderer.getPixelRatio();
+    layoutDirty = true;
+  }
+  addEventListener('resize', resize); resize();
+
+  function spawn(n, ox, oy, oz, size, speed) {
+    for (let k = 0; k < n; k++) {
+      const i = bcur++ % BN, a = Math.random() * 6.283, b = Math.acos(Math.random() * 2 - 1), sp = speed * size * (.3 + Math.random() * .9);
+      bp[i * 3] = ox + (Math.random() - .5) * size * .4; bp[i * 3 + 1] = oy + (Math.random() - .5) * size * .4; bp[i * 3 + 2] = oz + (Math.random() - .5) * size * .2;
+      bv[i * 3] = Math.sin(b) * Math.cos(a) * sp; bv[i * 3 + 1] = Math.sin(b) * Math.sin(a) * sp + size * .3; bv[i * 3 + 2] = Math.cos(b) * sp * .6;
+      const c = burstPal[(Math.random() * burstPal.length) | 0]; bb[i * 3] = c.r; bb[i * 3 + 1] = c.g; bb[i * 3 + 2] = c.b; bl[i] = 1;
+    }
+  }
+
+  FX.shake = () => { st.shake = 1; };
+  FX.glow = v => { st.glowT = v; };
+  FX.kick = () => { st.kickVel = 9; };
+  FX.pulse = () => { st.kick = 1; if (!reduced) spawn(26, cur.x, cur.y, cur.z, cur.size, 1.4); };
+  FX.burst = (n, speed) => { if (!reduced) spawn(n, cur.x, cur.y, cur.z, cur.size, speed || 2.4); };
+  FX.urgency = v => { st.urg = v; };
+
+  /* pointer: parallax, drag-to-spin, tap to pulse */
+  const glEl = $('#gl');
+  addEventListener('pointermove', e => {
+    P.x = (e.clientX / innerWidth) * 2 - 1; P.y = -((e.clientY / innerHeight) * 2 - 1);
+    if (P.down) { const dx = e.clientX - P.lx, dy = e.clientY - P.ly; P.lx = e.clientX; P.ly = e.clientY; P.moved += Math.abs(dx) + Math.abs(dy);
+      st.dragYaw += dx * .012; st.dragPitch = Math.max(-.6, Math.min(.6, st.dragPitch + dy * .008)); }
+  });
+  glEl.addEventListener('pointerdown', e => { P.down = true; P.lx = e.clientX; P.ly = e.clientY; P.moved = 0; P.t0 = performance.now(); });
+  addEventListener('pointerup', () => { if (!P.down) return; P.down = false; if (P.moved < 8 && performance.now() - P.t0 < 400) FX.pulse(); });
+  addEventListener('pointercancel', () => { P.down = false; });
+
+  let last = performance.now();
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const dt = Math.min(.1, (now - last) / 1000); last = now; st.t += dt;
+    const t = st.t, T = STAGE[S.stage] || STAGE.boot;
+    ema = ema * .95 + dt * 1000 * .05;
+    if (t > 4 && ema > 34 && adapt < 2) { adapt++; ema = 16; if (adapt === 1) { renderer.setPixelRatio(1); resize(); } else { dg.setDrawRange(0, 320); floaters.count = 12; } }
+
+    // layout target: from the free area on screen to world units
+    const wpp = visH / H;
+    const tx = (L.cx - W / 2) * wpp, ty = (H / 2 - L.cy) * wpp, ts = L.px * wpp;
+    if (t < .05) { cur.x = tx; cur.y = ty; cur.size = ts; }
+    cur.x = damp(cur.x, tx, 3.2, dt); cur.y = damp(cur.y, ty, 3.2, dt); cur.size = damp(cur.size, ts, 3.2, dt);
+    cur.z = damp(cur.z, T.z, 2.5, dt); cur.dim = damp(cur.dim, T.dim, 1.6, dt); cur.rings = damp(cur.rings, T.rings, 2.2, dt);
+    cur.bpm = damp(cur.bpm, T.bpm + st.urg * 46, 2, dt);
+
+    st.phase += dt * cur.bpm / 60; const beat = beatCurve(st.phase % 1) * (1 - cur.dim * .5);
+    st.shake = Math.max(0, st.shake - dt * 1.7); st.kick = Math.max(0, st.kick - dt * 3.2);
+    st.glow = damp(st.glow, st.glowT, 2.2, dt);
+    st.kickVel = damp(st.kickVel, 0, 1.8, dt); st.yawAcc += st.kickVel * dt;
+    if (!P.down && st.kickVel < 1.5) st.yawAcc = damp(st.yawAcc, Math.round(st.yawAcc / (2 * Math.PI)) * 2 * Math.PI, 2.2, dt);
+    if (!P.down) { st.dragYaw = damp(st.dragYaw, 0, .5, dt); st.dragPitch = damp(st.dragPitch, 0, .8, dt); }
+    const intro = Math.min(1, Math.max(0, (t - .25) / 1.9)), c1 = 1.70158, c3 = c1 + 1;
+    const introS = intro <= 0 ? 0 : 1 + c3 * Math.pow(intro - 1, 3) + c1 * Math.pow(intro - 1, 2);
+
+    // pointer parallax
+    P.sx = damp(P.sx, P.x, 2.5, dt); P.sy = damp(P.sy, P.y, 2.5, dt);
+    camera.position.set(P.sx * .35, P.sy * .22, DIST); camera.lookAt(0, 0, 0);
+
+    // heart
+    const sway = reduced ? 0 : Math.sin(t * .55) * .5 + Math.sin(t * .23) * .15;
+    spin.rotation.y = sway + st.dragYaw + st.yawAcc + P.sx * .18; spin.rotation.x = -.04 + st.dragPitch - P.sy * .08; spin.rotation.z = Math.sin(t * .4) * .03;
+    const bob = reduced ? 0 : Math.sin(t * .8) * .02 * cur.size;
+    rig.position.set(cur.x + Math.sin(t * 80) * .06 * st.shake * cur.size, cur.y + bob, cur.z);
+    rig.scale.setScalar(Math.max(.0001, cur.size * introS * (1 + .07 * beat + .11 * st.kick)));
+    heartMat.emissive.copy(rubyE).lerp(goldE, st.glow);
+    heartMat.emissiveIntensity = (.55 + .7 * beat + st.glow * .5) * (1 - cur.dim * .5);
+    heartMat.envMapIntensity = 1.0 * (1 - cur.dim * .55);
+    rimMat.uniforms.uK.value = (.55 + .6 * beat + st.glow * .5) * (1 - cur.dim * .5);
+    halo.material.opacity = (.5 + .35 * beat + st.glow * .25) * (1 - cur.dim * .6) * Math.min(1, intro * 1.4);
+    halo2.material.opacity = (.2 + .1 * beat) * (1 - cur.dim * .6);
+    halo.scale.setScalar(3.3 + .4 * beat); halo.material.color.copy(haloRed).lerp(haloGold, st.glow);
+    for (const g of glints) { const s = Math.pow(Math.max(0, Math.sin(t * g.userData.sp + g.userData.ph)), 6); g.scale.setScalar(.0001 + g.userData.sc * s); g.material.opacity = s; g.visible = cur.dim < .7; }
+    key.intensity = 1.4 + .45 * beat; goldL.intensity = 1.3 + .8 * beat;
+
+    // backdrop
+    bgMat.uniforms.uC.value.set(L.cx / W, 1 - L.cy / H);
+    bgMat.uniforms.uDim.value = cur.dim; bgMat.uniforms.uGlow.value = .75 + .45 * beat + st.glow * .3; bgMat.uniforms.uTime.value = t % 100;
+
+    // dust + floating hearts
+    dustMat.uniforms.uTime.value = reduced ? 0 : t; dustMat.uniforms.uK.value = 1 - cur.dim * .5;
+    const sx = visH * W / H * .5, sy = visH * .55;
+    for (let i = 0; i < floaters.count; i++) {
+      const f = fl[i], yy = ((f.y0 + t * f.v * (reduced ? 0 : 1)) % 2) - 1, edge = Math.min(1, (1 - Math.abs(yy)) * 6);
+      dummy.position.set(f.x * sx * 1.05 + Math.sin(t * .5 + f.p) * .18, yy * sy, f.z * 3.2 - 2.2);
+      dummy.rotation.set(0, t * f.r + f.p, Math.sin(t * .7 + f.p) * .35);
+      dummy.scale.setScalar(f.sc * edge * (1 + .12 * beat) * (1 - cur.dim * .35)); dummy.updateMatrix(); floaters.setMatrixAt(i, dummy.matrix);
+    }
+    floaters.instanceMatrix.needsUpdate = true;
+
+    // rings orbit the heart
+    const RS = Math.max(.0001, cur.rings);
+    const orbit = Math.min(cur.size * .95, visH * W / H * .4), a = t * .55;
+    rings.position.set(cur.x + Math.cos(a) * orbit, cur.y + Math.sin(a * .8) * cur.size * .28, cur.z + Math.sin(a) * orbit * .8 + .2);
+    rings.scale.setScalar(cur.size * .9 * RS); rings.rotation.set(t * .5, t * .7, t * .3); rings.visible = cur.rings > .01;
+
+    // sparkle bursts
+    for (let i = 0; i < BN; i++) {
+      if (bl[i] <= 0) { bc[i * 3] = bc[i * 3 + 1] = bc[i * 3 + 2] = 0; continue; }
+      bl[i] -= dt * .55; const k = Math.pow(Math.max(0, bl[i]), 1.6), drag = Math.exp(-dt * 1.3);
+      bv[i * 3] *= drag; bv[i * 3 + 1] = bv[i * 3 + 1] * drag - dt * .5 * cur.size; bv[i * 3 + 2] *= drag;
+      bp[i * 3] += bv[i * 3] * dt; bp[i * 3 + 1] += bv[i * 3 + 1] * dt; bp[i * 3 + 2] += bv[i * 3 + 2] * dt;
+      bc[i * 3] = bb[i * 3] * k; bc[i * 3 + 1] = bb[i * 3 + 1] * k; bc[i * 3 + 2] = bb[i * 3 + 2] * k;
+    }
+    bgeo.attributes.position.needsUpdate = true; bgeo.attributes.color.needsUpdate = true;
+
+    renderer.render(scene, camera);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* where the heart lives: the free part of the screen next to the active panel */
+function applyLayout() {
+  layoutDirty = false;
+  const W = innerWidth, H = innerHeight, T = STAGE[S.stage] || STAGE.boot;
+  const scr = $('#s-' + S.stage), panel = scr && $('.panel', scr), dock = scr && scr.dataset.dock;
+  let top = 0, bottom = H;
+  if (panel && dock !== 'center') { const r = panel.getBoundingClientRect(); if (dock === 'top') top = r.bottom + 10; else bottom = r.top - 6; }
+  const rh = Math.max(60, bottom - top);
+  const px = Math.max(70, Math.min(rh * T.fill, W * .74 / 1.12, 620));
+  L = { cx: W / 2, cy: (top + bottom) / 2, px };
+  const fb = $('#fb'); if (fb) { fb.style.top = L.cy + 'px'; fb.style.height = px + 'px'; }
+}
+new ResizeObserver(() => { layoutDirty = true; }).observe(document.documentElement);
+addEventListener('resize', () => { layoutDirty = true; });
+(function watchLayout() { if (layoutDirty) applyLayout(); requestAnimationFrame(watchLayout); })();
+
+/* ================= flow ================= */
+function go(stage) {
+  S.stage = stage;
+  $$('.scr').forEach(s => { const on = s.id === 's-' + stage; s.classList.toggle('on', on); s.toggleAttribute('inert', !on); });
+  layoutDirty = true;
+  ({ intro: enterIntro, date: enterDate, name: enterName, letter: enterLetter, wait: enterWait, final: enterFinal }[stage] || (() => {}))();
+}
+function toast(msg) { const el = $('#toast'); el.textContent = msg; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('on'), 3400); }
+$$('.panel').forEach(p => new ResizeObserver(() => { layoutDirty = true; }).observe(p));
+
+/* intro */
+function enterIntro() { setTimeout(() => { if (S.stage === 'intro') go('date'); }, 5400); }
+
+/* step 1: the date, two minutes */
+const F = ['dd', 'mm', 'yy'].map(id => $('#' + id));
+const D = { ok: false, wrong: 0, deadline: 0, timer: 0 };
+function enterDate() {
+  F.forEach(el => { el.value = ''; el.readOnly = false; el.classList.remove('ok', 'bad'); });
+  D.ok = false; D.wrong = 0;
+  $('#btnContinue').hidden = true; msg('#dmsg', ''); $('#timer').classList.remove('done', 'low');
+  startTimer();
+  if (!coarse) setTimeout(() => { if (S.stage === 'date' && !D.ok) F[0].focus(); }, 1000);
+}
+function msg(sel, text, good) { const el = $(sel); el.textContent = text; el.classList.toggle('good', !!good); }
+function startTimer() {
+  clearInterval(D.timer); D.deadline = Date.now() + CFG.timerSec * 1000;
+  tick(); D.timer = setInterval(tick, 200);
+}
+function tick() {
+  const left = Math.max(0, D.deadline - Date.now()), s = Math.ceil(left / 1000);
+  $('#tv').textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+  $('#ringFg').style.strokeDashoffset = String(100.53 * (1 - left / (CFG.timerSec * 1000)));
+  $('#timer').classList.toggle('low', left <= 20000);
+  FX.urgency(left < 20000 ? 1 - left / 20000 : 0);
+  if (left <= 0 && !D.ok) {
+    F.forEach(el => { el.value = ''; }); FX.shake();
+    msg('#dmsg', 'Время вышло. Начинаем заново, у вас получится ❤️');
+    startTimer(); if (!coarse) F[0].focus();
+  }
+}
+F.forEach((el, i) => {
+  el.addEventListener('input', () => {
+    el.value = el.value.replace(/\D/g, '').slice(0, el.maxLength);
+    el.classList.remove('bad');
+    const v = el.value, full = v.length === el.maxLength || (i === 0 && v.length === 1 && +v > 3) || (i === 1 && v.length === 1 && +v > 1);
+    if (full && i < 2) F[i + 1].focus();
+    if (full) checkDate(false);
+  });
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && !el.value && i > 0) F[i - 1].focus();
+    if (e.key === 'Enter') { e.preventDefault(); checkDate(true); }
+  });
+  el.addEventListener('focus', () => { try { el.select(); } catch (e) {} });
+});
+$('#dateForm').addEventListener('submit', e => { e.preventDefault(); checkDate(true); });
+function checkDate(force) {
+  if (D.ok) return;
+  const [d, m, y] = F.map(el => el.value);
+  if (!d || !m || y.length < 4) { if (force) msg('#dmsg', 'Заполните день, месяц и год'); return; }
+  if (+d === CFG.date.d && +m === CFG.date.m && +y === CFG.date.y) return dateOk();
+  D.wrong++; FX.shake(); FX.pulse();
+  F.forEach(el => { el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); });
+  msg('#dmsg', D.wrong >= 3 ? 'Подсказка: свадьба была ровно 20 лет назад, в конце сентября ❤️' : 'Пока не та дата. Вспомните тот самый день ❤️');
+}
+function dateOk() {
+  D.ok = true; clearInterval(D.timer); FX.urgency(0);
+  F.forEach(el => { el.readOnly = true; el.classList.remove('bad'); el.classList.add('ok'); el.blur(); });
+  $('#timer').classList.remove('low'); $('#timer').classList.add('done');
+  msg('#dmsg', 'Верно! С этого дня всё и началось ❤️', true);
+  FX.glow(1); FX.kick(); FX.burst(180, 2.6);
+  const b = $('#btnContinue'); b.hidden = false; b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
+}
+$('#btnContinue').addEventListener('click', () => { FX.glow(0); go('name'); });
+
+/* step 2: the name */
+function enterName() { $('#nm').value = ''; msg('#nmsg', ''); if (!coarse) setTimeout(() => { if (S.stage === 'name') $('#nm').focus(); }, 900); }
+const normName = s => s.toLowerCase().replace(/ё/g, 'е').replace(/[^a-zа-я]/g, '');
+$('#nameForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = normName($('#nm').value);
+  const who = Object.keys(PEOPLE).find(k => PEOPLE[k].aliases.includes(v));
+  if (!who) {
+    const el = $('#nm'); el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); FX.shake();
+    msg('#nmsg', 'Этот сюрприз приготовлен для Наталии и Михаила. Проверьте имя и попробуйте ещё раз.');
+    return;
+  }
+  S.me = who; SS.set('nm20.me', who); $('#nm').blur(); FX.burst(120, 2.2); FX.kick(); go('letter');
+});
+$('#nm').addEventListener('input', () => $('#nm').classList.remove('bad'));
+
+/* step 3: the letter */
+function enterLetter() {
+  const p = PEOPLE[S.me], el = $('#letter');
+  el.innerHTML = '<div class="l-scroll" id="lScroll"><h2 class="l-head" style="--i:0"></h2><div class="orn" style="--i:1"></div>'
+    + p.paras.map((t, i) => '<p style="--i:' + (i + 2) + '">' + t + '</p>').join('')
+    + '<div class="l-foot" style="--i:' + (p.paras.length + 2.5) + '"><button class="btn" id="btnDone" type="button"></button></div></div>';
+  $('.l-head', el).textContent = p.head; $('#btnDone').textContent = p.btn;
+  const sc = $('#lScroll'), more = () => sc.classList.toggle('more', sc.scrollTop + sc.clientHeight < sc.scrollHeight - 10);
+  sc.addEventListener('scroll', more, { passive: true }); new ResizeObserver(more).observe(sc); setTimeout(more, 50);
+  $('#btnDone').addEventListener('click', finishTest);
+}
+async function finishTest() {
+  const b = $('#btnDone'); b.disabled = true;
+  Sync.done(S.me);                                   // upload runs in the background
+  FX.burst(100, 2); FX.kick(); go('wait');
+}
+
+/* step 4: wait for the other person */
+let pollT = 0;
+function enterWait() {
+  const p = PEOPLE[S.me];
+  $('#waitTitle').textContent = p.name + ', всё готово ❤️'; $('#waitText').textContent = p.wait;
+  paintChips(Sync.status()); poll();
+}
+function paintChips(st) {
+  [['#chipN', st.n, 'готова'], ['#chipM', st.m, 'готов']].forEach(([sel, on, word]) => {
+    const li = $(sel); li.classList.toggle('on', on); $('small', li).textContent = on ? word : 'в пути';
+  });
+}
+async function poll() {
+  clearTimeout(pollT);
+  if (S.stage !== 'wait') return;
+  await Sync.pull();
+  if (S.stage !== 'wait') return;
+  Sync.ensure(S.me);
+  const st = Sync.status(); paintChips(st);
+  if (st.n && st.m) { go('final'); return; }
+  pollT = setTimeout(poll, CFG.pollMs);
+}
+addEventListener('storage', e => { if (e.key === Sync.KEY && S.stage === 'wait') poll(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.stage === 'wait') poll(); });
+
+/* step 5: both are ready */
+function enterFinal() { clearTimeout(pollT); FX.glow(0); setTimeout(() => FX.burst(60, 1.2), 600); }
+
+/* ================= start ================= */
+function boot() {
+  try { init3D(); } catch (e) { console.warn('3D unavailable, using the flat heart:', e); document.documentElement.classList.add('no-gl'); }
+  // owner tool: open the page with #reset to clear everyone's progress before the real thing
+  const wantsReset = () => /(^|[#?&])reset\b/.test(location.hash + location.search);
+  const doReset = () => Sync.reset().then(() => { SS.set('nm20.me', ''); toast('Прогресс сброшен, можно начинать заново'); if (S.stage === 'wait' || S.stage === 'final') location.reload(); });
+  if (wantsReset() && !SS.get('nm20.resetDone')) { SS.set('nm20.resetDone', '1'); doReset(); }
+  addEventListener('hashchange', () => { if (wantsReset()) doReset(); });
+  const me = SS.get('nm20.me');
+  if (me && PEOPLE[me] && Sync.status()[me]) { S.me = me; go('wait'); }
+  else go('intro');
+}
+boot();
+})();
+</script>
+
+</body>
+</html>
