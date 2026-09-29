@@ -1,0 +1,795 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Алексей — программист и дизайнер</title>
+  <meta name="description" content="Алексей — программист и дизайнер. Бірлік, Stells Pro и Stella Coder: образование, искусственный интеллект и инструменты разработчика." />
+  <meta name="theme-color" content="#fbfbfd" />
+  <meta property="og:title" content="Алексей — программист и дизайнер" />
+  <meta property="og:description" content="Бірлік · Stells Pro · Stella Coder" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%230a84ff'/%3E%3Cstop offset='.5' stop-color='%23bf5af2'/%3E%3Cstop offset='1' stop-color='%23ff375f'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='700' font-size='34' text-anchor='middle' fill='white'%3EA%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- ============ ИКОНКИ ============ -->
+  <svg class="sprite" aria-hidden="true">
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.2"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 1 3.3 6.5L4 19.5l1-3.2A7.9 7.9 0 0 1 4 12Z"/><path d="M9 11h6M9 14h4"/></symbol>
+    <symbol id="i-face" viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 9.5v1M15 9.5v1M12 9.5v3.5h-1M9.5 15.5a3.5 3.5 0 0 0 5 0"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 5 6v5.5c0 4.4 3 8.1 7 9.5 4-1.4 7-5.1 7-9.5V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-offline" viewBox="0 0 24 24"><path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1"/><path d="M3 3l18 18"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+    <symbol id="i-game" viewBox="0 0 24 24"><path d="M7 7h10a5 5 0 0 1 4.9 6l-.6 3a2.5 2.5 0 0 1-4.3 1.2L15 15H9l-2 2.2A2.5 2.5 0 0 1 2.7 16l-.6-3A5 5 0 0 1 7 7Z"/><path d="M7 10v4M5 12h4"/><circle cx="16" cy="11" r=".8"/><circle cx="18" cy="13" r=".8"/></symbol>
+    <symbol id="i-server" viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="7" rx="2"/><rect x="3.5" y="13" width="17" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01M11 7.5h6M11 16.5h6"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H12L13 2Z"/></symbol>
+    <symbol id="i-cube" viewBox="0 0 24 24"><path d="m12 2.8 8 4.6v9.2l-8 4.6-8-4.6V7.4l8-4.6Z"/><path d="m4 7.4 8 4.6 8-4.6M12 12v9.2"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></symbol>
+    <symbol id="i-api" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+    <symbol id="i-bug" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="13" rx="5"/><path d="M9 7a3 3 0 0 1 6 0M12 11v9M3 13h4M17 13h4M4 7l3 2M20 7l-3 2M4 19l3-2M20 19l-3-2"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></symbol>
+    <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m7 9 3 3-3 3M12 15h5"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="3"/><path d="M10.5 18.5h3"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 8.5h18M9.5 12.5l-2 2 2 2M14.5 12.5l2 2-2 2"/></symbol>
+    <symbol id="i-test" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M4 4v4h4M20 20v-4h-4"/></symbol>
+    <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M5 15c-1.5 1.5-2 5-2 5s3.5-.5 5-2"/><path d="M9 15l-3-3c1-4 4.5-8.5 12-9 0 7.5-5 11-9 12Z"/><circle cx="14.5" cy="9.5" r="1.5"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3 3 10.5l7 2.5 2.5 7L21 3Z"/><path d="m10 13 4.5-4.5"/></symbol>
+    <symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5v-15Z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19M9 7.5h6M9 11h4"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/></symbol>
+  </svg>
+
+  <!-- ============ ЗАСТАВКА ============ -->
+  <div class="loader" aria-hidden="true">
+    <div class="loader-name">
+      <span>А</span><span>л</span><span>е</span><span>к</span><span>с</span><span>е</span><span>й</span>
+    </div>
+    <div class="loader-bar"><i></i></div>
+  </div>
+
+  <!-- ============ КУРСОР ============ -->
+  <div class="cursor" aria-hidden="true"></div>
+  <div class="cursor-dot" aria-hidden="true"></div>
+
+  <!-- ============ НАВИГАЦИЯ ============ -->
+  <header class="nav">
+    <div class="nav-inner">
+      <a href="#top" class="nav-logo" data-cursor="hover"><span class="logo-dot"></span>Алексей</a>
+      <nav class="nav-links" aria-label="Основная навигация">
+        <a href="#birlik">Бірлік</a>
+        <a href="#stells">Stells Pro</a>
+        <a href="#coder">Stella Coder</a>
+        <a href="#skills">Навыки</a>
+      </nav>
+      <a href="#contact" class="nav-cta magnetic">Связаться</a>
+      <button class="nav-burger" aria-label="Открыть меню" aria-expanded="false"><span></span><span></span></button>
+    </div>
+    <div class="nav-progress"><i></i></div>
+  </header>
+  <div class="mobile-menu" aria-hidden="true">
+    <a href="#birlik">Бірлік</a>
+    <a href="#stells">Stells Pro</a>
+    <a href="#coder">Stella Coder</a>
+    <a href="#skills">Навыки</a>
+    <a href="#contact">Связаться</a>
+  </div>
+
+  <main>
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="top">
+      <canvas id="hero-canvas" aria-hidden="true"></canvas>
+      <div class="hero-shadow" aria-hidden="true"></div>
+      <div class="hero-content">
+        <div class="hero-chip hero-anim"><span class="pulse"></span>Программист · Дизайнер · 12 лет</div>
+        <h1 class="hero-title hero-anim"><span class="hero-name">Алексей</span><span class="hero-dot">.</span></h1>
+        <p class="hero-sub hero-anim">Пишу код, проектирую интерфейсы и&nbsp;довожу идеи до&nbsp;готовых продуктов&nbsp;— от&nbsp;школьной платформы до&nbsp;собственного&nbsp;ИИ.</p>
+        <div class="hero-actions hero-anim">
+          <a href="#projects" class="btn btn-primary magnetic">Смотреть проекты <svg><use href="#i-down"/></svg></a>
+          <a href="#contact" class="btn btn-ghost magnetic">Связаться</a>
+        </div>
+      </div>
+      <div class="hero-foot hero-anim">
+        <span>Python</span><span>Go</span><span>JavaScript</span><span>Дизайн</span>
+      </div>
+      <div class="scroll-cue hero-anim" aria-hidden="true"><span class="mouse"><i></i></span></div>
+    </section>
+
+    <!-- ============ МАНИФЕСТ ============ -->
+    <section class="manifesto" id="about">
+      <div class="manifesto-pin">
+        <p class="eyebrow center">Обо мне</p>
+        <p class="manifesto-text" data-words>
+          Мне двенадцать. Я не жду, когда вырасту, чтобы строить настоящие вещи. Я пишу на Python, Go и JavaScript, рисую интерфейсы и превращаю идеи в продукты — от школьной платформы до собственной нейросети.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ ЦИФРЫ ============ -->
+    <section class="stats wrap">
+      <div class="stat reveal-up">
+        <div class="stat-num"><span data-count="3">0</span></div>
+        <p>продукта — образование, ИИ и&nbsp;инструменты разработчика</p>
+      </div>
+      <div class="stat reveal-up">
+        <div class="stat-num"><span data-count="20">0</span><em>B</em></div>
+        <p>параметров в&nbsp;нейросети Stells&nbsp;Pro</p>
+      </div>
+      <div class="stat reveal-up">
+        <div class="stat-num"><span data-count="170">0</span></div>
+        <p>уроков истории Казахстана в&nbsp;Бірлік</p>
+      </div>
+      <div class="stat reveal-up">
+        <div class="stat-num"><span data-count="680">0</span></div>
+        <p>вопросов, которые проверяет сервер, а&nbsp;не&nbsp;телефон</p>
+      </div>
+    </section>
+
+    <!-- ============ МАРКИ ============ -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-row" data-dir="1">
+        <span>Python</span><i>✦</i><span>Go</span><i>✦</i><span>JavaScript</span><i>✦</i><span>TypeScript</span><i>✦</i><span>Node.js</span><i>✦</i><span>Transformers</span><i>✦</i><span>RAG</span><i>✦</i><span>UI / UX</span><i>✦</i>
+      </div>
+      <div class="marquee-row outline" data-dir="-1">
+        <span>Бірлік</span><i>✦</i><span>Stells Pro</span><i>✦</i><span>Stella Coder</span><i>✦</i><span>Дизайн</span><i>✦</i><span>Код</span><i>✦</i><span>Интеллект</span><i>✦</i>
+      </div>
+    </div>
+
+    <!-- ============ ПРОЕКТЫ: ОБЗОР ============ -->
+    <section class="projects wrap" id="projects">
+      <p class="eyebrow center reveal-up">Проекты</p>
+      <h2 class="h-xl center split">Три продукта. <span class="grad grad-hero">Один автор.</span></h2>
+      <p class="lead center reveal-up">Каждый — от&nbsp;идеи и&nbsp;дизайна до&nbsp;кода и&nbsp;сервера.</p>
+      <div class="project-cards">
+        <a href="#birlik" class="pcard pcard-birlik tilt reveal-up">
+          <div class="pcard-glare"></div>
+          <span class="pcard-num">01</span>
+          <div class="pcard-art art-birlik"><i></i><i></i><i></i></div>
+          <span class="tag">EdTech</span>
+          <h3>Бірлік</h3>
+          <p>Школьная платформа, в&nbsp;которой невозможно списать.</p>
+          <span class="pcard-more">Подробнее <svg><use href="#i-arrow"/></svg></span>
+        </a>
+        <a href="#stells" class="pcard pcard-stells tilt reveal-up">
+          <div class="pcard-glare"></div>
+          <span class="pcard-num">02</span>
+          <div class="pcard-art art-stells"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <span class="tag">Искусственный интеллект</span>
+          <h3>Stells Pro</h3>
+          <p>Когнитивный движок на&nbsp;20&nbsp;миллиардов параметров.</p>
+          <span class="pcard-more">Подробнее <svg><use href="#i-arrow"/></svg></span>
+        </a>
+        <a href="#coder" class="pcard pcard-coder tilt reveal-up">
+          <div class="pcard-glare"></div>
+          <span class="pcard-num">03</span>
+          <div class="pcard-art art-coder"><i></i><i></i><i></i></div>
+          <span class="tag">DevTools</span>
+          <h3>Stella Coder</h3>
+          <p>ИИ-разработчик в&nbsp;редакторе, терминале и&nbsp;телефоне.</p>
+          <span class="pcard-more">Подробнее <svg><use href="#i-arrow"/></svg></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         ПРОЕКТ 01 — БІРЛІК
+    ====================================================== -->
+    <section class="product birlik" id="birlik">
+      <div class="product-head wrap">
+        <p class="eyebrow center reveal-up"><span class="eb-num">01</span>EdTech · Казахстан</p>
+        <h2 class="h-product center split"><span class="grad grad-birlik">Бірлік</span></h2>
+        <p class="lead lead-lg center reveal-up">Учебная система для школы. <span class="nowrap">5–11Учебная система для школы. 5–11&nbsp;класс.nbsp;класс.</span> Все&nbsp;предметы&nbsp;— и&nbsp;ни&nbsp;одного шанса списать.</p>
+        <p class="note center reveal-up">«Бірлік» по-казахски значит «единство»&nbsp;— но&nbsp;название так и&nbsp;пишется и&nbsp;не&nbsp;переводится. Одно из&nbsp;двух изделий комплекса «Бәрі бірге»; второе, «Завхоз»,&nbsp;— про хозяйственную часть школы.</p>
+        <div class="chips center reveal-up">
+          <span class="chip">170 уроков</span><span class="chip">680 вопросов</span><span class="chip">Мини-игры</span><span class="chip">ЕНТ и ОГЭ</span><span class="chip">Android · iOS · Web</span>
+        </div>
+      </div>
+
+      <!-- 3D-карусель предметов -->
+      <div class="subjects">
+        <div class="subjects-copy wrap">
+          <h3 class="h-lg center split">Начиналось с&nbsp;истории. <span class="grad grad-birlik">Теперь&nbsp;— все&nbsp;предметы.</span></h3>
+        </div>
+        <div class="carousel-stage" aria-hidden="true">
+          <div class="carousel">
+            <div class="ccard" style="--h:190"><b>Тарих</b><span>История Казахстана</span></div>
+            <div class="ccard" style="--h:220"><b>∑</b><span>Математика</span></div>
+            <div class="ccard" style="--h:260"><b>E=mc²</b><span>Физика</span></div>
+            <div class="ccard" style="--h:40"><b>Қаз</b><span>Казахский язык</span></div>
+            <div class="ccard" style="--h:140"><b>ДНК</b><span>Биология</span></div>
+            <div class="ccard" style="--h:320"><b>H₂O</b><span>Химия</span></div>
+            <div class="ccard" style="--h:200"><b>Aa</b><span>Английский</span></div>
+            <div class="ccard" style="--h:170"><b>Гео</b><span>География</span></div>
+            <div class="ccard" style="--h:10"><b>Рус</b><span>Русский язык</span></div>
+            <div class="ccard" style="--h:280"><b>&lt;/&gt;</b><span>Информатика</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Три рабочих места: морфинг устройства -->
+      <div class="showcase wrap">
+        <div class="showcase-sticky">
+          <div class="device-wrap">
+            <div class="device" data-state="student">
+              <div class="device-island"></div>
+              <div class="device-bar"><i></i><i></i><i></i><span class="device-url">birlik.kz</span></div>
+              <div class="device-screen">
+                <!-- Экран ученика -->
+                <div class="screen screen-student is-active">
+                  <div class="st-top">
+                    <div><small>Сәлем 👋</small><b>Айгерим</b></div>
+                    <span class="st-streak">🔥 12</span>
+                  </div>
+                  <div class="st-offline"><svg><use href="#i-offline"/></svg>Работает без интернета</div>
+                  <div class="st-lesson">
+                    <small>Урок 42 · 7 класс</small>
+                    <b>Казахское ханство</b>
+                    <div class="st-progress"><i></i></div>
+                  </div>
+                  <div class="st-q">
+                    <small>Вопрос 3 из 4</small>
+                    <p>В каком году образовалось Казахское ханство?</p>
+                    <div class="st-ans"><span>1456</span><span class="is-picked">1465</span><span>1511</span><span>1598</span></div>
+                  </div>
+                  <div class="st-row">
+                    <div class="st-tile"><svg><use href="#i-game"/></svg>Мини-игры</div>
+                    <div class="st-tile alt"><svg><use href="#i-flag"/></svg>ЕНТ · ОГЭ</div>
+                  </div>
+                </div>
+                <!-- Экран учителя -->
+                <div class="screen screen-teacher">
+                  <aside class="tc-side">
+                    <b>Бірлік</b>
+                    <span class="is-on">Журнал</span><span>Задания</span><span>Класс</span><span>Игры</span>
+                    <div class="tc-face"><svg><use href="#i-face"/></svg>Вход по лицу<br><small>живость ✓</small></div>
+                  </aside>
+                  <div class="tc-main">
+                    <div class="tc-head"><b>7 «А» · История</b><span class="tc-btn">+ Задание</span></div>
+                    <div class="tc-table">
+                      <div class="tc-row th"><span>Ученик</span><span>Балл</span><span>Оценка</span></div>
+                      <div class="tc-row"><span>Айгерим С.</span><span class="tc-bar"><i style="--w:96%"></i></span><span class="tc-mark">5</span></div>
+                      <div class="tc-row"><span>Данияр К.</span><span class="tc-bar"><i style="--w:81%"></i></span><span class="tc-mark">4</span></div>
+                      <div class="tc-row"><span>Мадина Т.</span><span class="tc-bar"><i style="--w:88%"></i></span><span class="tc-mark">5</span></div>
+                      <div class="tc-row"><span>Арман Б.</span><span class="tc-bar"><i style="--w:64%"></i></span><span class="tc-mark">3</span></div>
+                      <div class="tc-row"><span>Томирис Ж.</span><span class="tc-bar"><i style="--w:92%"></i></span><span class="tc-mark">5</span></div>
+                    </div>
+                    <div class="tc-toast"><svg><use href="#i-check"/></svg>Новый балл от&nbsp;сервера: Айгерим&nbsp;— 96</div>
+                  </div>
+                </div>
+                <!-- Экран владельца -->
+                <div class="screen screen-admin">
+                  <div class="ad-head"><b>Админка владельца</b><span>Сентябрь</span></div>
+                  <div class="ad-kpis">
+                    <div><small>Школы</small><svg viewBox="0 0 60 20"><path d="M0 16 L12 12 L24 14 L36 7 L48 9 L60 2"/></svg></div>
+                    <div><small>Подписки</small><svg viewBox="0 0 60 20"><path d="M0 14 L12 15 L24 9 L36 10 L48 5 L60 4"/></svg></div>
+                    <div><small>Оплаты</small><svg viewBox="0 0 60 20"><path d="M0 17 L12 11 L24 13 L36 8 L48 6 L60 3"/></svg></div>
+                  </div>
+                  <div class="ad-chart">
+                    <i style="--h:34%"></i><i style="--h:48%"></i><i style="--h:42%"></i><i style="--h:60%"></i><i style="--h:55%"></i><i style="--h:72%"></i><i style="--h:68%"></i><i style="--h:84%"></i><i style="--h:79%"></i><i style="--h:95%"></i>
+                  </div>
+                  <div class="ad-wa"><span class="wa-ic"><svg><use href="#i-chat"/></svg></span><div><b>Рассылка в WhatsApp</b><small>Всем директорам · отправлено</small></div><span class="wa-ok">✓✓</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="device-shadow"></div>
+          </div>
+        </div>
+        <div class="showcase-panels">
+          <div class="spanel" data-state="student">
+            <span class="spanel-ic"><svg><use href="#i-phone"/></svg></span>
+            <p class="eyebrow">Рабочее место 1</p>
+            <h3>Приложение ученика</h3>
+            <p>На&nbsp;телефоне: Android, iOS или браузер. Уроки, вопросы, мини-игры и&nbsp;подготовка к&nbsp;ЕНТ и&nbsp;ОГЭ.</p>
+            <ul class="ticks"><li>170 уроков и 680 вопросов</li><li>Мини-игры вместо скучных тестов</li><li>Работает без интернета</li></ul>
+          </div>
+          <div class="spanel" data-state="teacher">
+            <span class="spanel-ic"><svg><use href="#i-code"/></svg></span>
+            <p class="eyebrow">Рабочее место 2</p>
+            <h3>Портал учителя</h3>
+            <p>В&nbsp;браузере. Конструктор заданий, свои вопросы и&nbsp;игры, класс, журнал и&nbsp;оценки.</p>
+            <ul class="ticks"><li>Конструктор заданий</li><li>Журнал обновляется сам</li><li>Вход по лицу с проверкой живости</li></ul>
+          </div>
+          <div class="spanel" data-state="admin">
+            <span class="spanel-ic"><svg><use href="#i-layers"/></svg></span>
+            <p class="eyebrow">Рабочее место 3</p>
+            <h3>Админка владельца</h3>
+            <p>Школы, подписки, оплаты и&nbsp;рассылки в&nbsp;WhatsApp&nbsp;— в&nbsp;одном окне.</p>
+            <ul class="ticks"><li>Управление школами</li><li>Подписки и оплаты</li><li>Рассылки в WhatsApp</li></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Как это работает по кругу -->
+      <div class="loop-block wrap">
+        <div class="loop-copy">
+          <p class="eyebrow reveal-up">Как это работает</p>
+          <h3 class="h-lg split">По&nbsp;кругу. <span class="grad grad-birlik">Без&nbsp;разрывов.</span></h3>
+          <p class="lead reveal-up">Каждое действие сразу доходит до&nbsp;того, кому оно нужно. А&nbsp;директор получает отчёт по&nbsp;школе отдельной ссылкой&nbsp;— без установки приложения.</p>
+          <ol class="loop-list">
+            <li data-i="0"><span><b>Учитель</b> собирает задание и&nbsp;отправляет классу</span></li>
+            <li data-i="1"><span><b>Ученик</b> проходит его в&nbsp;приложении</span></li>
+            <li data-i="2"><span><b>Сервер</b>, а&nbsp;не&nbsp;телефон, считает балл</span></li>
+            <li data-i="3"><span><b>Журнал</b> учителя сразу получает балл</span></li>
+            <li data-i="4"><span><b>Профиль</b> ученика показывает оценку</span></li>
+          </ol>
+        </div>
+        <div class="loop-visual reveal-scale">
+          <svg class="loop-svg" viewBox="0 0 440 440" aria-hidden="true">
+            <defs>
+              <linearGradient id="loopGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#00afca"/><stop offset=".6" stop-color="#2dd4bf"/><stop offset="1" stop-color="#fec50c"/>
+              </linearGradient>
+            </defs>
+            <circle cx="220" cy="220" r="170" class="loop-track"/>
+            <circle cx="220" cy="220" r="170" class="loop-fill" pathLength="1"/>
+          </svg>
+          <div class="loop-nodes">
+            <div class="lnode" style="--a:-90deg"><span><svg><use href="#i-layers"/></svg></span></div>
+            <div class="lnode" style="--a:-18deg"><span><svg><use href="#i-phone"/></svg></span></div>
+            <div class="lnode" style="--a:54deg"><span><svg><use href="#i-shield"/></svg></span></div>
+            <div class="lnode" style="--a:126deg"><span><svg><use href="#i-book"/></svg></span></div>
+            <div class="lnode" style="--a:198deg"><span><svg><use href="#i-star"/></svg></span></div>
+          </div>
+          <div class="loop-dot"></div>
+          <div class="loop-center">
+            <small class="loop-step">Шаг 1</small>
+            <b class="loop-title">Задание</b>
+            <p class="loop-desc">Учитель собирает задание и&nbsp;отправляет классу</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Горизонтальная лента возможностей -->
+      <div class="hscroll">
+        <div class="hscroll-head wrap">
+          <h3 class="h-lg split">Честно. Безопасно. <span class="grad grad-birlik">Просто.</span></h3>
+        </div>
+        <div class="hscroll-track">
+          <article class="fcard fcard-hero">
+            <span class="fcard-ic"><svg><use href="#i-lock"/></svg></span>
+            <h4>Списать нельзя</h4>
+            <p>Правильные ответы никогда не&nbsp;попадают в&nbsp;приложение. Балл считает сервер&nbsp;— подделать оценку невозможно.</p>
+            <div class="fcard-vis vis-lock"><span>✕ телефон</span><i></i><span>✓ сервер</span></div>
+          </article>
+          <article class="fcard">
+            <span class="fcard-ic"><svg><use href="#i-chat"/></svg></span>
+            <h4>Без паролей</h4>
+            <p>Вход по&nbsp;номеру телефона. Код приходит в&nbsp;WhatsApp.</p>
+            <div class="fcard-vis vis-code"><span>4</span><span>8</span><span>1</span><span>7</span></div>
+          </article>
+          <article class="fcard">
+            <span class="fcard-ic"><svg><use href="#i-face"/></svg></span>
+            <h4>Вход по&nbsp;лицу</h4>
+            <p>Учитель входит через распознавание лица с&nbsp;проверкой живости.</p>
+            <div class="fcard-vis vis-face"><svg><use href="#i-face"/></svg><i></i></div>
+          </article>
+          <article class="fcard">
+            <span class="fcard-ic"><svg><use href="#i-shield"/></svg></span>
+            <h4>Школы изолированы</h4>
+            <p>Данные школ разделены: учитель одной школы не&nbsp;видит учеников другой.</p>
+            <div class="fcard-vis vis-split"><i></i><i></i></div>
+          </article>
+          <article class="fcard">
+            <span class="fcard-ic"><svg><use href="#i-offline"/></svg></span>
+            <h4>Без интернета</h4>
+            <p>Приложение ученика работает офлайн&nbsp;— учиться можно где угодно.</p>
+            <div class="fcard-vis vis-wave"><i></i><i></i><i></i></div>
+          </article>
+          <article class="fcard">
+            <span class="fcard-ic"><svg><use href="#i-link"/></svg></span>
+            <h4>Отчёт директору</h4>
+            <p>Отчёт по&nbsp;всей школе приходит отдельной ссылкой. Ничего устанавливать не&nbsp;нужно.</p>
+            <div class="fcard-vis vis-link"><span>birlik.kz/report/…</span></div>
+          </article>
+          <article class="fcard">
+            <span class="fcard-ic"><svg><use href="#i-game"/></svg></span>
+            <h4>Мини-игры</h4>
+            <p>Свои вопросы и&nbsp;игры от&nbsp;учителя&nbsp;— учёба, которая затягивает.</p>
+            <div class="fcard-vis vis-game"><i></i><i></i><i></i><i></i></div>
+          </article>
+        </div>
+      </div>
+
+      <!-- Инженерия -->
+      <div class="engineering wrap">
+        <p class="eyebrow center reveal-up">Под капотом</p>
+        <h3 class="h-lg center split">Инженерия <span class="grad grad-birlik">без&nbsp;лишнего.</span></h3>
+        <div class="eng-grid">
+          <div class="eng reveal-up"><b>1</b><span>сервер на&nbsp;Node&nbsp;22</span></div>
+          <div class="eng reveal-up"><b>1</b><span>файл&nbsp;— вся база данных</span></div>
+          <div class="eng eng-zero reveal-up"><b>0</b><span>внешних библиотек на&nbsp;сервере</span></div>
+          <div class="eng reveal-up"><b>1</b><span>команда для установки на&nbsp;недорогой сервер</span></div>
+          <div class="eng reveal-up"><b>1</b><span>человек, чтобы всё обслуживать</span></div>
+        </div>
+        <p class="note center reveal-up">Продаётся школам по&nbsp;подписке.</p>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         ПРОЕКТ 02 — STELLS PRO
+    ====================================================== -->
+    <section class="product stells" id="stells">
+      <div class="product-head wrap">
+        <p class="eyebrow center reveal-up"><span class="eb-num">02</span>Искусственный интеллект</p>
+        <h2 class="h-product center split"><span class="grad grad-stells">Stells Pro</span></h2>
+        <p class="lead lead-lg center reveal-up">Не&nbsp;очередная языковая модель. Когнитивный движок, который <em>думает</em>, прежде чем&nbsp;ответить.</p>
+        <div class="chips center reveal-up">
+          <span class="chip">20B параметров</span><span class="chip">Reasoning AI</span><span class="chip">Трансформер</span><span class="chip">On-Premise</span><span class="chip">API</span>
+        </div>
+      </div>
+
+      <!-- 3D-нейросеть -->
+      <div class="neural" id="neural">
+        <div class="neural-pin">
+          <canvas id="neural-canvas" aria-label="3D-визуализация нейросети Stells Pro" role="img"></canvas>
+          <div class="neural-labels" aria-hidden="true"></div>
+          <div class="neural-ui wrap">
+            <div class="neural-top">
+              <p class="eyebrow">Загляните внутрь</p>
+              <h3>20&nbsp;миллиардов параметров <span class="grad grad-stells">в&nbsp;движении.</span></h3>
+            </div>
+            <div class="neural-steps">
+              <div class="nstep is-active" data-step="0">
+                <span class="nstep-num">01</span>
+                <h4>Эмбеддинг</h4>
+                <p>Текст превращается в&nbsp;числа. Каждый токен&nbsp;— слово или его часть&nbsp;— становится вектором и&nbsp;попадает на&nbsp;вход первым нейронам.</p>
+              </div>
+              <div class="nstep" data-step="1">
+                <span class="nstep-num">02</span>
+                <h4>Self-Attention</h4>
+                <p>Сердце архитектуры. Нейроны внимания связывают слова между собой, даже если они далеко друг от&nbsp;друга. Так модель понимает контекст.</p>
+              </div>
+              <div class="nstep" data-step="2">
+                <span class="nstep-num">03</span>
+                <h4>Feed-Forward</h4>
+                <p>Когда контекст понят, полносвязные слои сопоставляют факты, выстраивают логику и&nbsp;генерируют варианты ответа.</p>
+              </div>
+              <div class="nstep" data-step="3">
+                <span class="nstep-num">04</span>
+                <h4>Выход</h4>
+                <p>Последние слои считают вероятность каждого следующего слова. Модель выбирает самое точное, добавляет его к&nbsp;ответу и&nbsp;идёт дальше.</p>
+              </div>
+            </div>
+            <div class="neural-bottom">
+              <div class="neural-dots"><i class="is-active"></i><i></i><i></i><i></i></div>
+              <button class="btn btn-stells magnetic" id="fire-btn"><svg><use href="#i-bolt"/></svg>Отправить сигнал</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Внимание в действии -->
+      <div class="attention wrap">
+        <div class="att-copy">
+          <p class="eyebrow reveal-up">Механизм внимания</p>
+          <h3 class="h-lg split">Понимает, <span class="grad grad-stells">о&nbsp;чём речь.</span></h3>
+          <p class="lead reveal-up">Наведите на&nbsp;слово. Нейроны внимания точно свяжут «он» с&nbsp;«кодом», а&nbsp;не&nbsp;с&nbsp;именем.</p>
+        </div>
+        <div class="att-demo reveal-up">
+          <svg class="att-svg" aria-hidden="true"></svg>
+          <p class="att-sentence">
+            <span class="aw" data-w="0">Алексей</span>
+            <span class="aw" data-w="1">написал</span>
+            <span class="aw" data-w="2">код,</span>
+            <span class="aw" data-w="3">и</span>
+            <span class="aw is-focus" data-w="4">он</span>
+            <span class="aw" data-w="5">успешно</span>
+            <span class="aw" data-w="6">запустился.</span>
+          </p>
+          <div class="att-weights"></div>
+        </div>
+      </div>
+
+      <!-- Анатомия нейрона -->
+      <div class="neuron-anatomy wrap">
+        <div class="na-visual reveal-scale">
+          <svg viewBox="0 0 560 320" class="na-svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="naGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5e5ce6"/><stop offset=".5" stop-color="#0a84ff"/><stop offset="1" stop-color="#bf5af2"/></linearGradient>
+              <radialGradient id="naCore" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#b9b8ff"/><stop offset="1" stop-color="#5e5ce6"/></radialGradient>
+            </defs>
+            <g class="na-inputs">
+              <path id="naP1" d="M70 70 C 170 70, 200 150, 280 160"/>
+              <path id="naP2" d="M70 160 C 170 160, 200 160, 280 160"/>
+              <path id="naP3" d="M70 250 C 170 250, 200 170, 280 160"/>
+              <path id="naP4" class="na-out" d="M280 160 C 360 160, 420 160, 500 160"/>
+            </g>
+            <g class="na-in-nodes">
+              <circle cx="70" cy="70" r="20"/><text x="70" y="75">x₁</text>
+              <circle cx="70" cy="160" r="20"/><text x="70" y="165">x₂</text>
+              <circle cx="70" cy="250" r="20"/><text x="70" y="255">x₃</text>
+            </g>
+            <g class="na-weights">
+              <text x="175" y="88">w₁</text><text x="175" y="150">w₂</text><text x="175" y="232">w₃</text>
+            </g>
+            <circle class="na-core-halo" cx="280" cy="160" r="62"/>
+            <circle class="na-core" cx="280" cy="160" r="46" fill="url(#naCore)"/>
+            <text class="na-core-t" x="280" y="167">Σ + b</text>
+            <g class="na-act"><rect x="382" y="136" width="56" height="48" rx="14"/><text x="410" y="167">f( )</text></g>
+            <circle cx="500" cy="160" r="22" class="na-y"/><text x="500" y="166" class="na-y-t">y</text>
+            <circle r="6" class="na-pulse"><animateMotion dur="2.4s" repeatCount="indefinite"><mpath href="#naP1"/></animateMotion></circle>
+            <circle r="6" class="na-pulse"><animateMotion dur="2.4s" begin=".5s" repeatCount="indefinite"><mpath href="#naP2"/></animateMotion></circle>
+            <circle r="6" class="na-pulse"><animateMotion dur="2.4s" begin="1s" repeatCount="indefinite"><mpath href="#naP3"/></animateMotion></circle>
+            <circle r="7" class="na-pulse na-pulse-out"><animateMotion dur="1.6s" begin=".8s" repeatCount="indefinite"><mpath href="#naP4"/></animateMotion></circle>
+          </svg>
+          <div class="na-formula">y = f(&thinsp;Σ&thinsp;w<sub>i</sub>·x<sub>i</sub> + b&thinsp;)</div>
+        </div>
+        <div class="na-copy">
+          <p class="eyebrow reveal-up">Один нейрон</p>
+          <h3 class="h-lg split">Маленькая функция. <span class="grad grad-stells">Большой смысл.</span></h3>
+          <p class="lead reveal-up">Нейрон Stells&nbsp;Pro принимает числа, умножает их на&nbsp;весы, складывает и&nbsp;пропускает через функцию активации. Миллиарды таких нейронов&nbsp;— и&nbsp;модель начинает рассуждать.</p>
+          <div class="na-list">
+            <div class="reveal-up"><b>Весы</b><span>Память и&nbsp;опыт модели. Каждый вес решает, насколько важен сигнал.</span></div>
+            <div class="reveal-up"><b>Смещения</b><span>Сдвигают функцию, чтобы сеть точнее подстраивалась под данные.</span></div>
+            <div class="reveal-up"><b>Слои</b><span>Ранние&nbsp;— грамматика и&nbsp;смысл. Средние&nbsp;— логика. Глубокие&nbsp;— планирование.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Проблема рынка -->
+      <div class="problem wrap">
+        <p class="eyebrow center reveal-up">Проблема рынка</p>
+        <h3 class="h-lg center split">Нейросети упёрлись <span class="grad grad-stells">в&nbsp;потолок.</span></h3>
+        <div class="problem-grid">
+          <article class="prob tilt reveal-up"><div class="pcard-glare"></div><span class="prob-n">01</span><h4>Иллюзия мгновенного ответа</h4><p>Обычные модели отвечают «в&nbsp;лоб». На&nbsp;сложной логике и&nbsp;архитектуре кода они галлюцинируют и&nbsp;сбиваются.</p></article>
+          <article class="prob tilt reveal-up"><div class="pcard-glare"></div><span class="prob-n">02</span><h4>Нет внутренней проверки</h4><p>Триллионы параметров, но&nbsp;принцип тот&nbsp;же: статистически угадать следующий токен&nbsp;— без реального обдумывания.</p></article>
+          <article class="prob tilt reveal-up"><div class="pcard-glare"></div><span class="prob-n">03</span><h4>Зависимость и&nbsp;цена</h4><p>Тяжёлым моделям нужны дата-центры космической стоимости, а&nbsp;бизнес оказывается привязан к&nbsp;монополистам.</p></article>
+        </div>
+      </div>
+
+      <!-- Конвейер мышления -->
+      <div class="pipeline wrap">
+        <div class="pipe-copy">
+          <p class="eyebrow reveal-up">Конвейер мышления</p>
+          <h3 class="h-lg split">Сначала думает. <span class="grad grad-stells">Потом отвечает.</span></h3>
+          <div class="pipe-steps">
+            <div class="pstep"><span class="pstep-dot"></span><div><b>Глубокая декомпозиция</b><p>Задача разбивается на&nbsp;сотни мелких логических векторов и&nbsp;условий.</p></div></div>
+            <div class="pstep"><span class="pstep-dot"></span><div><b>Self-Tasking</b><p>Модель сама ставит себе подзадачи: что проверить, какие краевые случаи учесть.</p></div></div>
+            <div class="pstep"><span class="pstep-dot"></span><div><b>Internal Sandbox</b><p>Изолированный контур: гипотезы прогоняются, ошибки находятся, тупиковые ветки отсекаются.</p></div></div>
+            <div class="pstep"><span class="pstep-dot"></span><div><b>Финальная верификация</b><p>На&nbsp;выходе&nbsp;— проверенный, глубокий и&nbsp;обоснованный результат.</p></div></div>
+            <div class="pipe-line"><i></i></div>
+          </div>
+        </div>
+        <div class="console reveal-scale">
+          <div class="console-bar"><i></i><i></i><i></i><span>stells-pro — reasoning</span></div>
+          <div class="console-body" id="think-console"></div>
+        </div>
+      </div>
+
+      <!-- Почему это золотая жила -->
+      <div class="why wrap">
+        <p class="eyebrow center reveal-up">Для инвесторов</p>
+        <h3 class="h-lg center split">Почему это <span class="grad grad-gold">золотая жила.</span></h3>
+        <div class="bento bento-why">
+          <article class="bcard bcard-big reveal-up">
+            <div class="big-20"><span>20</span><em>B</em></div>
+            <h4>Идеальный баланс размера и&nbsp;мощи</h4>
+            <p>Способности больших систем&nbsp;— но&nbsp;работает на&nbsp;порядок быстрее и&nbsp;требует в&nbsp;разы меньше ресурсов для инференса. Огромная экономия на&nbsp;инфраструктуре.</p>
+          </article>
+          <article class="bcard reveal-up">
+            <span class="bcard-ic"><svg><use href="#i-shield"/></svg></span>
+            <h4>Доверие для B2B и&nbsp;B2G</h4>
+            <p>Бизнесу и&nbsp;государству нужен ИИ, который проверяет себя сам и&nbsp;даёт обоснованные решения.</p>
+          </article>
+          <article class="bcard reveal-up">
+            <span class="bcard-ic"><svg><use href="#i-spark"/></svg></span>
+            <h4>Полная независимость</h4>
+            <p>Свободен от&nbsp;корпоративных ограничений. Гибко настраивается под&nbsp;финтех, кибербезопасность, инжиниринг.</p>
+          </article>
+        </div>
+        <div class="money">
+          <div class="money-item reveal-up"><span class="money-ic"><svg><use href="#i-server"/></svg></span><b>On-Premise</b><p>Модель на&nbsp;серверах компании: аудит, критически важный код, аналитика.</p></div>
+          <div class="money-item reveal-up"><span class="money-ic"><svg><use href="#i-api"/></svg></span><b>API-платформа</b><p>Доступ к&nbsp;когнитивному движку по&nbsp;подписке для создания своих умных агентов.</p></div>
+          <div class="money-item reveal-up"><span class="money-ic"><svg><use href="#i-cube"/></svg></span><b>Вертикальные решения</b><p>Интеграция в&nbsp;системы принятия решений, где права на&nbsp;ошибку нет.</p></div>
+        </div>
+      </div>
+
+      <div class="quote wrap">
+        <p class="quote-text" data-words>Эра чат-ботов закончилась. Наступает эра систем, которые умеют мыслить, проверять себя и&nbsp;отвечать за&nbsp;сложные задачи.</p>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         ПРОЕКТ 03 — STELLA CODER
+    ====================================================== -->
+    <section class="product coder" id="coder">
+      <div class="product-head wrap">
+        <p class="eyebrow center reveal-up"><span class="eb-num">03</span>Инструменты разработчика</p>
+        <h2 class="h-product center split"><span class="grad grad-coder">Stella Coder</span></h2>
+        <p class="lead lead-lg center reveal-up">Автономный ИИ-разработчик. Пишет, тестирует, чинит и&nbsp;разворачивает код&nbsp;— в&nbsp;редакторе, в&nbsp;терминале и&nbsp;с&nbsp;телефона.</p>
+      </div>
+
+      <div class="coder-stage">
+        <div class="coder-scale">
+          <div class="coder-scene">
+            <!-- Редактор -->
+            <div class="win win-editor">
+              <div class="win-bar"><i></i><i></i><i></i><span>server.ts — my-shop</span></div>
+              <div class="editor">
+                <div class="ed-tree">
+                  <small>ПРОЕКТ</small>
+                  <span><svg><use href="#i-folder"/></svg>src</span>
+                  <span class="on">server.ts</span>
+                  <span>db.ts</span>
+                  <span>routes.ts</span>
+                  <span><svg><use href="#i-folder"/></svg>tests</span>
+                  <span>package.json</span>
+                  <span>Dockerfile</span>
+                </div>
+                <pre class="ed-code" id="ed-code"><code><span class="ln"><span class="k">import</span> express <span class="k">from</span> <span class="s">"express"</span>;</span>
+<span class="ln"><span class="k">import</span> { db } <span class="k">from</span> <span class="s">"./db"</span>;</span>
+<span class="ln"> </span>
+<span class="ln"><span class="k">const</span> app = <span class="f">express</span>();</span>
+<span class="ln"> </span>
+<span class="ln">app.<span class="f">get</span>(<span class="s">"/api/users/:id"</span>, <span class="k">async</span> (req, res) =&gt; {</span>
+<span class="ln">  <span class="k">const</span> user = <span class="k">await</span> db.users.<span class="f">find</span>(req.params.id);</span>
+<span class="ln ln-fix">  <span class="k">if</span> (!user) <span class="k">return</span> res.<span class="f">status</span>(<span class="n">404</span>).<span class="f">json</span>({ error: <span class="s">"Not found"</span> });</span>
+<span class="ln ln-bug">  res.<span class="f">json</span>(<span class="u">user.profile</span>);</span>
+<span class="ln">});</span>
+<span class="ln"> </span>
+<span class="ln">app.<span class="f">listen</span>(<span class="n">3000</span>);</span></code></pre>
+                <div class="ed-ai">
+                  <div class="ai-head"><span class="ai-star">✦</span>Stella</div>
+                  <div class="ai-msg">Нашла ошибку: <code>user</code> может быть <code>undefined</code>. Предлагаю патч:</div>
+                  <div class="ai-diff"><span class="add">+ if (!user) return res.status(404)…</span><span class="ctx">  res.json(user.profile);</span></div>
+                  <div class="ai-btn">Применить <svg><use href="#i-check"/></svg></div>
+                </div>
+              </div>
+            </div>
+            <!-- Терминал -->
+            <div class="win win-term">
+              <div class="win-bar dark"><i></i><i></i><i></i><span>zsh — stella</span></div>
+              <div class="term" id="term"></div>
+            </div>
+            <!-- Телефон с панелью -->
+            <div class="win win-phone">
+              <div class="ph-island"></div>
+              <div class="ph-body">
+                <small>Stella · Dashboard</small>
+                <b>Задачи</b>
+                <div class="ph-ring"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="32"/><circle cx="40" cy="40" r="32" class="ph-ring-fill" pathLength="1"/></svg><span>86%</span></div>
+                <div class="ph-task done"><i></i>Индексация проекта</div>
+                <div class="ph-task done"><i></i>Исправить TypeError</div>
+                <div class="ph-task run"><i></i>Покрыть тестами</div>
+                <div class="ph-task"><i></i>Собрать Dockerfile</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="interfaces wrap">
+        <article class="iface reveal-up"><span class="iface-ic"><svg><use href="#i-code"/></svg></span><h4>Расширение для VS&nbsp;Code</h4><p>ИИ прямо в&nbsp;редакторе: при написании кода, выделении фрагментов и&nbsp;работе со&nbsp;структурой проекта.</p></article>
+        <article class="iface reveal-up"><span class="iface-ic"><svg><use href="#i-terminal"/></svg></span><h4>CLI-агент</h4><p>Генерация файлов, анализ директорий, поиск багов и&nbsp;автоматические задачи в&nbsp;один клик&nbsp;— из&nbsp;командной строки.</p></article>
+        <article class="iface reveal-up"><span class="iface-ic"><svg><use href="#i-phone"/></svg></span><h4>Мобильная и&nbsp;десктопная панели</h4><p>Интерфейсы на&nbsp;Flet для мониторинга процессов и&nbsp;удалённого управления задачами.</p></article>
+      </div>
+
+      <!-- Орбита моделей -->
+      <div class="models wrap">
+        <div class="models-copy">
+          <p class="eyebrow reveal-up">Мультимодельный бэкенд</p>
+          <h3 class="h-lg split">Любая модель. <span class="grad grad-coder">Ваш выбор.</span></h3>
+          <p class="lead reveal-up">Локально через Ollama&nbsp;— когда важна приватность. Облачные API&nbsp;— когда нужна максимальная мощность. Stella Coder балансирует между ними.</p>
+        </div>
+        <div class="orbit" aria-hidden="true">
+          <svg class="orbit-ring" viewBox="0 0 600 260"><ellipse cx="300" cy="130" rx="270" ry="96"/><ellipse cx="300" cy="130" rx="190" ry="64"/></svg>
+          <div class="orbit-core"><span>✦</span></div>
+          <div class="orb" data-r="1">Ollama<small>локально</small></div>
+          <div class="orb" data-r="1">Claude</div>
+          <div class="orb" data-r="1">OpenAI</div>
+          <div class="orb" data-r="1">Groq</div>
+          <div class="orb" data-r="1">OpenRouter</div>
+          <div class="orb" data-r="1">Gemini</div>
+        </div>
+      </div>
+
+      <!-- Возможности -->
+      <div class="bento bento-coder wrap">
+        <article class="bcard bcard-wide reveal-up">
+          <span class="bcard-ic"><svg><use href="#i-search"/></svg></span>
+          <h4>Понимает проект целиком</h4>
+          <p>RAG и&nbsp;индексация: сканирует структуру, читает зависимости и&nbsp;понимает логику приложения, а&nbsp;не&nbsp;отдельные строки. Поэтому не&nbsp;галлюцинирует на&nbsp;больших кодовых базах.</p>
+          <div class="rag-vis"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </article>
+        <article class="bcard reveal-up">
+          <span class="bcard-ic"><svg><use href="#i-bug"/></svg></span>
+          <h4>Чинит ошибки сам</h4>
+          <p>Разбирает стектрейсы и&nbsp;логи терминала, предлагает готовый патч или применяет его автоматически.</p>
+        </article>
+        <article class="bcard reveal-up">
+          <span class="bcard-ic"><svg><use href="#i-folder"/></svg></span>
+          <h4>Архитектура по&nbsp;описанию</h4>
+          <p>Из&nbsp;текста&nbsp;— структура папок, конфиги и&nbsp;подробный README.</p>
+          <div class="files"><span>package.json</span><span>Dockerfile</span><span>docker-compose.yml</span><span>nginx.conf</span><span>README.md</span></div>
+        </article>
+        <article class="bcard bcard-wide reveal-up">
+          <span class="bcard-ic"><svg><use href="#i-cpu"/></svg></span>
+          <h4>Сценарии применения</h4>
+          <div class="usecases">
+            <div><svg><use href="#i-rocket"/></svg><b>MVP за&nbsp;минуты</b><span>Бэкенд или фронтенд с&nbsp;нуля по&nbsp;ТЗ.</span></div>
+            <div><svg><use href="#i-refresh"/></svg><b>Рефакторинг</b><span>Оптимизация и&nbsp;перевод: JavaScript → TypeScript или Python.</span></div>
+            <div><svg><use href="#i-test"/></svg><b>Тесты и&nbsp;документация</b><span>Юнит-тесты на&nbsp;Jest и&nbsp;PyTest, понятная документация по&nbsp;API.</span></div>
+          </div>
+        </article>
+      </div>
+      <div class="stack wrap reveal-up">
+        <span>Python</span><span>JavaScript</span><span>TypeScript</span><span>Node.js</span><span>Express</span><span>Git</span><span>Flet</span><span>Ollama</span>
+      </div>
+    </section>
+
+    <!-- ============ НАВЫКИ ============ -->
+    <section class="skills" id="skills">
+      <div class="wrap skills-inner">
+        <div class="skills-copy">
+          <p class="eyebrow reveal-up">Навыки</p>
+          <h2 class="h-xl split">Код <span class="grad grad-hero">+&nbsp;дизайн.</span></h2>
+          <p class="lead reveal-up">Я не&nbsp;только пишу код, но&nbsp;и&nbsp;проектирую, как он выглядит. Поэтому мои продукты сразу выглядят готовыми.</p>
+          <div class="langs">
+            <div class="lang reveal-up" style="--lv:.95; --c1:#3776ab; --c2:#ffd43b"><div class="lang-top"><b>Python</b><span>Уверенно</span></div><div class="lang-bar"><i></i></div></div>
+            <div class="lang reveal-up" style="--lv:.9; --c1:#f7b500; --c2:#ff9f0a"><div class="lang-top"><b>JavaScript</b><span>Уверенно</span></div><div class="lang-bar"><i></i></div></div>
+            <div class="lang reveal-up" style="--lv:.8; --c1:#00add8; --c2:#5ac8fa"><div class="lang-top"><b>Go</b><span>Хорошо</span></div><div class="lang-bar"><i></i></div></div>
+            <div class="lang reveal-up" style="--lv:.9; --c1:#bf5af2; --c2:#ff375f"><div class="lang-top"><b>Дизайн интерфейсов</b><span>Работаю дизайнером</span></div><div class="lang-bar"><i></i></div></div>
+            <div class="lang reveal-up" style="--lv:.2; --c1:#68217a; --c2:#9b4f96"><div class="lang-top"><b>C#</b><span>Начинаю изучать</span></div><div class="lang-bar"><i></i></div></div>
+          </div>
+        </div>
+        <div class="tag-sphere" aria-hidden="true">
+          <span>Python</span><span>Go</span><span>JavaScript</span><span>TypeScript</span><span>Node.js</span><span>Express</span><span>C#</span><span>Flet</span><span>Git</span><span>Ollama</span><span>RAG</span><span>Transformers</span><span>Self-Attention</span><span>REST API</span><span>WhatsApp API</span><span>UI / UX</span><span>Дизайн</span><span>VS Code API</span><span>CLI</span><span>Three.js</span><span>HTML</span><span>CSS</span><span>Android</span><span>iOS</span><span>Серверы</span><span>Базы данных</span><span>LLM</span><span>Промпты</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ КОНТАКТ ============ -->
+    <section class="contact" id="contact">
+      <div class="contact-bg" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <div class="wrap contact-inner">
+        <p class="eyebrow center reveal-up">Связаться</p>
+        <h2 class="h-contact center split">Есть идея? <span class="grad grad-hero">Давайте её&nbsp;построим.</span></h2>
+        <p class="lead center reveal-up">Продукт, сайт, ИИ-агент или дизайн&nbsp;— напишите, и&nbsp;обсудим.</p>
+        <!-- TODO: заменить ссылки на реальные контакты Алексея -->
+        <div class="contact-actions reveal-up">
+          <a href="mailto:hello@example.com" class="btn btn-primary btn-lg magnetic"><svg><use href="#i-mail"/></svg>Написать Алексею</a>
+        </div>
+        <div class="socials reveal-up">
+          <a href="#" class="social magnetic" aria-label="Telegram"><svg><use href="#i-send"/></svg>Telegram</a>
+          <a href="#" class="social magnetic" aria-label="GitHub"><svg><use href="#i-github"/></svg>GitHub</a>
+          <a href="mailto:hello@example.com" class="social magnetic" aria-label="Email"><svg><use href="#i-mail"/></svg>Email</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span>© <span id="year">2026</span> Алексей. Спроектировано и&nbsp;написано вручную.</span>
+      <nav><a href="#birlik">Бірлік</a><a href="#stells">Stells Pro</a><a href="#coder">Stella Coder</a><a href="#top">Наверх ↑</a></nav>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="js/main.js" defer></script>
+  <script src="js/hero.js" defer></script>
+  <script src="js/neural.js" defer></script>
+</body>
+</html>
