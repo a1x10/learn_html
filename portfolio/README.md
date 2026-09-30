@@ -38,9 +38,19 @@ portfolio/
 - В секции «Связаться» указан Telegram [@l3xn0](https://t.me/l3xn0). Ссылки на GitHub и почту закомментированы в `index.html`: раскомментируйте и впишите адреса, когда они появятся.
 - Имена учеников, цифры в макетах экранов, строки терминала и консоли — демонстрационные, их можно поменять под реальные.
 
-## Публикация на свой сервер (portfolioalex.duckdns.org)
+## Публикация бесплатно: GitHub Pages
 
-Домен в Duck DNS должен указывать на IP сервера. Дальше на сервере (Ubuntu или Debian):
+1. На GitHub откройте репозиторий → **Settings** → **Pages**.
+2. В блоке **Build and deployment**: Source — **Deploy from a branch**, Branch — ветка с сайтом, папка **/ (root)** → **Save**.
+3. Через 1–2 минуты сайт откроется по адресу `https://a1x10.github.io/learn_html/` (корневой `index.html` перенаправляет в `portfolio/`).
+
+Каждый новый push в выбранную ветку обновляет сайт сам. Файл `.nojekyll` в корне отключает обработку Jekyll: сайт отдаётся как есть.
+
+Домен DuckDNS к GitHub Pages нормально не привязать: для поддомена GitHub требует запись CNAME, а DuckDNS её не поддерживает, поэтому HTTPS не выпустится.
+
+## Публикация на свой сервер
+
+Если появится VPS (Ubuntu или Debian), а домен в DuckDNS указывает на его IP:
 
 ```bash
 git clone -b claude/optimistic-gauss-j4n5lv https://github.com/a1x10/learn_html.git
@@ -48,10 +58,6 @@ cd learn_html/portfolio
 sudo bash deploy/setup-server.sh portfolioalex.duckdns.org
 ```
 
-Скрипт ставит веб-сервер Caddy, копирует сайт в `/var/www/portfolio` и включает HTTPS (сертификат Let's Encrypt выпускается и продлевается сам). Если в панели хостинга есть файрвол, откройте в нём входящие порты TCP 80 и 443.
-
-Обновить сайт после изменений: `git pull && sudo bash deploy/setup-server.sh`.
-
-Если сервер не нужен, подойдёт GitHub Pages: Settings → Pages, адрес будет вида `https://<логин>.github.io/learn_html/portfolio/`.
+Скрипт ставит веб-сервер Caddy, копирует сайт в `/var/www/portfolio` и включает HTTPS (сертификат Let's Encrypt выпускается и продлевается сам). Если в панели хостинга есть файрвол, откройте в нём входящие порты TCP 80 и 443. Обновить сайт: `git pull && sudo bash deploy/setup-server.sh`.
 
 Учтены `prefers-reduced-motion` (анимации отключаются) и сенсорные экраны (кастомный курсор и наклоны не мешают).
