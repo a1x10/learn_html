@@ -147,7 +147,7 @@
 
   <main id="main">
     <!-- ============ HERO ============ -->
-    <section class="hero" id="top" data-shape="0">
+    <section class="hero" id="top" data-scene="2.5,0.35,0.85,1" data-shape="0">
       <div class="hud hud--tl"><span class="hud__dot"></span>HERMES / CORE <em>☤</em></div>
       <div class="hud hud--tr">37.9715° N · 23.7257° E <em>// Олимп на связи</em></div>
       <div class="hud hud--bl">
@@ -212,7 +212,7 @@
     </div>
 
     <!-- ============ MANIFESTO ============ -->
-    <section class="manifesto" id="manifesto" data-shape="0">
+    <section class="manifesto" id="manifesto" data-scene="3.4,0,0.4,0.55" data-shape="0">
       <div class="container">
         <p class="eyebrow"><span></span>Манифест</p>
         <p class="manifesto__text" data-words>
@@ -241,7 +241,7 @@
     </section>
 
     <!-- ============ 01 LEARNING LOOP ============ -->
-    <section class="loop" id="loop" data-shape="1">
+    <section class="loop" id="loop" data-scene="2.55,0,0,1" data-shape="1">
       <div class="loop__pin">
         <div class="container loop__grid">
           <div class="loop__left">
@@ -274,18 +274,7 @@
           </div>
 
           <div class="loop__right">
-            <div class="orbit" aria-hidden="true">
-              <svg viewBox="0 0 400 400">
-                <circle class="orbit__track" cx="200" cy="200" r="180"/>
-                <circle class="orbit__fill" cx="200" cy="200" r="180" pathLength="1"/>
-              </svg>
-              <span class="orbit__node" style="--a:-90deg">01</span>
-              <span class="orbit__node" style="--a:-18deg">02</span>
-              <span class="orbit__node" style="--a:54deg">03</span>
-              <span class="orbit__node" style="--a:126deg">04</span>
-              <span class="orbit__node" style="--a:198deg">05</span>
-            </div>
-            <div class="window glass loop__window" data-tilt>
+            <div class="window glass glass--solid loop__window" data-tilt>
               <div class="window__bar">
                 <i></i><i></i><i></i>
                 <span class="window__title" id="loop-title">telegram · @hermes</span>
@@ -303,7 +292,7 @@
     </section>
 
     <!-- ============ 02 MEMORY ============ -->
-    <section class="memory" id="memory" data-shape="2">
+    <section class="memory" id="memory" data-scene="2.5,0,0,0.9" data-shape="2">
       <div class="container">
         <div class="split">
           <div>
@@ -370,7 +359,7 @@
     </section>
 
     <!-- ============ 03 GATEWAY ============ -->
-    <section class="gateway" id="gateway" data-shape="3">
+    <section class="gateway" id="gateway" data-scene="2.4,0,0.5,0.9" data-shape="3">
       <div class="container gateway__grid">
         <div class="gateway__left">
           <p class="eyebrow"><span></span>03 — Шлюз сообщений</p>
@@ -418,7 +407,7 @@
     </section>
 
     <!-- ============ 04 TERMINAL ============ -->
-    <section class="terminal-sec" id="terminal" data-shape="4">
+    <section class="terminal-sec" id="terminal" data-scene="0,0,0,0.85" data-shape="4">
       <div class="container">
         <div class="center-head">
           <p class="eyebrow eyebrow--c"><span></span>04 — Терминал<span></span></p>
@@ -455,7 +444,7 @@
     </section>
 
     <!-- ============ 05 CAPABILITIES (horizontal) ============ -->
-    <section class="caps" id="caps" data-shape="4">
+    <section class="caps" id="caps" data-scene="0,0,0,0.8" data-shape="4">
       <div class="caps__pin">
         <div class="container caps__head">
           <div>
@@ -551,7 +540,7 @@ hits = web_search(<span class="t-gold">"CVE nginx 2026"</span>)
     </section>
 
     <!-- ============ 06 SCHEDULER ============ -->
-    <section class="sched" id="schedule" data-shape="3">
+    <section class="sched" id="schedule" data-scene="2.6,-1.4,0.4,0.6" data-shape="3">
       <div class="container">
         <div class="split split--top">
           <div>
@@ -559,7 +548,7 @@ hits = web_search(<span class="t-gold">"CVE nginx 2026"</span>)
             <h2 class="h2" data-split>Скажите <em>когда</em>. Он&nbsp;сделает сам</h2>
             <p class="lead" data-reveal>Встроенный cron‑планировщик: ежедневные отчёты, ночные бэкапы, еженедельные аудиты — на естественном языке, без присмотра, с доставкой в любой мессенджер.</p>
           </div>
-          <div class="sched__try" data-reveal>
+          <div class="sched__try glass" data-reveal>
             <label class="sched__label" for="sched-input">Опишите задачу своими словами</label>
             <div class="sched__field">
               <svg><use href="#i-clock"/></svg>
@@ -598,7 +587,7 @@ hits = web_search(<span class="t-gold">"CVE nginx 2026"</span>)
     </section>
 
     <!-- ============ 07 BACKENDS ============ -->
-    <section class="backends" id="backends" data-shape="4">
+    <section class="backends" id="backends" data-scene="0,0,0,0.85" data-shape="4">
       <div class="container">
         <div class="center-head">
           <p class="eyebrow eyebrow--c"><span></span>07 — Среды исполнения<span></span></p>
@@ -647,7 +636,7 @@ hits = web_search(<span class="t-gold">"CVE nginx 2026"</span>)
     </section>
 
     <!-- ============ 08 MODELS ============ -->
-    <section class="models" id="models" data-shape="3">
+    <section class="models" id="models" data-scene="0,-1.7,0.45,0.6" data-shape="3">
       <div class="container">
         <div class="center-head">
           <p class="eyebrow eyebrow--c"><span></span>08 — Модели<span></span></p>
@@ -690,7 +679,7 @@ hits = web_search(<span class="t-gold">"CVE nginx 2026"</span>)
     </section>
 
     <!-- ============ INSTALL ============ -->
-    <section class="install" id="install" data-shape="5">
+    <section class="install" id="install" data-scene="0,-0.5,0.4,0.5" data-shape="5">
       <div class="container">
         <div class="center-head">
           <p class="eyebrow eyebrow--c"><span></span>Установка<span></span></p>
@@ -737,7 +726,7 @@ hits = web_search(<span class="t-gold">"CVE nginx 2026"</span>)
     </section>
 
     <!-- ============ FAQ ============ -->
-    <section class="faq" id="faq" data-shape="5">
+    <section class="faq" id="faq" data-scene="-2.8,0,0.45,0.5" data-shape="5">
       <div class="container faq__grid">
         <div>
           <p class="eyebrow"><span></span>Вопросы</p>
@@ -773,7 +762,7 @@ hits = web_search(<span class="t-gold">"CVE nginx 2026"</span>)
     </section>
 
     <!-- ============ FINAL CTA ============ -->
-    <section class="final" id="final" data-shape="5">
+    <section class="final" id="final" data-scene="0,0,0,0.9" data-shape="5">
       <div class="final__big" aria-hidden="true"><span>HERMES</span><span>HERMES</span></div>
       <div class="container final__inner">
         <svg class="final__logo" aria-hidden="true"><use href="#i-logo"/></svg>

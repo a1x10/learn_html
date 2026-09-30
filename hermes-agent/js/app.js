@@ -68,8 +68,14 @@
     var nodes = Array.prototype.slice.call(el.childNodes);
     nodes.forEach(function (node) {
       if (node.nodeType === 3) {
-        var frag = document.createDocumentFragment();
-        node.textContent.split(/( +)/).forEach(function (part) {
+        var frag = document.createDocumentFragment(), text = node.textContent;
+        // punctuation right after an <em> ("когда.") must stay on the same line
+        var prev = node.previousSibling, lead = text.match(/^[^\s]+/);
+        if (lead && prev && prev.nodeType === 1 && prev.classList.contains('word--em')) {
+          prev.firstChild.appendChild(document.createTextNode(lead[0]));
+          text = text.slice(lead[0].length);
+        }
+        text.split(/( +)/).forEach(function (part) {
           if (!part) return;
           if (/^ +$/.test(part)) { frag.appendChild(document.createTextNode(' ')); return; }
           var w = document.createElement('span'); w.className = 'word';
@@ -125,6 +131,11 @@
   function scrollToTarget(target, offset) {
     var el = typeof target === 'string' ? $(target) : target;
     if (!el && typeof target !== 'number') return;
+    // a pinned section's box sits at the end of its pin-spacer once scrolled past → aim at the pin start
+    if (el && hasGSAP) {
+      var pinST = ScrollTrigger.getAll().filter(function (st) { return st.pin === el; })[0];
+      if (pinST) { target = pinST.start + (offset || 0); el = null; offset = 0; }
+    }
     if (lenis) lenis.scrollTo(el || target, { offset: offset || 0, duration: 1.8, easing: function (t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; } });
     else if (typeof target === 'number') window.scrollTo({ top: target, behavior: reduce ? 'auto' : 'smooth' });
     else el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
@@ -191,7 +202,8 @@
     gsap.timeline({ defaults: { ease: 'expo.out' } })
       .from('.hero__title .line__in', { yPercent: 115, rotate: 5, duration: 1.7, stagger: 0.12 }, 0.2)
       .from('[data-hero]', { y: 34, opacity: 0, duration: 1.3, stagger: 0.1 }, 0.6)
-      .from('.nav', { y: -40, opacity: 0, duration: 1.3 }, 0.3)
+      .from('.nav', { autoAlpha: 0, duration: 1.2, ease: 'power2.out' }, 0.3)
+      .from('.nav > *', { y: -18, opacity: 0, duration: 1.2, stagger: 0.08 }, 0.35)
       .from('.hud, .scroll-badge, .rail', { opacity: 0, duration: 1.4, stagger: 0.06 }, 0.8);
   }
 
@@ -214,14 +226,23 @@
   }
   if (lenis) lenis.on('scroll', onScroll); else window.addEventListener('scroll', onScroll, { passive: true });
 
-  var currentShape = 0, morphTarget = 0;
-  function setShape(n) {
-    if (n === currentShape) return;
-    currentShape = n;
-    if (hasGSAP) gsap.to(state, { morph: n, duration: reduce ? 0.01 : 2.4, ease: 'power2.inOut', overwrite: true });
-    else morphTarget = n;
+  // data-scene="x,y,core,dim": where the 3D sits for this chapter, core size, particle brightness
+  var currentSec = null, sceneTarget = null;
+  function sceneOf(sec) {
+    var v = (sec.dataset.scene || '0,0,1,1').split(',').map(Number);
+    return { morph: +sec.dataset.shape || 0, sx: v[0], sy: v[1], core: v[2], dim: v[3] };
   }
-  if (!hasGSAP) (function lerpMorph() { state.morph += (morphTarget - state.morph) * 0.04; requestAnimationFrame(lerpMorph); })();
+  function setSection(sec) {
+    if (!sec || sec === currentSec) return;
+    currentSec = sec;
+    var t = sceneOf(sec);
+    if (hasGSAP) gsap.to(state, { morph: t.morph, sx: t.sx, sy: t.sy, core: t.core, dim: t.dim, duration: reduce ? 0.01 : 2.4, ease: 'power2.inOut', overwrite: true });
+    else sceneTarget = t;
+  }
+  if (!hasGSAP) (function lerpScene() {
+    if (sceneTarget) ['morph', 'sx', 'sy', 'core', 'dim'].forEach(function (k) { state[k] += (sceneTarget[k] - state[k]) * 0.04; });
+    requestAnimationFrame(lerpScene);
+  })();
 
   var railLinks = $$('.rail a'), navLinks = $$('.nav__links a');
   function setActive(id) {
@@ -232,7 +253,7 @@
   function setupScroll() {
     if (!hasGSAP) {
       $$('[data-shape]').forEach(function (sec) {
-        onVisible(sec, function (vis) { if (vis) setShape(+sec.dataset.shape); }, { threshold: 0.4 });
+        onVisible(sec, function (vis) { if (vis) setSection(sec); }, { threshold: 0.4 });
       });
       $$('[data-count]').forEach(function (el) { el.textContent = el.dataset.count; });
       return;
@@ -266,8 +287,8 @@
     shapeSecs.forEach(function (sec, i) {
       ScrollTrigger.create({
         trigger: sec, start: 'top 62%',
-        onEnter: function () { setShape(+sec.dataset.shape); },
-        onLeaveBack: function () { setShape(i ? +shapeSecs[i - 1].dataset.shape : 0); }
+        onEnter: function () { setSection(sec); },
+        onLeaveBack: function () { setSection(shapeSecs[Math.max(0, i - 1)]); }
       });
     });
 
@@ -290,20 +311,25 @@
       gsap.to('.hud, .scroll-badge', { opacity: 0, ease: 'none', scrollTrigger: { trigger: '.hero', start: '20% top', end: '60% top', scrub: true } });
     }
 
-    /* --- heading reveals --- */
-    $$('[data-split]').forEach(function (h) {
-      gsap.from(h.querySelectorAll('.word__in'), {
-        yPercent: 118, rotate: 4, duration: 1.35, stagger: 0.055, ease: 'expo.out',
-        scrollTrigger: { trigger: h, start: 'top 86%', once: true }
+    /* --- heading + block reveals ---
+       IntersectionObserver instead of ScrollTrigger: survives instant jumps (anchors, ⌘K) */
+    var splitHeads = $$('[data-split]'), blocks = $$('[data-reveal]');
+    splitHeads.forEach(function (h) { gsap.set(h.querySelectorAll('.word__in'), { yPercent: 118, rotate: 4 }); });
+    gsap.set(blocks, { y: 44, opacity: 0 });
+    var revealIO = new IntersectionObserver(function (entries) {
+      var k = 0;
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var el = e.target;
+        revealIO.unobserve(el);
+        if (el.hasAttribute('data-split')) {
+          gsap.to(el.querySelectorAll('.word__in'), { yPercent: 0, rotate: 0, duration: 1.35, stagger: 0.055, ease: 'expo.out' });
+        } else {
+          gsap.to(el, { y: 0, opacity: 1, duration: 1.3, ease: 'expo.out', delay: (k++) * 0.09, clearProps: 'transform' });
+        }
       });
-    });
-
-    /* --- generic reveals --- */
-    gsap.set('[data-reveal]', { y: 44, opacity: 0 });
-    ScrollTrigger.batch('[data-reveal]', {
-      start: 'top 90%', once: true,
-      onEnter: function (batch) { gsap.to(batch, { y: 0, opacity: 1, duration: 1.3, ease: 'expo.out', stagger: 0.09, overwrite: true, clearProps: 'transform' }); }
-    });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    splitHeads.concat(blocks).forEach(function (el) { revealIO.observe(el); });
 
     /* --- manifesto words light up --- */
     var words = $$('.manifesto__text .w');
@@ -317,13 +343,12 @@
     /* --- counters --- */
     $$('[data-count]').forEach(function (el) {
       var end = +el.dataset.count;
-      ScrollTrigger.create({
-        trigger: el, start: 'top 92%', once: true,
-        onEnter: function () {
-          var o = { v: 0 };
-          gsap.to(o, { v: end, duration: 2.2, ease: 'power3.out', onUpdate: function () { el.textContent = Math.round(o.v); } });
-        }
-      });
+      onVisible(el, function (vis, io) {
+        if (!vis) return;
+        io.disconnect();
+        var o = { v: 0 };
+        gsap.to(o, { v: end, duration: 2.2, ease: 'power3.out', onUpdate: function () { el.textContent = Math.round(o.v); } });
+      }, { threshold: 0.6 });
     });
 
     /* --- marquee skew with velocity --- */
@@ -342,10 +367,22 @@
 
     /* --- traits bars --- */
     var traits = $('#traits');
-    if (traits) ScrollTrigger.create({ trigger: traits, start: 'top 85%', once: true, onEnter: function () { traits.classList.add('is-in'); } });
+    onVisible(traits, function (vis, io) { if (vis) { traits.classList.add('is-in'); io.disconnect(); } }, { threshold: 0.3 });
 
     // pins alter layout → refresh once fonts are ready
     if (document.fonts) document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+
+    // dynamic content (search results, FAQ, chat) changes page height → keep trigger positions fresh
+    if ('ResizeObserver' in window) {
+      var mainEl = $('#main'), lastH = mainEl.offsetHeight, rT;
+      new ResizeObserver(function () {
+        clearTimeout(rT);
+        rT = setTimeout(function () {
+          var h = mainEl.offsetHeight;
+          if (Math.abs(h - lastH) > 2) { lastH = h; ScrollTrigger.refresh(); lastH = mainEl.offsetHeight; }
+        }, 350);
+      }).observe(mainEl);
+    }
   }
 
   /* ======================================================================
@@ -486,7 +523,7 @@
 
   var loop = { current: 0, pinned: null, userTouched: false };
   (function setupLoop() {
-    var steps = $$('.step'), nodes = $$('.orbit__node'), fill = $('.orbit__fill');
+    var steps = $$('.step');
     var title = $('#loop-title'), badge = $('#loop-badge'), body = $('#loop-body'), foot = $('#loop-foot'), prog = $('#loop-progress');
     if (!body) return;
     loop.set = function (i) {
@@ -497,8 +534,6 @@
         s.setAttribute('aria-selected', on ? 'true' : 'false');
         s.tabIndex = on ? 0 : -1;
       });
-      nodes.forEach(function (n, k) { n.classList.toggle('is-on', k <= i); });
-      if (fill) fill.style.strokeDashoffset = String(1 - (i + 1) / 5);
       title.textContent = LOOP[i].title; badge.textContent = LOOP[i].badge;
       body.innerHTML = LOOP[i].html;
       foot.textContent = 'step ' + (i + 1) + '/5';
@@ -987,7 +1022,7 @@
         await wait(700);
         await autoType('Привет! Что ты обо мне помнишь?');
       })();
-    }, { threshold: 0.45 });
+    }, { threshold: 0.25 });
 
     return { run: run, focus: function () { input.focus({ preventScroll: true }); } };
   })();
@@ -1023,16 +1058,17 @@
      06 — Natural language → cron
      ====================================================================== */
   var DAYS = [
-    { re: /понедельн|monday|\bпн\b/, n: 1, name: 'понедельникам' },
-    { re: /вторник|tuesday|\bвт\b/, n: 2, name: 'вторникам' },
-    { re: /сред[аыу]\b|wednesday|\bср\b/, n: 3, name: 'средам' },
-    { re: /четверг|thursday|\bчт\b/, n: 4, name: 'четвергам' },
-    { re: /пятниц|friday|\bпт\b/, n: 5, name: 'пятницам' },
-    { re: /суббот|saturday|\bсб\b/, n: 6, name: 'субботам' },
-    { re: /воскрес|sunday|\bвс\b/, n: 0, name: 'воскресеньям' }
+    // note: \b is ASCII-only in JS, so Cyrillic words use explicit (^|\s) boundaries
+    { re: /понедельн|monday|(^|[\s,])пн($|[\s,.])/, n: 1, name: 'понедельникам' },
+    { re: /вторник|tuesday|(^|[\s,])вт($|[\s,.])/, n: 2, name: 'вторникам' },
+    { re: /(^|[\s,])сред[аыу]($|[\s,.])|wednesday|(^|[\s,])ср($|[\s,.])/, n: 3, name: 'средам' },
+    { re: /четверг|thursday|(^|[\s,])чт($|[\s,.])/, n: 4, name: 'четвергам' },
+    { re: /пятниц|friday|(^|[\s,])пт($|[\s,.])/, n: 5, name: 'пятницам' },
+    { re: /суббот|saturday|(^|[\s,])сб($|[\s,.])/, n: 6, name: 'субботам' },
+    { re: /воскрес|sunday|(^|[\s,])вс($|[\s,.])/, n: 0, name: 'воскресеньям' }
   ];
   var PLATFORMS = [
-    { re: /телеграм|telegram|\btg\b|тг\b/, name: 'Telegram', icon: 'telegram' },
+    { re: /телеграм|telegram|\btg\b|(^|\s)тг($|[\s,.])/, name: 'Telegram', icon: 'telegram' },
     { re: /дискорд|discord/, name: 'Discord', icon: 'discord' },
     { re: /слак|slack/, name: 'Slack', icon: 'slack' },
     { re: /ватсап|вотсап|whatsapp/, name: 'WhatsApp', icon: 'whatsapp' },
@@ -1060,7 +1096,7 @@
     var h = null, mi = 0;
     if (/полноч|midnight/.test(s)) { h = 0; }
     else if (/полдень|noon/.test(s)) { h = 12; }
-    else if ((m = s.match(/(?:\bв|\bat|\bк)\s*(\d{1,2})(?:[:.](\d{2}))?\s*(утра|дня|вечера|ночи|am|pm)?/))) {
+    else if ((m = s.match(/(?:^|\s)(?:в|во|at|к)\s*(\d{1,2})(?:[:.](\d{2}))?\s*(утра|дня|вечера|ночи|am|pm)?/))) {
       h = +m[1]; mi = m[2] ? +m[2] : 0;
       var mer = m[3];
       if ((mer === 'вечера' || mer === 'дня' || mer === 'pm') && h < 12) h += 12;
@@ -1099,10 +1135,10 @@
     // task prompt: strip schedule & delivery phrases
     var task = text
       .replace(/(каждые?|каждую|каждый|каждое|каждого)\s+(\d+\s*)?(минут[уы]?|час[аов]*|день|дня|ночь|утро|вечер|недел[юи]|месяц[а]?|будний\s+день|будни)/gi, '')
-      .replace(/(каждую|каждый|каждое)\s+(понедельник|вторник|среду|четверг|пятницу|субботу|воскресенье)/gi, '')
+      .replace(/(каждую|каждый|каждое|по|every)?\s*(понедельник\S*|вторник\S*|сред[уаы]|четверг\S*|пятниц\S*|суббот\S*|воскресен\S*)(\s*(,|и|and)\s*(понедельник\S*|вторник\S*|сред[уаы]|четверг\S*|пятниц\S*|суббот\S*|воскресен\S*))*/gi, '')
       .replace(/по\s+(будням|выходным|понедельникам|вторникам|средам|четвергам|пятницам|субботам|воскресеньям)/gi, '')
       .replace(/\d{1,2}\s*-?\s*(го|ого)\s+числа(\s+каждого\s+месяца)?/gi, '')
-      .replace(/(в|к|at)\s*\d{1,2}([:.]\d{2})?\s*(утра|дня|вечера|ночи|am|pm)?/gi, '')
+      .replace(/(^|\s)(в|во|к|at)\s*\d{1,2}([:.]\d{2})?\s*(утра|дня|вечера|ночи|am|pm)?/gi, ' ')
       .replace(/в\s+(полночь|полдень)/gi, '')
       .replace(/(в|на|во)\s+(telegram|телеграм\S*|discord|дискорд\S*|slack|слак\S*|whatsapp|ватсап\S*|signal|сигнал\S*|email|e-mail|почту|имейл)/gi, '')
       .replace(/ежедневно|ежечасно|еженедельно|ежемесячно/gi, '')

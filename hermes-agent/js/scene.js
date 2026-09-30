@@ -9,6 +9,8 @@
 
   var H = (window.HERMES = window.HERMES || {});
   var state = (H.state = H.state || { morph: 0, pulse: 0, ready: false });
+  // per-section overrides tweened by app.js: x/y offset, core scale, particle brightness
+  if (state.sx == null) { state.sx = 2.5; state.sy = 0.35; state.core = 0.85; state.dim = 1; }
   var canvas = document.getElementById('webgl');
   if (!canvas) return;
 
@@ -74,7 +76,9 @@
     var dpr = Math.min(window.devicePixelRatio || 1, lowPower ? 1.5 : 1.75);
     renderer.setPixelRatio(dpr);
     renderer.setSize(W, Hh, false);
-    renderer.setClearColor(0x04050a, 1);
+    renderer.setClearColor(0x020308, 1);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
 
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(42, W / Hh, 0.1, 120);
@@ -233,10 +237,10 @@
       transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
       uniforms: {
         uTime: { value: 0 }, uMorph: { value: 0 }, uPixelRatio: { value: dpr }, uSize: { value: lowPower ? 5.2 : 4.6 },
-        uMouse: { value: new THREE.Vector3(99, 99, 0) }, uMouseStrength: { value: 0 }, uPulse: { value: 0 }
+        uMouse: { value: new THREE.Vector3(99, 99, 0) }, uMouseStrength: { value: 0 }, uPulse: { value: 0 }, uDim: { value: 1 }
       },
       vertexShader: [
-        'uniform float uTime, uMorph, uPixelRatio, uSize, uMouseStrength, uPulse;',
+        'uniform float uTime, uMorph, uPixelRatio, uSize, uMouseStrength, uPulse, uDim;',
         'uniform vec3 uMouse;',
         'attribute vec3 aP0, aP1, aP2, aP3, aP4, aDir;',
         'attribute float aRand, aSize;',
@@ -266,7 +270,7 @@
         '  float size = uSize * aSize * (1.0 + burst*0.8 + uPulse);',
         '  gl_PointSize = size * uPixelRatio * (7.5 / -mv.z);',
         '  float tw = 0.6 + 0.4*sin(uTime*1.7 + aRand*60.0);',
-        '  vAlpha = tw * (0.45 + 0.55*aRand) * smoothstep(30.0, 3.0, -mv.z);',
+        '  vAlpha = tw * (0.35 + 0.5*aRand) * smoothstep(30.0, 3.0, -mv.z) * uDim;',
         '  vec3 gold = vec3(1.0, 0.76, 0.40); vec3 cyan = vec3(0.38, 0.88, 1.0); vec3 violet = vec3(0.62, 0.52, 1.0);',
         '  float k = fract(aRand*7.13);',
         '  vec3 c = k < 0.52 ? mix(gold, vec3(1.0,0.93,0.8), k*0.9) : (k < 0.86 ? cyan : violet);',
@@ -315,9 +319,9 @@
         '  vec3 gold = vec3(1.0, 0.74, 0.36); vec3 cyan = vec3(0.35, 0.86, 1.0); vec3 violet = vec3(0.55, 0.45, 1.0);',
         '  float band = 0.5 + 0.5*sin(vD*22.0 + uTime*1.2);',
         '  vec3 iri = mix(mix(gold, cyan, smoothstep(-0.15, 0.2, vD)), violet, band*0.35);',
-        '  vec3 base = vec3(0.012, 0.016, 0.035) + iri * 0.06;',
-        '  float lines = pow(band, 18.0) * 0.55;',
-        '  vec3 col = base + iri * (fr*1.7 + lines*0.8) + gold * pow(fr, 6.0) * 0.8;',
+        '  vec3 base = vec3(0.006, 0.008, 0.02) + iri * 0.025;',
+        '  float lines = pow(band, 22.0) * 0.4;',
+        '  vec3 col = base + iri * (fr*0.95 + lines*0.45) + gold * pow(fr, 5.0) * 0.35;',
         '  gl_FragColor = vec4(col, 1.0);',
         '}'
       ].join('\n')
@@ -381,7 +385,7 @@
       composer.setPixelRatio(dpr);
       composer.setSize(W, Hh);
       composer.addPass(new RenderPass(scene, camera));
-      bloom = new UnrealBloomPass(new THREE.Vector2(W, Hh), lowPower ? 0.7 : 0.85, 0.55, 0.05);
+      bloom = new UnrealBloomPass(new THREE.Vector2(W, Hh), lowPower ? 0.55 : 0.7, 0.42, 0.24);
       if (lowPower) bloom.resolution.set(W / 2, Hh / 2);
       composer.addPass(bloom);
       composer.addPass(new OutputPass());
@@ -390,8 +394,6 @@
     /* ---------------- per-section presets ---------------- */
     //                0 sphere 1 caduceus 2 network 3 orbits 4 grid 5 finale
     var PRESET = {
-      core:   [1.0,   0.36,  0.62, 0.72, 0.0,  1.15],
-      offset: [1.55,  2.55, -2.55, 2.35, 0.0,  0.0],
       camZ:   [9.0,   9.2,   9.0,  9.6,  7.6,  9.6],
       camY:   [0.0,   0.0,   0.0,  0.0,  0.8,  0.0],
       rings:  [1.0,   0.0,   0.25, 0.85, 0.0,  1.0],
@@ -467,7 +469,7 @@
       for (var r = 0; r < ringMats.length; r++) { ringMats[r].uniforms.uTime.value = time; ringMats[r].uniforms.uOpacity.value = ro; }
       rings.visible = ro > 0.01;
 
-      var cs = sample(PRESET.core, m) * (1 + pulse * 0.25);
+      var cs = state.core * (narrow.matches ? 0.7 : 1) * (1 + pulse * 0.25);
       coreGroup.scale.setScalar(Math.max(cs, 0.0001));
       coreGroup.visible = cs > 0.01;
       core.rotation.y += dt * 0.15 * speed;
@@ -476,9 +478,10 @@
 
       rotY += dt * sample(PRESET.spin, m) * speed;
       var isNarrow = narrow.matches;
-      var off = isNarrow ? 0 : sample(PRESET.offset, m);
-      root.position.x += (off - root.position.x) * 0.05;
-      root.position.y += ((isNarrow && m < 0.5 ? 0.9 : 0) - root.position.y) * 0.05;
+      var off = isNarrow ? 0 : state.sx;
+      root.position.x += (off - root.position.x) * 0.06;
+      root.position.y += ((isNarrow ? (m < 0.5 ? 1.7 : 0) : state.sy) - root.position.y) * 0.06;
+      pMat.uniforms.uDim.value = state.dim * (isNarrow ? (m < 0.5 ? 0.8 : 0.6) : 1);
       root.rotation.y = rotY + mouse.x * 0.25;
       root.rotation.x += (-mouse.y * 0.12 - root.rotation.x) * 0.05;
 
