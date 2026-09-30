@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Hermes Agent — агент, который растёт вместе с тобой</title>
+  <meta name="description" content="Hermes Agent — самообучающийся open-source ИИ-агент от Nous Research: постоянная память, навыки из опыта, шлюз во все мессенджеры, cron-автоматизации и любая модель." />
+  <meta name="theme-color" content="#04050a" />
+  <meta property="og:title" content="Hermes Agent — агент, который растёт вместе с тобой" />
+  <meta property="og:description" content="Постоянная память. Навыки из опыта. Telegram, Discord, Slack и ещё 4 платформы. Любая модель." />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500;600&family=Onest:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@1,500;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+  <!-- ============ SVG SPRITE ============ -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="grad-gold" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#ffe2a6" /><stop offset=".55" stop-color="#f4c66a" /><stop offset="1" stop-color="#67e8ff" />
+      </linearGradient>
+    </defs>
+    <symbol id="i-logo" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="4.6" r="1.7"/><path d="M16 6.8V29.5"/><path d="M16 9c-3.6-2-8.6-2.6-12.2-1 2.6 1.2 4.6 3 8.7 3.2"/><path d="M16 9c3.6-2 8.6-2.6 12.2-1-2.6 1.2-4.6 3-8.7 3.2"/><path d="M12 13c0 3 8 3.5 8 7s-8 3.5-8 6.5"/><path d="M20 13c0 3-8 3.5-8 7s8 3.5 8 6.5"/></g></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></g></symbol>
+    <symbol id="i-arrow-ur" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></g></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="3"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></g></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></g></symbol>
+    <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v14H6.5A2.5 2.5 0 0 0 4 19.5v-14Z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20v4H6.5A2.5 2.5 0 0 1 4 19.5Z"/></g></symbol>
+    <symbol id="i-telegram" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21.2 4.3 2.9 11.5c-.8.3-.8 1.4 0 1.7l4.6 1.6 1.8 5.5c.2.7 1.1.9 1.6.4l2.7-2.6 4.7 3.5c.6.4 1.4.1 1.6-.6L22.6 5.6c.2-.9-.6-1.6-1.4-1.3Z"/><path d="m7.6 14.8 9.9-6.9-7.1 8.5"/></g></symbol>
+    <symbol id="i-discord" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8.6 5.4c-1.8.3-3.4.9-4.7 1.8C2.3 10.5 1.8 13.8 2 17c1.5 1.2 3.2 2 5 2.5l1.2-2c-.8-.3-1.5-.7-2.2-1.2M15.4 5.4c1.8.3 3.4.9 4.7 1.8 1.6 3.3 2.1 6.6 1.9 9.8-1.5 1.2-3.2 2-5 2.5l-1.2-2c.8-.3 1.5-.7 2.2-1.2M7 16.2c3.2 1.6 6.8 1.6 10 0M8.6 5.4l.7 1.5c1.9-.4 3.5-.4 5.4 0l.7-1.5"/><circle cx="9" cy="12.4" r="1.2"/><circle cx="15" cy="12.4" r="1.2"/></g></symbol>
+    <symbol id="i-slack" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.8" y="9.3" width="10" height="3.2" rx="1.6"/><rect x="11.2" y="11.5" width="10" height="3.2" rx="1.6"/><rect x="9.3" y="2.8" width="3.2" height="10" rx="1.6"/><rect x="11.5" y="11.2" width="3.2" height="10" rx="1.6"/></g></symbol>
+    <symbol id="i-whatsapp" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.4 20.6 4.9 16a8.6 8.6 0 1 1 3.3 3.2Z"/><path d="M9 8.4c0 3.6 2.8 6.6 6.6 6.6l1-1.5-2.1-1-1 .8c-1.2-.5-2.3-1.6-2.8-2.8l.8-1-1-2.1Z"/></g></symbol>
+    <symbol id="i-signal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 0 0-7.7 13.6L3.2 20.8l4.2-1.1A9 9 0 1 0 12 3Z" stroke-dasharray="2.4 1.9"/><circle cx="12" cy="12" r="5"/></g></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></g></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="3"/><path d="m7 9 3 3-3 3M12.5 15H17"/></g></symbol>
+    <symbol id="i-laptop" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="11" rx="2"/><path d="M2 19h20"/></g></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.8 20.5 7.5v9L12 21.2 3.5 16.5v-9L12 2.8Z"/><path d="M3.5 7.5 12 12l8.5-4.5M12 12v9.2"/></g></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15.5" r="4.5"/><path d="m11.2 12.3 8.3-8.3M16.5 7l2.5 2.5M14 9.5l2 2"/></g></symbol>
+    <symbol id="i-cpu" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 2.5V6M15 2.5V6M9 18v3.5M15 18v3.5M2.5 9H6M2.5 15H6M18 9h3.5M18 15h3.5"/></g></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18.5a4.5 4.5 0 0 1-.6-9 6 6 0 0 1 11.5 1.6 3.8 3.8 0 0 1-.4 7.4H7Z"/><path d="M13.5 12.2a2 2 0 1 1-2.6 2.6 2.4 2.4 0 0 0 2.6-2.6Z"/></g></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12.5 9 5 9-5M3 16.5l9 5 9-5"/></g></symbol>
+    <symbol id="i-triangle" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 21 19.5H3L12 4Z"/><path d="M12 10.5v4"/></g></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.3-4.3"/></g></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 2.5c.6 4.6 2.9 6.9 7.5 7.5-4.6.6-6.9 2.9-7.5 7.5-.6-4.6-2.9-6.9-7.5-7.5 4.6-.6 6.9-2.9 7.5-7.5Z" stroke-linejoin="round"/><path d="M19 17v4M17 19h4"/></g></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></g></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></g></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></g></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4 18-7Z"/></g></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 8h16M4 16h16"/></g></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></g></symbol>
+  </svg>
+
+  <!-- ============ ATMOSPHERE ============ -->
+  <canvas id="webgl" aria-hidden="true"></canvas>
+  <div class="fallback-bg" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="scroll-progress" aria-hidden="true"><span></span></div>
+
+  <div class="cursor" aria-hidden="true">
+    <div class="cursor__dot"></div>
+    <div class="cursor__ring"><span class="cursor__label"></span></div>
+  </div>
+
+  <!-- ============ PRELOADER ============ -->
+  <div class="loader" id="loader" role="status" aria-live="polite">
+    <div class="loader__center">
+      <svg class="loader__logo" viewBox="0 0 32 32" aria-hidden="true">
+        <g fill="none" stroke="url(#grad-gold)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="16" cy="4.6" r="1.7" pathLength="1"/><path d="M16 6.8V29.5" pathLength="1"/><path d="M16 9c-3.6-2-8.6-2.6-12.2-1 2.6 1.2 4.6 3 8.7 3.2" pathLength="1"/><path d="M16 9c3.6-2 8.6-2.6 12.2-1-2.6 1.2-4.6 3-8.7 3.2" pathLength="1"/><path d="M12 13c0 3 8 3.5 8 7s-8 3.5-8 6.5" pathLength="1"/><path d="M20 13c0 3-8 3.5-8 7s8 3.5 8 6.5" pathLength="1"/>
+        </g>
+      </svg>
+      <div class="loader__word" aria-label="Hermes Agent">
+        <span>H</span><span>E</span><span>R</span><span>M</span><span>E</span><span>S</span>
+      </div>
+    </div>
+    <ul class="loader__boot">
+      <li data-at="8">загрузка памяти <b>MEMORY.md</b></li>
+      <li data-at="30">индексация навыков <b>~/.hermes/skills</b></li>
+      <li data-at="55">подключение шлюза <b>7 платформ</b></li>
+      <li data-at="80">прогрев ядра <b>WebGL</b></li>
+    </ul>
+    <div class="loader__count"><span id="loader-num">000</span><small>%</small></div>
+    <div class="loader__bar"><span></span></div>
+  </div>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <a href="#top" class="nav__brand" data-cursor="Наверх" aria-label="Hermes Agent — наверх">
+      <svg class="nav__logo"><use href="#i-logo"/></svg>
+      <span>Hermes<i>Agent</i></span>
+    </a>
+    <nav class="nav__links" aria-label="Разделы">
+      <a href="#loop">Обучение</a>
+      <a href="#memory">Память</a>
+      <a href="#gateway">Шлюз</a>
+      <a href="#terminal">Терминал</a>
+      <a href="#models">Модели</a>
+    </nav>
+    <div class="nav__actions">
+      <button class="nav__kbd" type="button" data-palette-open aria-label="Открыть командную палитру"><kbd>⌘</kbd><kbd>K</kbd></button>
+      <a class="nav__gh" href="https://github.com/NousResearch/hermes-agent" target="_blank" rel="noopener" aria-label="GitHub" data-cursor="GitHub"><svg><use href="#i-github"/></svg></a>
+      <a href="#install" class="btn btn--gold btn--sm" data-magnetic><span>Установить</span><svg class="btn__ico"><use href="#i-arrow"/></svg></a>
+      <button class="nav__burger" type="button" aria-label="Меню" aria-expanded="false"><svg><use href="#i-menu"/></svg></button>
+    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <nav>
+      <a href="#loop"><small>01</small>Обучение</a>
+      <a href="#memory"><small>02</small>Память</a>
+      <a href="#gateway"><small>03</small>Шлюз</a>
+      <a href="#terminal"><small>04</small>Терминал</a>
+      <a href="#schedule"><small>06</small>Автоматизация</a>
+      <a href="#models"><small>08</small>Модели</a>
+      <a href="#install"><small>→</small>Установка</a>
+    </nav>
+  </div>
+
+  <aside class="rail" aria-label="Навигация по главам">
+    <a href="#top" data-rail="top"><span>Старт</span></a>
+    <a href="#loop" data-rail="loop"><span>Обучение</span></a>
+    <a href="#memory" data-rail="memory"><span>Память</span></a>
+    <a href="#gateway" data-rail="gateway"><span>Шлюз</span></a>
+    <a href="#terminal" data-rail="terminal"><span>Терминал</span></a>
+    <a href="#caps" data-rail="caps"><span>Возможности</span></a>
+    <a href="#schedule" data-rail="schedule"><span>Автоматизация</span></a>
+    <a href="#backends" data-rail="backends"><span>Среды</span></a>
+    <a href="#models" data-rail="models"><span>Модели</span></a>
+    <a href="#install" data-rail="install"><span>Установка</span></a>
+  </aside>
+
+  <main id="main">
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="top" data-shape="0">
+      <div class="hud hud--tl"><span class="hud__dot"></span>HERMES / CORE <em>☤</em></div>
+      <div class="hud hud--tr">37.9715° N · 23.7257° E <em>// Олимп на связи</em></div>
+      <div class="hud hud--bl">
+        <span>СТАТУС <b class="ok">● ОНЛАЙН</b></span>
+        <span>UTC <b id="hud-clock">--:--:--</b></span>
+        <span>FPS <b id="hud-fps">--</b></span>
+      </div>
+
+      <div class="container hero__inner">
+        <div class="chip hero__chip" data-hero>
+          <span class="chip__pulse"></span>
+          Open Source · MIT · от Nous Research
+        </div>
+
+        <h1 class="hero__title" aria-label="Агент, который растёт вместе с тобой">
+          <span class="line"><span class="line__in">Агент, который</span></span>
+          <span class="line"><span class="line__in"><em>растёт</em> вместе</span></span>
+          <span class="line"><span class="line__in">с тобой<span class="hero__dot">.</span></span></span>
+        </h1>
+
+        <div class="hero__bottom">
+          <p class="lead hero__lead" data-hero>
+            Hermes Agent — самообучающийся ИИ‑агент с&nbsp;постоянной памятью. Он превращает опыт в&nbsp;навыки, помнит ваши проекты и&nbsp;отвечает в&nbsp;Telegram, пока работает на&nbsp;облачном сервере.
+          </p>
+          <div class="hero__cta" data-hero>
+            <div class="hero__btns">
+              <a href="#install" class="btn btn--gold" data-magnetic><span>Установить за 2 минуты</span><svg class="btn__ico"><use href="#i-arrow"/></svg></a>
+              <a href="#loop" class="btn btn--ghost" data-magnetic><span>Как он учится</span></a>
+            </div>
+            <button class="cmd" type="button" data-copy="curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash" data-cursor="Копировать">
+              <span class="cmd__prompt">$</span>
+              <code>curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash</code>
+              <span class="cmd__icon"><svg><use href="#i-copy"/></svg></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <a href="#manifesto" class="scroll-badge" aria-label="Листать вниз" data-cursor="Вниз">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <defs><path id="circlePath" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/></defs>
+          <text><textPath href="#circlePath">ЛИСТАЙ ВНИЗ ✦ ИССЛЕДУЙ АГЕНТА ✦ ЛИСТАЙ ВНИЗ ✦</textPath></text>
+        </svg>
+        <span class="scroll-badge__arrow"><svg><use href="#i-arrow"/></svg></span>
+      </a>
+    </section>
+
+    <!-- ============ MARQUEE ============ -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__row">
+        <div class="marquee__track">
+          <span>Telegram</span><i>☤</i><span>Discord</span><i>☤</i><span>Slack</span><i>☤</i><span>WhatsApp</span><i>☤</i><span>Signal</span><i>☤</i><span>Email</span><i>☤</i><span>CLI</span><i>☤</i>
+          <span>Telegram</span><i>☤</i><span>Discord</span><i>☤</i><span>Slack</span><i>☤</i><span>WhatsApp</span><i>☤</i><span>Signal</span><i>☤</i><span>Email</span><i>☤</i><span>CLI</span><i>☤</i>
+        </div>
+      </div>
+      <div class="marquee__row marquee__row--rev">
+        <div class="marquee__track">
+          <span>Nous Portal</span><i>✦</i><span>OpenRouter</span><i>✦</i><span>OpenAI</span><i>✦</i><span>MCP</span><i>✦</i><span>Docker</span><i>✦</i><span>Modal</span><i>✦</i><span>Daytona</span><i>✦</i><span>SSH</span><i>✦</i>
+          <span>Nous Portal</span><i>✦</i><span>OpenRouter</span><i>✦</i><span>OpenAI</span><i>✦</i><span>MCP</span><i>✦</i><span>Docker</span><i>✦</i><span>Modal</span><i>✦</i><span>Daytona</span><i>✦</i><span>SSH</span><i>✦</i>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MANIFESTO ============ -->
+    <section class="manifesto" id="manifesto" data-shape="0">
+      <div class="container">
+        <p class="eyebrow"><span></span>Манифест</p>
+        <p class="manifesto__text" data-words>
+          Большинство ИИ‑ассистентов <s>забывают</s> вас, как&nbsp;только закрывается вкладка. Hermes устроен иначе. Он <b>помнит</b> ваши проекты и&nbsp;привычки, <b>учится</b> на&nbsp;каждой выполненной задаче и&nbsp;сам записывает то, что сработало, — в&nbsp;<b>навыки</b>. С&nbsp;каждым днём он становится немного больше <b>вашим</b>.
+        </p>
+
+        <div class="stats">
+          <div class="stat" data-reveal>
+            <div class="stat__num"><span data-count="40">40</span><sup>+</sup></div>
+            <div class="stat__label">встроенных инструментов: терминал, браузер, поиск, зрение, голос</div>
+          </div>
+          <div class="stat" data-reveal>
+            <div class="stat__num"><span data-count="300">300</span><sup>+</sup></div>
+            <div class="stat__label">моделей — переключение одной командой, без привязки</div>
+          </div>
+          <div class="stat" data-reveal>
+            <div class="stat__num"><span data-count="7">7</span></div>
+            <div class="stat__label">сред исполнения: от локальной машины до serverless</div>
+          </div>
+          <div class="stat" data-reveal>
+            <div class="stat__num"><sup class="pre">$</sup><span data-count="5">5</span></div>
+            <div class="stat__label">в месяц — VPS, которого хватит, чтобы агент работал 24/7</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 01 LEARNING LOOP ============ -->
+    <section class="loop" id="loop" data-shape="1">
+      <div class="loop__pin">
+        <div class="container loop__grid">
+          <div class="loop__left">
+            <p class="eyebrow"><span></span>01 — Цикл обучения</p>
+            <h2 class="h2" data-split>Каждая задача делает его <em>умнее</em></h2>
+            <p class="lead" data-reveal>Единственный агент со встроенным замкнутым циклом обучения: опыт превращается в навык, навык — улучшается при каждом использовании. Совместимо с открытым стандартом <a class="link" href="https://agentskills.io" target="_blank" rel="noopener">agentskills.io</a>.</p>
+
+            <ol class="steps" role="tablist" aria-label="Этапы цикла обучения">
+              <li class="step is-active" data-step="0" role="tab" tabindex="0" aria-selected="true">
+                <span class="step__n">01</span>
+                <div><b>Задача</b><p>Вы пишете в любом мессенджере. Hermes ищет похожий опыт в памяти.</p></div>
+              </li>
+              <li class="step" data-step="1" role="tab" tabindex="-1" aria-selected="false">
+                <span class="step__n">02</span>
+                <div><b>Действие</b><p>Терминал, браузер, код, веб‑поиск — 40+ инструментов в изолированной среде.</p></div>
+              </li>
+              <li class="step" data-step="2" role="tab" tabindex="-1" aria-selected="false">
+                <span class="step__n">03</span>
+                <div><b>Рефлексия</b><p>После сложной задачи агент разбирает, что сработало, а что — нет.</p></div>
+              </li>
+              <li class="step" data-step="3" role="tab" tabindex="-1" aria-selected="false">
+                <span class="step__n">04</span>
+                <div><b>Навык</b><p>Удачный путь сохраняется как SKILL.md — это процедурная память.</p></div>
+              </li>
+              <li class="step" data-step="4" role="tab" tabindex="-1" aria-selected="false">
+                <span class="step__n">05</span>
+                <div><b>Улучшение</b><p>При каждом запуске навык уточняется и становится надёжнее.</p></div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="loop__right">
+            <div class="orbit" aria-hidden="true">
+              <svg viewBox="0 0 400 400">
+                <circle class="orbit__track" cx="200" cy="200" r="180"/>
+                <circle class="orbit__fill" cx="200" cy="200" r="180" pathLength="1"/>
+              </svg>
+              <span class="orbit__node" style="--a:-90deg">01</span>
+              <span class="orbit__node" style="--a:-18deg">02</span>
+              <span class="orbit__node" style="--a:54deg">03</span>
+              <span class="orbit__node" style="--a:126deg">04</span>
+              <span class="orbit__node" style="--a:198deg">05</span>
+            </div>
+            <div class="window glass loop__window" data-tilt>
+              <div class="window__bar">
+                <i></i><i></i><i></i>
+                <span class="window__title" id="loop-title">telegram · @hermes</span>
+                <span class="window__badge" id="loop-badge">ЗАДАЧА</span>
+              </div>
+              <div class="window__body" id="loop-body">
+                <div class="msg msg--user">Задеплой ветку <code>feature/auth</code> на staging и проверь health‑check</div>
+                <div class="msg msg--bot"><span class="tag">память</span> Похожей задачи ещё не было. Начинаю с нуля — запомню, как это делается.</div>
+              </div>
+              <div class="window__foot"><span id="loop-foot">step 1/5</span><span class="window__progress"><i id="loop-progress"></i></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 MEMORY ============ -->
+    <section class="memory" id="memory" data-shape="2">
+      <div class="container">
+        <div class="split">
+          <div>
+            <p class="eyebrow"><span></span>02 — Память</p>
+            <h2 class="h2" data-split>Он помнит. <em>Всё&nbsp;важное.</em></h2>
+            <p class="lead" data-reveal>Три слоя памяти переживают перезапуски, смену модели и мессенджера. И всё хранится у вас — в&nbsp;<code class="ic">~/.hermes</code>.</p>
+
+            <ul class="legend" data-reveal>
+              <li data-layer="0"><i class="c-cyan"></i><div><b>Контекст сессии</b><p>Текущий диалог: файлы, шаги, промежуточные результаты.</p></div></li>
+              <li data-layer="1"><i class="c-gold"></i><div><b>Факты · MEMORY.md, USER.md</b><p>Агент сам решает, что стоит запомнить о вас и проектах, — и периодически напоминает себе это сделать.</p></div></li>
+              <li data-layer="2"><i class="c-violet"></i><div><b>Навыки · ~/.hermes/skills</b><p>Процедурная память: как именно решать повторяющиеся задачи.</p></div></li>
+            </ul>
+          </div>
+
+          <div class="stack" data-reveal aria-hidden="true">
+            <div class="stack__scene">
+              <div class="plate plate--2" style="--i:0"><span>skills/</span><small>38 навыков · v4</small></div>
+              <div class="plate plate--1" style="--i:1"><span>MEMORY.md</span><small>142 факта</small></div>
+              <div class="plate plate--0" style="--i:2"><span>session</span><small>контекст · 18k</small></div>
+            </div>
+            <div class="stack__glow"></div>
+          </div>
+        </div>
+
+        <div class="mem-grid">
+          <div class="card glass search-card" data-reveal>
+            <div class="card__head">
+              <div><b>Поиск по прошлым сессиям</b><p>Спросите, что вы обсуждали месяц назад, — Hermes найдёт.</p></div>
+              <span class="badge">SQLite FTS5 + LLM‑сводка</span>
+            </div>
+            <label class="search">
+              <svg><use href="#i-search"/></svg>
+              <input id="mem-search" type="search" placeholder="Попробуйте: миграция, отчёт, ssl, рецепт…" autocomplete="off" spellcheck="false" />
+              <span class="search__meta" id="mem-meta">8 сессий</span>
+            </label>
+            <div class="search__chips">
+              <button type="button" data-q="миграция">миграция</button>
+              <button type="button" data-q="отчёт">отчёт</button>
+              <button type="button" data-q="ssl">ssl</button>
+              <button type="button" data-q="typescript">typescript</button>
+            </div>
+            <div class="summary" id="mem-summary" hidden></div>
+            <ul class="results" id="mem-results"></ul>
+          </div>
+
+          <div class="card glass user-card" data-reveal>
+            <div class="card__head">
+              <div><b>Модель пользователя</b><p>Диалектическое моделирование Honcho: с каждой сессией Hermes понимает вас глубже.</p></div>
+            </div>
+            <div class="avatar">
+              <div class="avatar__ring"></div>
+              <div class="avatar__core">вы</div>
+            </div>
+            <ul class="traits" id="traits">
+              <li style="--w:.94"><span>Пишет на TypeScript, не на JavaScript</span><i></i></li>
+              <li style="--w:.88"><span>Предпочитает краткие ответы</span><i></i></li>
+              <li style="--w:.81"><span>Часовой пояс UTC+3, работает по вечерам</span><i></i></li>
+              <li style="--w:.76"><span>Деплои в пятницу — только с подтверждением</span><i></i></li>
+              <li style="--w:.63"><span>Не ест глютен</span><i></i></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 03 GATEWAY ============ -->
+    <section class="gateway" id="gateway" data-shape="3">
+      <div class="container gateway__grid">
+        <div class="gateway__left">
+          <p class="eyebrow"><span></span>03 — Шлюз сообщений</p>
+          <h2 class="h2" data-split>Живёт <em>там, где вы</em></h2>
+          <p class="lead" data-reveal>Один процесс шлюза — все мессенджеры сразу. Начните разговор в Telegram, продолжите в Slack: контекст не теряется. Голосовые сообщения расшифровываются.</p>
+
+          <div class="platforms" role="tablist" aria-label="Платформы" data-reveal>
+            <button type="button" class="platform is-active" data-platform="telegram" role="tab" aria-selected="true" style="--pc:#4fb6ff"><svg><use href="#i-telegram"/></svg><span>Telegram</span></button>
+            <button type="button" class="platform" data-platform="discord" role="tab" aria-selected="false" style="--pc:#8b93ff"><svg><use href="#i-discord"/></svg><span>Discord</span></button>
+            <button type="button" class="platform" data-platform="slack" role="tab" aria-selected="false" style="--pc:#ff7ab8"><svg><use href="#i-slack"/></svg><span>Slack</span></button>
+            <button type="button" class="platform" data-platform="whatsapp" role="tab" aria-selected="false" style="--pc:#4be08a"><svg><use href="#i-whatsapp"/></svg><span>WhatsApp</span></button>
+            <button type="button" class="platform" data-platform="signal" role="tab" aria-selected="false" style="--pc:#6f9bff"><svg><use href="#i-signal"/></svg><span>Signal</span></button>
+            <button type="button" class="platform" data-platform="email" role="tab" aria-selected="false" style="--pc:#f4c66a"><svg><use href="#i-mail"/></svg><span>Email</span></button>
+            <button type="button" class="platform" data-platform="cli" role="tab" aria-selected="false" style="--pc:#67e8ff"><svg><use href="#i-terminal"/></svg><span>CLI</span></button>
+          </div>
+
+          <div class="snippet" data-reveal>
+            <button type="button" class="cmd cmd--sm" data-copy="hermes gateway setup" data-cursor="Копировать"><span class="cmd__prompt">$</span><code>hermes gateway setup</code><span class="cmd__icon"><svg><use href="#i-copy"/></svg></span></button>
+            <button type="button" class="cmd cmd--sm" data-copy="hermes gateway start" data-cursor="Копировать"><span class="cmd__prompt">$</span><code>hermes gateway start</code><span class="cmd__icon"><svg><use href="#i-copy"/></svg></span></button>
+          </div>
+        </div>
+
+        <div class="gateway__right">
+          <div class="phone-orbit" aria-hidden="true">
+            <span style="--a:0deg"><svg><use href="#i-telegram"/></svg></span>
+            <span style="--a:51.4deg"><svg><use href="#i-discord"/></svg></span>
+            <span style="--a:102.8deg"><svg><use href="#i-slack"/></svg></span>
+            <span style="--a:154.2deg"><svg><use href="#i-whatsapp"/></svg></span>
+            <span style="--a:205.6deg"><svg><use href="#i-signal"/></svg></span>
+            <span style="--a:257deg"><svg><use href="#i-mail"/></svg></span>
+            <span style="--a:308.4deg"><svg><use href="#i-terminal"/></svg></span>
+          </div>
+          <div class="phone" data-tilt id="phone" style="--pc:#4fb6ff">
+            <div class="phone__notch"></div>
+            <div class="phone__head">
+              <div class="phone__avatar"><svg><use href="#i-logo"/></svg></div>
+              <div><b id="phone-name">Hermes</b><small id="phone-sub">бот · онлайн</small></div>
+              <span class="phone__plat" id="phone-plat">Telegram</span>
+            </div>
+            <div class="phone__body" id="phone-body" aria-live="polite"></div>
+            <div class="phone__input"><span>Сообщение…</span><svg><use href="#i-send"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 04 TERMINAL ============ -->
+    <section class="terminal-sec" id="terminal" data-shape="4">
+      <div class="container">
+        <div class="center-head">
+          <p class="eyebrow eyebrow--c"><span></span>04 — Терминал<span></span></p>
+          <h2 class="h2" data-split>Настоящий <em>TUI</em>. Попробуйте прямо здесь</h2>
+          <p class="lead" data-reveal>Многострочное редактирование, автодополнение слэш‑команд, история, прерывание на лету и потоковый вывод инструментов. Нажмите на терминал и наберите <code class="ic">help</code>.</p>
+        </div>
+
+        <div class="term glass" id="term" data-reveal>
+          <div class="term__bar">
+            <i></i><i></i><i></i>
+            <div class="term__tabs"><span class="is-active">hermes — zsh</span><span>gateway</span><span>~/.hermes</span></div>
+            <span class="term__size">120×32</span>
+          </div>
+          <div class="term__screen" id="term-screen" tabindex="0" aria-label="Интерактивный терминал Hermes">
+            <div class="term__out" id="term-out"></div>
+            <div class="term__line">
+              <span class="term__ps" id="term-ps"><b class="t-green">➜</b> <b class="t-cyan">~</b></span>
+              <input class="term__input" id="term-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Команда" />
+            </div>
+          </div>
+          <div class="term__hints" id="term-hints">
+            <span>попробуйте →</span>
+            <button type="button" data-cmd="help">help</button>
+            <button type="button" data-cmd="hermes">hermes</button>
+            <button type="button" data-cmd="hermes model">hermes model</button>
+            <button type="button" data-cmd="hermes tools">hermes tools</button>
+            <button type="button" data-cmd="hermes doctor">hermes doctor</button>
+            <button type="button" data-cmd="hermes gateway">hermes gateway</button>
+            <button type="button" data-cmd="ls ~/.hermes">ls ~/.hermes</button>
+            <button type="button" data-cmd="clear">clear</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 05 CAPABILITIES (horizontal) ============ -->
+    <section class="caps" id="caps" data-shape="4">
+      <div class="caps__pin">
+        <div class="container caps__head">
+          <div>
+            <p class="eyebrow"><span></span>05 — Возможности</p>
+            <h2 class="h2" data-split>Больше, чем <em>чат</em></h2>
+          </div>
+          <p class="lead" data-reveal>Hermes не просто отвечает — он действует. Семь суперспособностей, которые превращают модель в сотрудника.</p>
+        </div>
+        <div class="caps__viewport">
+          <div class="caps__track" id="caps-track">
+            <article class="cap glass">
+              <div class="cap__viz viz-agents" aria-hidden="true">
+                <svg viewBox="0 0 280 150">
+                  <path class="ln" d="M140 30 C140 70 50 60 50 100"/><path class="ln" d="M140 30 V100"/><path class="ln" d="M140 30 C140 70 230 60 230 100"/>
+                  <circle class="nd nd--main" cx="140" cy="26" r="11"/>
+                  <circle class="nd" cx="50" cy="104" r="8"/><circle class="nd" cx="140" cy="104" r="8"/><circle class="nd" cx="230" cy="104" r="8"/>
+                </svg>
+                <div class="bars"><i style="--d:2.6s"></i><i style="--d:3.4s"></i><i style="--d:2.1s"></i></div>
+              </div>
+              <span class="cap__n">01</span>
+              <h3>Субагенты</h3>
+              <p>Запускает изолированных субагентов для параллельных потоков работы. Вы получаете результат, а не простыню логов.</p>
+            </article>
+            <article class="cap glass">
+              <div class="cap__viz viz-browser" aria-hidden="true">
+                <div class="vb"><div class="vb__bar"><i></i><i></i><i></i><span class="vb__url"><em>agentskills.io/</em><b>search</b></span></div>
+                  <div class="vb__body"><span></span><span></span><span class="w60"></span><span class="hl"></span><span class="w80"></span><span class="w40"></span></div>
+                  <div class="vb__cursor"></div>
+                </div>
+              </div>
+              <span class="cap__n">02</span>
+              <h3>Браузер и веб</h3>
+              <p>Веб‑поиск, извлечение страниц и облачный браузер: агент сам кликает, заполняет формы и собирает данные.</p>
+            </article>
+            <article class="cap glass">
+              <div class="cap__viz viz-pixels" aria-hidden="true"><div class="px" id="px-grid"></div></div>
+              <span class="cap__n">03</span>
+              <h3>Зрение и изображения</h3>
+              <p>Понимает скриншоты, фото и схемы. Генерирует изображения по описанию — прямо в чат.</p>
+            </article>
+            <article class="cap glass">
+              <div class="cap__viz viz-voice" aria-hidden="true"><div class="wave" id="wave"></div><span class="viz-voice__mic"><svg><use href="#i-mic"/></svg></span></div>
+              <span class="cap__n">04</span>
+              <h3>Голос</h3>
+              <p>Расшифровывает голосовые сообщения из мессенджеров и умеет отвечать голосом (TTS).</p>
+            </article>
+            <article class="cap glass">
+              <div class="cap__viz viz-mcp" aria-hidden="true">
+                <svg viewBox="0 0 280 150">
+                  <g class="mcp-lines"><path d="M140 75 L40 30"/><path d="M140 75 L40 120"/><path d="M140 75 L240 30"/><path d="M140 75 L240 120"/><path d="M140 75 L140 12"/></g>
+                  <rect class="mcp-hub" x="116" y="51" width="48" height="48" rx="12"/>
+                  <text x="140" y="80" text-anchor="middle">MCP</text>
+                  <circle cx="40" cy="30" r="7"/><circle cx="40" cy="120" r="7"/><circle cx="240" cy="30" r="7"/><circle cx="240" cy="120" r="7"/><circle cx="140" cy="12" r="7"/>
+                </svg>
+              </div>
+              <span class="cap__n">05</span>
+              <h3>MCP‑интеграция</h3>
+              <p>Подключите любой MCP‑сервер — и у агента появятся новые инструменты: базы данных, CRM, рабочий стол.</p>
+            </article>
+            <article class="cap glass">
+              <div class="cap__viz viz-code" aria-hidden="true">
+<pre><span class="t-violet">from</span> hermes_tools <span class="t-violet">import</span> web_search, terminal
+
+hits = web_search(<span class="t-gold">"CVE nginx 2026"</span>)
+<span class="t-violet">for</span> h <span class="t-violet">in</span> hits[:<span class="t-cyan">5</span>]:
+    terminal(<span class="t-gold">f"curl -sI </span>{h.url}<span class="t-gold">"</span>)
+<span class="t-dim"># 1 ход · 0 токенов контекста</span></pre>
+              </div>
+              <span class="cap__n">06</span>
+              <h3>Python RPC</h3>
+              <p>Скрипты вызывают инструменты напрямую: многошаговый пайплайн сворачивается в один ход без затрат контекста.</p>
+            </article>
+            <article class="cap glass">
+              <div class="cap__viz viz-research" aria-hidden="true">
+                <svg viewBox="0 0 280 150" preserveAspectRatio="none">
+                  <path class="grid" d="M0 30H280M0 60H280M0 90H280M0 120H280"/>
+                  <path class="tr tr1" d="M0 130 C40 120 60 100 90 96 S150 60 180 58 S240 30 280 22"/>
+                  <path class="tr tr2" d="M0 138 C50 132 70 118 110 110 S170 90 200 80 S250 64 280 56"/>
+                  <path class="tr tr3" d="M0 140 C60 138 90 130 130 124 S190 110 220 104 S260 96 280 92"/>
+                </svg>
+              </div>
+              <span class="cap__n">07</span>
+              <h3>Для исследователей</h3>
+              <p>Пакетная генерация траекторий и их сжатие — данные для обучения следующего поколения моделей с вызовом инструментов.</p>
+            </article>
+            <div class="cap cap--end">
+              <p>И это только<br/><em>начало.</em></p>
+              <a class="link" href="https://hermes-agent.nousresearch.com/docs/" target="_blank" rel="noopener">Вся документация <svg><use href="#i-arrow-ur"/></svg></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 06 SCHEDULER ============ -->
+    <section class="sched" id="schedule" data-shape="3">
+      <div class="container">
+        <div class="split split--top">
+          <div>
+            <p class="eyebrow"><span></span>06 — Автоматизация</p>
+            <h2 class="h2" data-split>Скажите <em>когда</em>. Он&nbsp;сделает сам</h2>
+            <p class="lead" data-reveal>Встроенный cron‑планировщик: ежедневные отчёты, ночные бэкапы, еженедельные аудиты — на естественном языке, без присмотра, с доставкой в любой мессенджер.</p>
+          </div>
+          <div class="sched__try" data-reveal>
+            <label class="sched__label" for="sched-input">Опишите задачу своими словами</label>
+            <div class="sched__field">
+              <svg><use href="#i-clock"/></svg>
+              <input id="sched-input" type="text" value="Каждый будний день в 9 утра присылай сводку по GitHub в Telegram" autocomplete="off" spellcheck="false" />
+            </div>
+            <div class="search__chips" id="sched-chips">
+              <button type="button">Каждую пятницу в 18:00 — отчёт по продажам в Slack</button>
+              <button type="button">Каждые 15 минут проверяй аптайм сайта</button>
+              <button type="button">Каждую ночь в 3 делай бэкап базы</button>
+              <button type="button">1-го числа каждого месяца присылай счета на email</button>
+              <button type="button">По выходным в 10 утра — дайджест новостей в Discord</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="cron glass" data-reveal>
+          <div class="cron__main">
+            <span class="cron__k">cron</span>
+            <div class="cron__expr" id="cron-expr" aria-live="polite"></div>
+            <div class="cron__fields"><span>мин</span><span>час</span><span>день</span><span>мес</span><span>нед</span></div>
+            <p class="cron__human" id="cron-human"></p>
+          </div>
+          <div class="cron__side">
+            <div class="cron__block">
+              <span class="cron__k">Доставка</span>
+              <div class="cron__deliver" id="cron-deliver"></div>
+            </div>
+            <div class="cron__block">
+              <span class="cron__k">Ближайшие запуски</span>
+              <ol class="cron__next" id="cron-next"></ol>
+            </div>
+          </div>
+          <pre class="cron__yaml" id="cron-yaml"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 07 BACKENDS ============ -->
+    <section class="backends" id="backends" data-shape="4">
+      <div class="container">
+        <div class="center-head">
+          <p class="eyebrow eyebrow--c"><span></span>07 — Среды исполнения<span></span></p>
+          <h2 class="h2" data-split>От <em>$5&nbsp;VPS</em> до GPU‑кластера</h2>
+          <p class="lead" data-reveal>Семь бэкендов терминала. Агент не привязан к ноутбуку: пишите ему из Telegram, пока он работает на облачной машине. Modal и Daytona засыпают в простое и просыпаются по запросу — между сессиями это почти бесплатно.</p>
+        </div>
+
+        <div class="bento">
+          <article class="be be--wide" data-spot data-reveal>
+            <div class="be__icon"><svg><use href="#i-laptop"/></svg></div>
+            <h3>Local</h3><p>Прямо на вашей машине — максимум скорости, ноль настройки.</p>
+            <div class="be__tags"><span>zero setup</span><span>macOS · Linux · Windows</span></div>
+          </article>
+          <article class="be be--wide" data-spot data-reveal>
+            <div class="be__icon"><svg><use href="#i-box"/></svg></div>
+            <h3>Docker</h3><p>Изоляция в контейнере: агент экспериментирует, не трогая систему.</p>
+            <div class="be__tags"><span>sandbox</span><span>безопасно</span></div>
+          </article>
+          <article class="be be--wide" data-spot data-reveal>
+            <div class="be__icon"><svg><use href="#i-key"/></svg></div>
+            <h3>SSH</h3><p>Любой удалённый сервер — от Raspberry Pi до bare metal.</p>
+            <div class="be__tags"><span>remote</span><span>$5 VPS</span></div>
+          </article>
+          <article class="be" data-spot data-reveal>
+            <div class="be__icon"><svg><use href="#i-cpu"/></svg></div>
+            <h3>Singularity</h3><p>Для HPC‑кластеров и научных вычислений.</p>
+            <div class="be__tags"><span>HPC</span></div>
+          </article>
+          <article class="be be--hot" data-spot data-reveal>
+            <div class="be__icon"><svg><use href="#i-cloud"/></svg></div>
+            <h3>Modal</h3><p>Serverless: засыпает в простое, просыпается по запросу.</p>
+            <div class="be__tags"><span>serverless</span><span>GPU</span></div>
+          </article>
+          <article class="be be--hot" data-spot data-reveal>
+            <div class="be__icon"><svg><use href="#i-layers"/></svg></div>
+            <h3>Daytona</h3><p>Облачные dev‑среды с сохранением состояния.</p>
+            <div class="be__tags"><span>serverless</span><span>persistent</span></div>
+          </article>
+          <article class="be" data-spot data-reveal>
+            <div class="be__icon"><svg><use href="#i-triangle"/></svg></div>
+            <h3>Vercel Sandbox</h3><p>Эфемерные облачные песочницы для кода агента.</p>
+            <div class="be__tags"><span>cloud</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 08 MODELS ============ -->
+    <section class="models" id="models" data-shape="3">
+      <div class="container">
+        <div class="center-head">
+          <p class="eyebrow eyebrow--c"><span></span>08 — Модели<span></span></p>
+          <h2 class="h2" data-split>Любая модель. <em>Без привязки</em></h2>
+          <p class="lead" data-reveal>Nous Portal, OpenRouter, OpenAI, собственный endpoint и многие другие. Переключение одной командой — без изменений в коде. Потяните карусель.</p>
+        </div>
+      </div>
+
+      <div class="ring" id="ring" data-cursor="Тянуть" aria-label="Карусель провайдеров моделей">
+        <div class="ring__rot" id="ring-rot">
+          <div class="ring__item" style="--i:0"><b>Nous Portal</b><small>Hermes 4 · 300+ моделей</small></div>
+          <div class="ring__item" style="--i:1"><b>OpenRouter</b><small>сотни моделей, один ключ</small></div>
+          <div class="ring__item" style="--i:2"><b>OpenAI</b><small>GPT‑семейство</small></div>
+          <div class="ring__item" style="--i:3"><b>Anthropic</b><small>Claude</small></div>
+          <div class="ring__item" style="--i:4"><b>Google</b><small>Gemini</small></div>
+          <div class="ring__item" style="--i:5"><b>DeepSeek</b><small>открытые веса</small></div>
+          <div class="ring__item" style="--i:6"><b>Qwen</b><small>открытые веса</small></div>
+          <div class="ring__item" style="--i:7"><b>Kimi</b><small>длинный контекст</small></div>
+          <div class="ring__item" style="--i:8"><b>vLLM · Ollama</b><small>свой endpoint</small></div>
+          <div class="ring__item" style="--i:9"><b>llama.cpp</b><small>локально, офлайн</small></div>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="models__foot" data-reveal>
+          <div class="portal glass">
+            <svg class="portal__ico"><use href="#i-spark"/></svg>
+            <div>
+              <b>Nous Portal — без сбора ключей</b>
+              <p>300+ моделей и Tool Gateway: веб‑поиск, генерация изображений, TTS и облачный браузер по одной подписке.</p>
+            </div>
+            <button type="button" class="cmd cmd--sm" data-copy="hermes setup --portal" data-cursor="Копировать"><span class="cmd__prompt">$</span><code>hermes setup --portal</code><span class="cmd__icon"><svg><use href="#i-copy"/></svg></span></button>
+          </div>
+          <div class="switch glass">
+            <span class="cron__k">Смена модели в любой момент</span>
+            <div class="switch__row"><code>/model</code><span class="switch__val" id="switch-val">nous:hermes-4-405b</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ INSTALL ============ -->
+    <section class="install" id="install" data-shape="5">
+      <div class="container">
+        <div class="center-head">
+          <p class="eyebrow eyebrow--c"><span></span>Установка<span></span></p>
+          <h2 class="h2" data-split>Две минуты до <em>первого диалога</em></h2>
+        </div>
+
+        <div class="install__box glass" data-reveal>
+          <div class="tabs" role="tablist" aria-label="Платформа установки">
+            <button type="button" role="tab" class="is-active" aria-selected="true" data-os="unix">macOS · Linux · WSL2</button>
+            <button type="button" role="tab" aria-selected="false" data-os="win">Windows</button>
+            <button type="button" role="tab" aria-selected="false" data-os="android">Android · Termux</button>
+            <span class="tabs__ink"></span>
+          </div>
+          <div class="install__cmd">
+            <span class="cmd__prompt" id="install-prompt">$</span>
+            <code id="install-code">curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash</code>
+            <button type="button" class="copy-btn" id="install-copy" data-cursor="Копировать"><svg><use href="#i-copy"/></svg><span>Копировать</span></button>
+          </div>
+          <p class="install__note" id="install-note">Установщик сам поставит Python, Node.js, ripgrep и FFmpeg. После установки: <code class="ic">source ~/.bashrc</code></p>
+        </div>
+
+        <div class="install__steps">
+          <div class="istep glass" data-reveal>
+            <span class="istep__n">1</span>
+            <h3>Установите</h3>
+            <p>Одна команда в терминале. Нативно работает даже на Windows — без WSL.</p>
+          </div>
+          <div class="istep glass" data-reveal>
+            <span class="istep__n">2</span>
+            <h3>Настройте</h3>
+            <p>Мастер спросит модель, инструменты и мессенджеры.</p>
+            <code class="ic">hermes setup</code>
+          </div>
+          <div class="istep glass" data-reveal>
+            <span class="istep__n">3</span>
+            <h3>Общайтесь</h3>
+            <p>Терминал или любой мессенджер — дальше агент растёт сам.</p>
+            <code class="ic">hermes</code>
+          </div>
+        </div>
+
+        <p class="install__migrate" data-reveal>Переезжаете с OpenClaw? Память, навыки, персона SOUL.md и ключи переносятся автоматически: <code class="ic">hermes claw migrate</code></p>
+      </div>
+    </section>
+
+    <!-- ============ FAQ ============ -->
+    <section class="faq" id="faq" data-shape="5">
+      <div class="container faq__grid">
+        <div>
+          <p class="eyebrow"><span></span>Вопросы</p>
+          <h2 class="h2" data-split>Честные <em>ответы</em></h2>
+        </div>
+        <div class="faq__list">
+          <details class="qa" data-reveal>
+            <summary>Это бесплатно?<i></i></summary>
+            <div class="qa__a"><p>Да. Hermes Agent — open source под лицензией MIT. Вы платите только за модель у выбранного провайдера — или берёте подписку Nous Portal, где модели и инструменты уже включены.</p></div>
+          </details>
+          <details class="qa" data-reveal>
+            <summary>Где хранятся мои данные?<i></i></summary>
+            <div class="qa__a"><p>У вас. Память, навыки и история сессий лежат в <code class="ic">~/.hermes</code> на машине, где запущен агент, — ноутбук, VPS или облачная песочница.</p></div>
+          </details>
+          <details class="qa" data-reveal>
+            <summary>Чем Hermes отличается от обычного чат‑бота?<i></i></summary>
+            <div class="qa__a"><p>Замкнутым циклом обучения. Он не просто отвечает: выполняет задачи инструментами, сохраняет удачные решения как навыки, улучшает их со временем и строит модель того, кто вы.</p></div>
+          </details>
+          <details class="qa" data-reveal>
+            <summary>Безопасно ли давать агенту терминал?<i></i></summary>
+            <div class="qa__a"><p>Для этого есть подтверждение команд, привязка личных сообщений (DM pairing) и изоляция в контейнере — Docker, Modal, Daytona и другие бэкенды.</p></div>
+          </details>
+          <details class="qa" data-reveal>
+            <summary>Как остановить агента посреди задачи?<i></i></summary>
+            <div class="qa__a"><p>В терминале — <code class="ic">Ctrl+C</code> или просто новое сообщение. В мессенджерах — <code class="ic">/stop</code>. Агент прервётся и перестроит план.</p></div>
+          </details>
+          <details class="qa" data-reveal>
+            <summary>Я пользуюсь OpenClaw. Придётся всё настраивать заново?<i></i></summary>
+            <div class="qa__a"><p>Нет. <code class="ic">hermes claw migrate</code> перенесёт память, навыки, персону, настройки мессенджеров и ключи. Есть режим <code class="ic">--dry-run</code> для предпросмотра.</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FINAL CTA ============ -->
+    <section class="final" id="final" data-shape="5">
+      <div class="final__big" aria-hidden="true"><span>HERMES</span><span>HERMES</span></div>
+      <div class="container final__inner">
+        <svg class="final__logo" aria-hidden="true"><use href="#i-logo"/></svg>
+        <h2 class="final__title" data-split>Вырастите <em>своего</em> агента</h2>
+        <p class="lead">Он начнёт учиться с первой же задачи.</p>
+        <div class="final__btns">
+          <a class="btn btn--gold btn--lg" href="https://github.com/NousResearch/hermes-agent" target="_blank" rel="noopener" data-magnetic><svg class="btn__ico btn__ico--l"><use href="#i-github"/></svg><span>Открыть на GitHub</span></a>
+          <a class="btn btn--ghost btn--lg" href="https://hermes-agent.nousresearch.com/docs/" target="_blank" rel="noopener" data-magnetic><svg class="btn__ico btn__ico--l"><use href="#i-book"/></svg><span>Документация</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <svg><use href="#i-logo"/></svg>
+          <p>Hermes Agent<br/><span>Агент, который растёт вместе с тобой.</span></p>
+        </div>
+        <div class="footer__cols">
+          <div>
+            <b>Продукт</b>
+            <a href="#loop">Цикл обучения</a><a href="#memory">Память</a><a href="#gateway">Шлюз</a><a href="#schedule">Автоматизация</a>
+          </div>
+          <div>
+            <b>Ресурсы</b>
+            <a href="https://hermes-agent.nousresearch.com/docs/" target="_blank" rel="noopener">Документация</a>
+            <a href="https://github.com/NousResearch/hermes-agent" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://agentskills.io" target="_blank" rel="noopener">Skills Hub</a>
+            <a href="https://discord.gg/NousResearch" target="_blank" rel="noopener">Discord</a>
+          </div>
+          <div>
+            <b>Сайт</b>
+            <button type="button" data-palette-open>Палитра команд <kbd>⌘K</kbd></button>
+            <a href="#top">Наверх ↑</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>Неофициальный фан‑концепт. Hermes Agent — open‑source проект <a href="https://nousresearch.com" target="_blank" rel="noopener">Nous Research</a> (MIT). Все товарные знаки принадлежат их владельцам.</p>
+        <p class="mono">☤ 2026 · сделано с WebGL, GSAP и любовью к деталям</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ COMMAND PALETTE ============ -->
+  <div class="palette" id="palette" role="dialog" aria-modal="true" aria-label="Командная палитра" hidden>
+    <div class="palette__backdrop" data-palette-close></div>
+    <div class="palette__box glass">
+      <label class="palette__search">
+        <svg><use href="#i-search"/></svg>
+        <input id="palette-input" type="text" placeholder="Куда перейти или что сделать?" autocomplete="off" spellcheck="false" />
+        <kbd>esc</kbd>
+      </label>
+      <ul class="palette__list" id="palette-list" role="listbox"></ul>
+      <div class="palette__foot"><span><kbd>↑</kbd><kbd>↓</kbd> выбор</span><span><kbd>↵</kbd> открыть</span></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"><svg><use href="#i-check"/></svg><span>Скопировано</span></div>
+
+  <!-- ============ SCRIPTS ============ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
+  <script src="js/scene.js" defer></script>
+  <script src="js/app.js" defer></script>
+</body>
+</html>
