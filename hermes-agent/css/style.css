@@ -35,6 +35,7 @@
   --r-lg: 30px;
   --gutter: clamp(16px, 4vw, 56px);
   --section: clamp(96px, 14vw, 200px);
+  color-scheme: dark;
 }
 
 /* ---------- reset ---------- */
@@ -241,7 +242,7 @@ h1 em, .h2 em, .final__title em, .cap--end em {
 
 /* ---------- nav ---------- */
 .nav {
-  position: fixed; top: 16px; left: 50%; z-index: 100; width: min(1320px, 100% - 2 * var(--gutter));
+  position: fixed; top: calc(16px + env(safe-area-inset-top, 0px)); left: 50%; z-index: 100; width: min(1320px, 100% - 2 * var(--gutter));
   transform: translateX(-50%); display: flex; align-items: center; justify-content: space-between; gap: 20px;
   height: 62px; padding: 0 10px 0 20px; border-radius: 18px;
   background: rgba(8, 10, 18, .45); border: 1px solid var(--line);

@@ -31,12 +31,14 @@
     if (!(probe.getContext('webgl2') || probe.getContext('webgl'))) return fail('no webgl');
   } catch (e) { return fail(e); }
 
+  // jsDelivr "+esm" builds: every addon imports the same /npm/three@0.169.0/+esm, so no import map is needed
+  var CDN = 'https://cdn.jsdelivr.net/npm/three@0.169.0/';
   Promise.all([
-    import('three'),
-    import('three/addons/postprocessing/EffectComposer.js'),
-    import('three/addons/postprocessing/RenderPass.js'),
-    import('three/addons/postprocessing/UnrealBloomPass.js'),
-    import('three/addons/postprocessing/OutputPass.js')
+    import(CDN + '+esm'),
+    import(CDN + 'examples/jsm/postprocessing/EffectComposer.js/+esm'),
+    import(CDN + 'examples/jsm/postprocessing/RenderPass.js/+esm'),
+    import(CDN + 'examples/jsm/postprocessing/UnrealBloomPass.js/+esm'),
+    import(CDN + 'examples/jsm/postprocessing/OutputPass.js/+esm')
   ]).then(function (mods) {
     try { init(mods[0], mods[1].EffectComposer, mods[2].RenderPass, mods[3].UnrealBloomPass, mods[4].OutputPass); }
     catch (e) { fail(e); }

@@ -43,6 +43,12 @@
     fallbackCopy(text); done();
     return Promise.resolve();
   }
+  // real <a> activation: works inside sandboxed frames where window.open is refused
+  function openLink(url) {
+    var a = document.createElement('a');
+    a.href = url; a.target = '_blank'; a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); a.remove();
+  }
   function fallbackCopy(text) {
     var ta = document.createElement('textarea');
     ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
@@ -1348,8 +1354,8 @@
       { t: 'Вопросы и ответы', k: 'раздел', i: '?', go: '#faq' },
       { t: 'Скопировать команду установки', k: 'действие', i: ICON('copy'), run: function () { copyText(H.installCommand ? H.installCommand() : 'curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash'); } },
       { t: 'Запустить hermes в терминале', k: 'действие', i: ICON('terminal'), run: function () { scrollToTarget('#terminal'); if (term) setTimeout(function () { term.run('hermes'); term.focus(); }, 1500); } },
-      { t: 'Открыть GitHub', k: 'ссылка', i: ICON('github'), run: function () { window.open('https://github.com/NousResearch/hermes-agent', '_blank', 'noopener'); } },
-      { t: 'Открыть документацию', k: 'ссылка', i: ICON('book'), run: function () { window.open('https://hermes-agent.nousresearch.com/docs/', '_blank', 'noopener'); } },
+      { t: 'Открыть GitHub', k: 'ссылка', i: ICON('github'), run: function () { openLink('https://github.com/NousResearch/hermes-agent'); } },
+      { t: 'Открыть документацию', k: 'ссылка', i: ICON('book'), run: function () { openLink('https://hermes-agent.nousresearch.com/docs/'); } },
       { t: 'Импульс частиц ✦', k: 'пасхалка', i: ICON('spark'), run: function () { state.pulse = 1; } },
       { t: 'Наверх', k: 'навигация', i: '↑', go: 0 }
     ];
