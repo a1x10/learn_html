@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>STELLA — персональный AI-агент, который берёт рутину на себя</title>
+  <meta name="description" content="STELLA — личный AI-агент: звонит человеческим голосом, переписывается в WhatsApp, договаривается о цене, парсит сайты и управляет компьютером. Начните бесплатно.">
+  <meta name="theme-color" content="#04030a">
+  <meta property="og:title" content="STELLA — ваш личный AI-агент">
+  <meta property="og:description" content="Вы ставите задачу — STELLA занимается её выполнением.">
+  <!-- Если API на другом домене, укажите его адрес: <meta name="stella-api" content="https://api.example.com"> -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232de2ff'/%3E%3Cstop offset='.5' stop-color='%238b5cff'/%3E%3Cstop offset='1' stop-color='%23ff4fd8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath fill='url(%23g)' d='M12 1c.7 5.6 3.3 9.3 10 11-6.7 1.7-9.3 5.4-10 11-.7-5.6-3.3-9.3-10-11 6.7-1.7 9.3-5.4 10-11z'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;700;900&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body class="is-loading">
+
+<!-- ═══════════════════════ ИКОНКИ ═══════════════════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="holo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2de2ff"/><stop offset=".5" stop-color="#8b5cff"/><stop offset="1" stop-color="#ff4fd8"/>
+    </linearGradient>
+  </defs>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path fill="url(#holo)" stroke="none" d="M12 1c.7 5.6 3.3 9.3 10 11-6.7 1.7-9.3 5.4-10 11-.7-5.6-3.3-9.3-10-11 6.7-1.7 9.3-5.4 10-11z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4.2l2 2h8.8A1.5 1.5 0 0 1 21 9.5v8a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5z"/><path d="M3 11h18"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></symbol>
+  <symbol id="i-brain" viewBox="0 0 24 24"><path d="M12 5.5A3 3 0 0 0 6.2 6.6 3 3 0 0 0 4 9.5c0 .9.4 1.7 1 2.2a3 3 0 0 0 .6 4.6A3 3 0 0 0 12 18.5z"/><path d="M12 5.5a3 3 0 0 1 5.8 1.1A3 3 0 0 1 20 9.5c0 .9-.4 1.7-1 2.2a3 3 0 0 1-.6 4.6A3 3 0 0 1 12 18.5"/><path d="M12 5.5v13M9 9.5c1 0 2 .5 3 1.5M15 13c-1 0-2 .5-3 1.5"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3 5.5 5.5"/><circle cx="12" cy="12" r="6.6"/></symbol>
+  <symbol id="i-laptop" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M2 19h20"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 20h18M6 20v-6M10.5 20V9M15 20v-4M19.5 20V5"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 0 4 20.5zM20 5.5A1.5 1.5 0 0 0 18.5 4H13v15h5.5a1.5 1.5 0 0 1 1.5 1.5z"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><path d="M4 21V5.5A1.5 1.5 0 0 1 5.5 4h8A1.5 1.5 0 0 1 15 5.5V21M15 10h3.5a1.5 1.5 0 0 1 1.5 1.5V21M2 21h20M8 8h3M8 12h3M8 16h3"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 3.5h3l1.6 4.2-2.1 1.3a11 11 0 0 0 7.5 7.5l1.3-2.1 4.2 1.6v3a2 2 0 0 1-2 2A16.5 16.5 0 0 1 3 5.5a2 2 0 0 1 2-2z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 1 3.3 6.5L3.5 19.6l1.2-3.4A8 8 0 0 1 4 12z"/><path d="M9 10.5h6M9 13.5h4"/></symbol>
+  <symbol id="i-deal" viewBox="0 0 24 24"><path d="m11 6.5-3-1.8-5.5 4.3 5.3 8.2 1.8 1"/><path d="m13 6.5 3-1.8 5.5 4.3-5.3 8.2-4.3 2.6a1.6 1.6 0 0 1-2.1-.5"/><path d="M13 6.5 9.4 9.4a1.6 1.6 0 0 0 1.9 2.6l2.5-1.7 3.6 4.3"/></symbol>
+  <symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M3 14.5h18M9 9v11"/></symbol>
+  <symbol id="i-remote" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12.5" rx="1.5"/><path d="M8 20.5h8M12 16.5v4"/><path d="m10.5 7.5 5.2 2.2-2.2.8-.8 2.2z"/></symbol>
+  <symbol id="i-browser" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8.5h18M6 6.3h.01M8.5 6.3h.01M11 6.3h.01"/></symbol>
+  <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.5M20 4v4.5h-4.5M20 12a8 8 0 0 1-13.7 5.6L4 15.5M4 20v-4.5h4.5"/></symbol>
+  <symbol id="i-sim" viewBox="0 0 24 24"><path d="M7.5 3H14l5 5v11.5a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 6 19.5v-15A1.5 1.5 0 0 1 7.5 3z"/><rect x="9" y="11" width="6" height="6.5" rx="1"/><path d="M12 11v6.5M9 14.2h6"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18.5a4.5 4.5 0 0 1-.6-9A6 6 0 0 1 18 9a4.5 4.5 0 0 1-.5 9.5z"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx=".6"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H13z"/></symbol>
+  <symbol id="i-server" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.5h.01M7 16.5h.01M11 7.5h6M11 16.5h6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.1 7.5 9.5 4.3-1.4 7.5-4.9 7.5-9.5V6z"/><path d="m8.8 12 2.2 2.2 4.3-4.4"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6.5 3H14l4.5 4.5v12A1.5 1.5 0 0 1 17 21H6.5A1.5 1.5 0 0 1 5 19.5v-15A1.5 1.5 0 0 1 6.5 3z"/><path d="M14 3v4.5h4.5M8.5 12h7M8.5 15.5h7"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.4-4.4"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></symbol>
+</svg>
+
+<!-- ═══════════════════════ ПРЕЛОАДЕР ═══════════════════════ -->
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="preloader__core">
+    <div class="preloader__ring"></div><div class="preloader__ring"></div><div class="preloader__ring"></div>
+    <svg class="preloader__star"><use href="#i-spark"/></svg>
+  </div>
+  <div class="preloader__name">STELLA</div>
+  <div class="preloader__status"><span data-preload-text>Инициализация нейроядра</span> <b data-preload-pct>0</b>%</div>
+  <div class="preloader__bar"><i data-preload-bar></i></div>
+</div>
+
+<canvas id="webgl" aria-hidden="true"></canvas>
+<div class="bg-fallback" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="scroll-progress" aria-hidden="true"><i></i></div>
+<div class="cursor" aria-hidden="true"><div class="cursor__dot"></div><div class="cursor__ring"><span></span></div></div>
+
+<!-- ═══════════════════════ НАВИГАЦИЯ ═══════════════════════ -->
+<header class="nav" id="nav">
+  <a class="nav__logo" href="#top" aria-label="STELLA — на главную">
+    <svg><use href="#i-spark"/></svg><span>STELLA</span>
+  </a>
+  <nav class="nav__links" aria-label="Разделы">
+    <a href="#agent">Возможности</a>
+    <a href="#replace">Что заменяет</a>
+    <a href="#scenarios">Сценарии</a>
+    <a href="#pricing">Тарифы</a>
+  </nav>
+  <button class="btn btn--ghost btn--sm nav__cta" data-register data-magnetic>Создать агента</button>
+  <button class="nav__burger" aria-label="Меню" aria-expanded="false"><svg><use href="#i-menu"/></svg></button>
+</header>
+<div class="mobile-menu" id="mobileMenu" hidden>
+  <a href="#agent">Возможности</a>
+  <a href="#replace">Что заменяет</a>
+  <a href="#features">Делегируйте рутину</a>
+  <a href="#scenarios">Сценарии</a>
+  <a href="#pricing">Тарифы</a>
+  <button class="btn btn--primary btn--block" data-register>Создать агента</button>
+</div>
+
+<main id="top">
+
+  <!-- ═══════════════════════ HERO ═══════════════════════ -->
+  <section class="hero" id="hero" data-scene="hero">
+    <div class="hero__hud" aria-hidden="true">
+      <div class="hud-chip" style="--x:-31vw;--y:-27vh;--z:80px"><span class="hud-chip__dot"></span><svg><use href="#i-phone"/></svg>Звонит человеческим голосом</div>
+      <div class="hud-chip" style="--x:29vw;--y:-30vh;--z:40px"><span class="hud-chip__dot"></span><svg><use href="#i-chat"/></svg>Переписывается в WhatsApp</div>
+      <div class="hud-chip" style="--x:-34vw;--y:21vh;--z:30px"><span class="hud-chip__dot"></span><svg><use href="#i-deal"/></svg>Договаривается о цене</div>
+      <div class="hud-chip" style="--x:33vw;--y:15vh;--z:90px"><span class="hud-chip__dot"></span><svg><use href="#i-table"/></svg>Парсит сайты</div>
+      <div class="hud-chip" style="--x:27vw;--y:33vh;--z:50px"><span class="hud-chip__dot"></span><svg><use href="#i-remote"/></svg>Управляет вашим ПК</div>
+    </div>
+
+    <div class="hero__content">
+      <div class="badge" data-hero-in><span class="badge__pulse"></span>Создание вашего личного агента</div>
+      <h1 class="hero__question" data-hero-in>Вам нужен личный AI-агент?</h1>
+      <div class="hero__title" aria-label="STELLA" data-hero-title>
+<span data-l="S"><i>S</i></span><span data-l="T"><i>T</i></span><span data-l="E"><i>E</i></span><span data-l="L"><i>L</i></span><span data-l="L"><i>L</i></span><span data-l="A"><i>A</i></span>
+      </div>
+      <p class="hero__lead" data-hero-in>
+        <b>Персональный AI-агент, который берёт вашу рутину на себя.</b>
+        Не просто чат с искусственным интеллектом — STELLA звонит, пишет, договаривается и делает работу вместо вас.
+      </p>
+      <div class="hero__actions" data-hero-in>
+        <button class="btn btn--primary btn--xl" data-register data-magnetic>
+          <span>Попробовать STELLA</span><svg><use href="#i-arrow"/></svg>
+        </button>
+        <a class="btn btn--glass btn--xl" href="#pricing" data-magnetic>Выбрать тариф</a>
+      </div>
+      <ul class="hero__stats" data-hero-in>
+        <li><b>200+</b> AI-моделей</li>
+        <li><b>24/7</b> без выходных</li>
+        <li><b>$0</b> для старта</li>
+      </ul>
+    </div>
+
+    <a class="hero__scroll" href="#agent" aria-label="Листать вниз"><span></span>Листайте</a>
+  </section>
+
+  <!-- ═══════════════════════ БЕГУЩАЯ СТРОКА ═══════════════════════ -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      <span>Звонит голосом</span><i>✦</i><span>Пишет в WhatsApp</span><i>✦</i><span>Договаривается о цене</span><i>✦</i><span>Парсит сайты</span><i>✦</i><span>Управляет компьютером</span><i>✦</i><span>Открывает сайты</span><i>✦</i><span>Делает рутину за вас</span><i>✦</i>
+      <span>Звонит голосом</span><i>✦</i><span>Пишет в WhatsApp</span><i>✦</i><span>Договаривается о цене</span><i>✦</i><span>Парсит сайты</span><i>✦</i><span>Управляет компьютером</span><i>✦</i><span>Открывает сайты</span><i>✦</i><span>Делает рутину за вас</span><i>✦</i>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ НЕ ПРОСТО ПОМОЩНИК ═══════════════════════ -->
+  <section class="section agent" id="agent" data-scene="agent">
+    <div class="container agent__grid">
+      <div class="agent__stage">
+        <div class="phone-tabs" role="tablist" aria-label="Демонстрация">
+          <button role="tab" class="is-active" data-mode="chat"><svg><use href="#i-chat"/></svg>WhatsApp</button>
+          <button role="tab" data-mode="call"><svg><use href="#i-phone"/></svg>Звонок</button>
+          <button role="tab" data-mode="parse"><svg><use href="#i-table"/></svg>Парсинг</button>
+          <button role="tab" data-mode="pc"><svg><use href="#i-remote"/></svg>Ваш ПК</button>
+        </div>
+
+        <div class="phone3d" data-phone>
+          <div class="phone3d__body" data-phone-body>
+            <div class="phone3d__layers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="phone3d__back" aria-hidden="true"><svg><use href="#i-spark"/></svg><span>STELLA</span><div class="phone3d__cam"><i></i><i></i><i></i></div></div>
+            <div class="phone3d__front">
+              <div class="phone3d__screen">
+                <div class="phone3d__island"></div>
+                <div class="pstatus"><span>9:41</span><span class="pstatus__icons"><i></i><i></i><i></i></span></div>
+
+                <!-- WhatsApp-переговоры -->
+                <div class="pscreen pscreen--chat is-active" data-screen="chat">
+                  <div class="wa-head">
+                    <div class="wa-head__ava">А</div>
+                    <div><b>Алексей · диван</b><small data-wa-status>в сети</small></div>
+                    <span class="wa-head__agent">агент</span>
+                  </div>
+                  <div class="wa-body" data-wa-body></div>
+                  <div class="wa-input"><span>STELLA ведёт переписку…</span><i><svg><use href="#i-mic"/></svg></i></div>
+                </div>
+
+                <!-- Звонок -->
+                <div class="pscreen pscreen--call" data-screen="call">
+                  <div class="call">
+                    <small class="call__label">STELLA звонит вместо вас</small>
+                    <div class="call__ava"><span></span><span></span><span></span><b>У</b></div>
+                    <b class="call__name">Стоматология «Улыбка»</b>
+                    <small class="call__timer" data-call-timer>00:00</small>
+                    <div class="call__wave" data-call-wave></div>
+                    <div class="call__lines" data-call-lines></div>
+                  </div>
+                </div>
+
+                <!-- Парсинг -->
+                <div class="pscreen pscreen--parse" data-screen="parse">
+                  <div class="parse">
+                    <div class="parse__head"><svg><use href="#i-table"/></svg><div><b>Сбор цен конкурентов</b><small data-parse-status>Обходим сайты…</small></div></div>
+                    <div class="parse__bar"><i data-parse-bar></i></div>
+                    <div class="parse__table" data-parse-table>
+                      <div class="parse__row parse__row--head"><span>Магазин</span><span>Цена</span><span>Наличие</span></div>
+                    </div>
+                    <div class="parse__file" data-parse-file><svg><use href="#i-doc"/></svg>prices.xlsx — готово</div>
+                  </div>
+                </div>
+
+                <!-- Управление ПК -->
+                <div class="pscreen pscreen--pc" data-screen="pc">
+                  <div class="pc">
+                    <div class="pc__head"><span class="pc__live"></span>Удалённо: «Рабочий ПК»</div>
+                    <div class="pc__desk">
+                      <div class="pc__win" data-pc-win>
+                        <div class="pc__bar"><i></i><i></i><i></i><span data-pc-url>stella://agent</span></div>
+                        <div class="pc__content" data-pc-content></div>
+                      </div>
+                      <div class="pc__cursor" data-pc-cursor></div>
+                    </div>
+                    <div class="pc__log" data-pc-log></div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="phone3d__shadow" aria-hidden="true"></div>
+          <div class="phone3d__toast" data-phone-toast></div>
+        </div>
+      </div>
+
+      <div class="agent__copy">
+        <p class="eyebrow" data-reveal>Это не просто помощник</p>
+        <h2 class="h2" data-split>Агент, который <em>действует</em> в реальном мире</h2>
+        <p class="lead" data-reveal>
+          Подключите виртуальную SIM-карту — и у STELLA появится собственный номер.
+          Она звонит человеческим голосом, общается с людьми через WhatsApp, договаривается о цене,
+          собирает данные с сайтов и удалённо управляет вашим компьютером. Вашу рутину она выполняет полностью — от задачи до результата.
+        </p>
+        <ul class="caps" data-caps>
+          <li data-mode-link="call"><span class="caps__ico"><svg><use href="#i-sim"/></svg></span><div><b>Виртуальная SIM-карта</b><small>Свой номер для агента — звонки и сообщения от его имени</small></div></li>
+          <li data-mode-link="call"><span class="caps__ico"><svg><use href="#i-mic"/></svg></span><div><b>Звонки человеческим голосом</b><small>Живая интонация, паузы, понимает ответы собеседника</small></div></li>
+          <li data-mode-link="chat"><span class="caps__ico"><svg><use href="#i-chat"/></svg></span><div><b>Общение через WhatsApp</b><small>Ведёт переписку с людьми по номеру, отвечает 24/7</small></div></li>
+          <li data-mode-link="chat"><span class="caps__ico"><svg><use href="#i-deal"/></svg></span><div><b>Договаривается о цене</b><small>Торгуется, сравнивает предложения и фиксирует условия</small></div></li>
+          <li data-mode-link="parse"><span class="caps__ico"><svg><use href="#i-table"/></svg></span><div><b>Парсинг сайтов</b><small>Цены, контакты, отзывы — сразу в готовую таблицу</small></div></li>
+          <li data-mode-link="pc"><span class="caps__ico"><svg><use href="#i-remote"/></svg></span><div><b>Управление компьютером удалённо</b><small>Открывает программы и сайты, заполняет формы, нажимает кнопки</small></div></li>
+          <li data-mode-link="pc"><span class="caps__ico"><svg><use href="#i-repeat"/></svg></span><div><b>Ваша рутина — полностью</b><small>Может делать всё, что вы делаете руками, только быстрее</small></div></li>
+        </ul>
+        <button class="btn btn--primary btn--lg" data-register data-magnetic><span>Создать своего агента</span><svg><use href="#i-arrow"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ ЧТО ЗАМЕНЯЕТ ═══════════════════════ -->
+  <section class="section replace" id="replace" data-scene="replace">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>Что заменяет STELLA</p>
+        <h2 class="h2" data-split>Один агент вместо <em>целой команды</em></h2>
+        <p class="lead" data-reveal>Наведите на карточку или просто смотрите — STELLA забирает работу каждого из них.</p>
+      </div>
+
+      <div class="flips" data-flips>
+        <article class="flip" tabindex="0">
+          <div class="flip__inner">
+            <div class="flip__face flip__front"><span class="flip__ico"><svg><use href="#i-user"/></svg></span><b>Личный ассистент</b><small>Звонки, запись, напоминания, бронирования</small><s>≈ $700 / мес</s></div>
+            <div class="flip__face flip__back"><span class="flip__ok"><svg><use href="#i-check"/></svg></span><b>Теперь это делает STELLA</b><small>Запишет к врачу, забронирует столик, напомнит о встрече</small></div>
+          </div>
+        </article>
+        <article class="flip" tabindex="0">
+          <div class="flip__inner">
+            <div class="flip__face flip__front"><span class="flip__ico"><svg><use href="#i-phone"/></svg></span><b>Оператор колл-центра</b><small>Входящие и исходящие звонки</small><s>≈ $600 / мес</s></div>
+            <div class="flip__face flip__back"><span class="flip__ok"><svg><use href="#i-check"/></svg></span><b>Теперь это делает STELLA</b><small>Звонит человеческим голосом с виртуального номера</small></div>
+          </div>
+        </article>
+        <article class="flip" tabindex="0">
+          <div class="flip__inner">
+            <div class="flip__face flip__front"><span class="flip__ico"><svg><use href="#i-chat"/></svg></span><b>Менеджер в мессенджерах</b><small>Ответы клиентам в WhatsApp</small><s>≈ $500 / мес</s></div>
+            <div class="flip__face flip__back"><span class="flip__ok"><svg><use href="#i-check"/></svg></span><b>Теперь это делает STELLA</b><small>Отвечает 24/7, без выходных и пропущенных сообщений</small></div>
+          </div>
+        </article>
+        <article class="flip" tabindex="0">
+          <div class="flip__inner">
+            <div class="flip__face flip__front"><span class="flip__ico"><svg><use href="#i-deal"/></svg></span><b>Закупщик-переговорщик</b><small>Торг, сравнение цен, договорённости</small><s>≈ $900 / мес</s></div>
+            <div class="flip__face flip__back"><span class="flip__ok"><svg><use href="#i-check"/></svg></span><b>Теперь это делает STELLA</b><small>Торгуется за вас и фиксирует лучшую цену</small></div>
+          </div>
+        </article>
+        <article class="flip" tabindex="0">
+          <div class="flip__inner">
+            <div class="flip__face flip__front"><span class="flip__ico"><svg><use href="#i-table"/></svg></span><b>Фрилансер-парсер</b><small>Сбор данных с сайтов в таблицы</small><s>≈ $300 / проект</s></div>
+            <div class="flip__face flip__back"><span class="flip__ok"><svg><use href="#i-check"/></svg></span><b>Теперь это делает STELLA</b><small>Обходит сайты и собирает данные по расписанию</small></div>
+          </div>
+        </article>
+        <article class="flip" tabindex="0">
+          <div class="flip__inner">
+            <div class="flip__face flip__front"><span class="flip__ico"><svg><use href="#i-chart"/></svg></span><b>Аналитик и копирайтер</b><small>Отчёты, документы, исследования</small><s>≈ $1 000 / мес</s></div>
+            <div class="flip__face flip__back"><span class="flip__ok"><svg><use href="#i-check"/></svg></span><b>Теперь это делает STELLA</b><small>Анализирует данные и готовит готовые документы</small></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="total" data-reveal>
+        <div class="total__old"><small>Команда специалистов</small><b><s>≈ $4 000+ / мес</s></b></div>
+        <div class="total__arrow"><svg><use href="#i-arrow"/></svg></div>
+        <div class="total__new"><small>Ваш агент STELLA</small><b>от <span class="holo-text">$0</span></b></div>
+      </div>
+      <p class="footnote">* Ориентировочная стоимость найма, зависит от региона и объёма задач.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ ДЕЛЕГИРУЙТЕ РУТИНУ ═══════════════════════ -->
+  <section class="section features" id="features" data-scene="features">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>Делегируйте рутину AI</p>
+        <h2 class="h2" data-split>Вместо часов однотипной работы — <em>одна задача</em> для STELLA</h2>
+        <p class="lead" data-reveal>Вместо того чтобы часами выполнять однотипные действия, просто поручите задачу STELLA.</p>
+      </div>
+      <div class="cards">
+        <article class="card" data-tilt><div class="card__glare"></div><span class="cube-ico"><svg><use href="#i-folder"/></svg></span><h3>Работа с файлами</h3><p>Находит, анализирует, сортирует и обрабатывает необходимые файлы.</p></article>
+        <article class="card" data-tilt><div class="card__glare"></div><span class="cube-ico"><svg><use href="#i-globe"/></svg></span><h3>Работа с интернетом</h3><p>Помогает находить информацию, анализировать источники и выполнять задачи в интернете.</p></article>
+        <article class="card" data-tilt><div class="card__glare"></div><span class="cube-ico"><svg><use href="#i-brain"/></svg></span><h3>Работа с AI-моделями</h3><p>Использует доступные AI-модели для решения разных типов задач.</p></article>
+        <article class="card" data-tilt><div class="card__glare"></div><span class="cube-ico"><svg><use href="#i-gear"/></svg></span><h3>Автоматизация</h3><p>Выполняет последовательности действий вместо вас.</p></article>
+        <article class="card" data-tilt><div class="card__glare"></div><span class="cube-ico"><svg><use href="#i-laptop"/></svg></span><h3>Работа с компьютером</h3><p>Может взаимодействовать с инструментами и окружением, необходимыми для выполнения поставленной задачи.</p></article>
+        <article class="card" data-tilt><div class="card__glare"></div><span class="cube-ico"><svg><use href="#i-chart"/></svg></span><h3>Анализ</h3><p>Анализирует документы, данные, тексты и другую информацию и превращает её в понятный результат.</p></article>
+        <article class="card" data-tilt><div class="card__glare"></div><span class="cube-ico"><svg><use href="#i-code"/></svg></span><h3>Для разработчиков</h3><p>Помогает писать и анализировать код, работать с проектами и выполнять технические задачи.</p></article>
+        <article class="card" data-tilt><div class="card__glare"></div><span class="cube-ico"><svg><use href="#i-book"/></svg></span><h3>Для преподавателей</h3><p>Помогает создавать материалы, документы, планы, задания и автоматизировать рутинную работу.</p></article>
+        <article class="card" data-tilt><div class="card__glare"></div><span class="cube-ico"><svg><use href="#i-building"/></svg></span><h3>Для бизнеса</h3><p>Помогает автоматизировать повторяющиеся процессы и выполнять рабочие задачи.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ ЧТО ДАСТ ═══════════════════════ -->
+  <section class="section benefits" id="benefits" data-scene="benefits">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>Что даст вам STELLA</p>
+        <h2 class="h2" data-split>Время, которое снова <em>принадлежит вам</em></h2>
+      </div>
+      <div class="stats">
+        <div class="stat" data-tilt><div class="card__glare"></div><b><span data-count="24">0</span>/7</b><span>работает, пока вы спите</span></div>
+        <div class="stat" data-tilt><div class="card__glare"></div><b><span data-count="200">0</span>+</b><span>AI-моделей в одном агенте</span></div>
+        <div class="stat" data-tilt><div class="card__glare"></div><b><span data-count="1000">0</span>+</b><span>задач и сценариев</span></div>
+        <div class="stat" data-tilt><div class="card__glare"></div><b>$<span data-count="0">0</span></b><span>чтобы начать прямо сейчас</span></div>
+      </div>
+      <div class="gains">
+        <div class="gain" data-reveal><svg><use href="#i-bolt"/></svg><div><b>Скорость</b><span>Задачи, на которые уходил день, делаются, пока вы пьёте кофе.</span></div></div>
+        <div class="gain" data-reveal><svg><use href="#i-shield"/></svg><div><b>Контроль</b><span>Вы ставите цель и видите каждый шаг агента и итоговый результат.</span></div></div>
+        <div class="gain" data-reveal><svg><use href="#i-spark"/></svg><div><b>Свобода</b><span>Рутина уходит агенту — у вас остаются важные решения и жизнь.</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ СЦЕНАРИИ (3D-карусель) ═══════════════════════ -->
+  <section class="section scenarios" id="scenarios" data-scene="scenarios">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>Сценарии</p>
+        <h2 class="h2" data-split>Один агент. <em>Тысячи задач.</em></h2>
+        <p class="lead" data-reveal>STELLA может использоваться для самых разных сценариев. Потяните карусель.</p>
+      </div>
+    </div>
+    <div class="carousel" data-carousel>
+      <div class="carousel__ring" data-carousel-ring>
+        <article class="scard"><span class="cube-ico"><svg><use href="#i-code"/></svg></span><h3>Разработка</h3><ul><li>написание и анализ кода</li><li>работа с проектами</li><li>поиск ошибок</li><li>автоматизация задач</li></ul></article>
+        <article class="scard"><span class="cube-ico"><svg><use href="#i-doc"/></svg></span><h3>Работа</h3><ul><li>документы</li><li>отчёты</li><li>исследования</li><li>анализ данных</li><li>обработка информации</li></ul></article>
+        <article class="scard"><span class="cube-ico"><svg><use href="#i-book"/></svg></span><h3>Образование</h3><ul><li>подготовка уроков</li><li>создание заданий</li><li>работа с учебными материалами</li><li>анализ документов</li></ul></article>
+        <article class="scard"><span class="cube-ico"><svg><use href="#i-spark"/></svg></span><h3>Личная продуктивность</h3><ul><li>организация информации</li><li>работа с файлами</li><li>планирование</li><li>автоматизация повторяющихся действий</li></ul></article>
+        <article class="scard"><span class="cube-ico"><svg><use href="#i-phone"/></svg></span><h3>Звонки и WhatsApp</h3><ul><li>запись к врачу и в сервисы</li><li>ответы клиентам 24/7</li><li>напоминания и подтверждения</li><li>переговоры о цене</li></ul></article>
+        <article class="scard"><span class="cube-ico"><svg><use href="#i-globe"/></svg></span><h3>Интернет и данные</h3><ul><li>парсинг сайтов</li><li>мониторинг цен конкурентов</li><li>поиск контактов</li><li>заполнение форм и заказы</li></ul></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ ВАШ ПЕРСОНАЛЬНЫЙ АГЕНТ ═══════════════════════ -->
+  <section class="section how" id="how" data-scene="how">
+    <div class="container how__grid">
+      <div class="how__copy">
+        <p class="eyebrow" data-reveal>Ваш персональный агент</p>
+        <h2 class="h2" data-split>Не «спросил → получил текст», а <em>задача → результат</em></h2>
+        <p class="lead" data-reveal>STELLA работает не только по принципу «спросил → получил текст». Вы можете поставить ей задачу — она разбивает её на этапы и помогает довести до результата.</p>
+        <div class="mantra">
+          <p data-reveal>Меньше ручной работы.</p>
+          <p data-reveal>Меньше переключений между приложениями.</p>
+          <p data-reveal><span class="holo-text">Больше времени на действительно важные задачи.</span></p>
+        </div>
+      </div>
+      <div class="console" data-console>
+        <div class="console__bar"><i></i><i></i><i></i><span>stella — агент</span></div>
+        <div class="console__task">
+          <small>Задача</small>
+          <p>«Найди информацию, проанализируй её, собери результаты и подготовь готовый документ»</p>
+        </div>
+        <ol class="console__steps">
+          <li data-cstep><span class="console__n">1</span><div><b>Планирование</b><small>Разбиваю задачу на этапы</small></div><em>✓</em></li>
+          <li data-cstep><span class="console__n">2</span><div><b>Поиск</b><small>Открыто 14 источников</small></div><em>✓</em></li>
+          <li data-cstep><span class="console__n">3</span><div><b>Анализ</b><small>Выделено 37 ключевых фактов</small></div><em>✓</em></li>
+          <li data-cstep><span class="console__n">4</span><div><b>Сборка</b><small>Структура, выводы, таблицы</small></div><em>✓</em></li>
+          <li data-cstep><span class="console__n">5</span><div><b>Готово</b><small>Отчёт.docx отправлен вам</small></div><em>✓</em></li>
+        </ol>
+        <div class="console__bar2"><i data-console-bar></i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ ПОЧЕМУ ЧАТА НЕДОСТАТОЧНО ═══════════════════════ -->
+  <section class="section why" id="why" data-scene="why">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>Почему просто чат недостаточен?</p>
+        <h2 class="h2" data-split>Обычный AI отвечает. <em>STELLA делает.</em></h2>
+      </div>
+      <div class="versus">
+        <div class="vs-card vs-card--old" data-tilt>
+          <div class="card__glare"></div>
+          <small>Обычный AI-чат</small>
+          <div class="bubble bubble--user">Запиши меня к стоматологу на четверг</div>
+          <div class="bubble bubble--bot">Вот 6 шагов, как это сделать: 1. Найдите клинику… 2. Позвоните по номеру… 3. Уточните время…</div>
+          <p class="vs-card__res">Вы получаете <b>инструкцию</b> — и делаете всё сами.</p>
+        </div>
+        <div class="versus__vs"><span>VS</span></div>
+        <div class="vs-card vs-card--new" data-tilt>
+          <div class="card__glare"></div>
+          <small>STELLA</small>
+          <div class="bubble bubble--user">Запиши меня к стоматологу на четверг</div>
+          <div class="bubble bubble--stella"><svg><use href="#i-check"/></svg> Готово. Позвонила в клинику, вы записаны на четверг, 15:30. Напомню за час.</div>
+          <p class="vs-card__res">Вы ставите цель: <b>«Сделай это за меня»</b> — и получаете результат.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ ТАРИФЫ ═══════════════════════ -->
+  <section class="section pricing" id="pricing" data-scene="pricing">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>Тарифы</p>
+        <h2 class="h2" data-split>Выберите свой <em>уровень STELLA</em></h2>
+        <p class="lead" data-reveal>От бесплатного доступа к полноценному AI-агенту с расширенными возможностями.</p>
+      </div>
+      <div class="plans">
+        <article class="plan" data-tilt>
+          <div class="card__glare"></div>
+          <header><h3>FREE</h3><p>Навсегда бесплатно</p></header>
+          <div class="plan__price"><b>$0</b></div>
+          <ul>
+            <li>Бесплатные AI-модели</li>
+            <li>Стандартные лимиты</li>
+            <li>$0 ежемесячных кредитов</li>
+            <li>Базовые возможности STELLA</li>
+          </ul>
+          <button class="btn btn--glass btn--block" data-register data-plan="free">Попробовать STELLA</button>
+        </article>
+        <article class="plan" data-tilt>
+          <div class="card__glare"></div>
+          <header><h3>PLUS</h3><p>Для регулярного использования</p></header>
+          <div class="plan__price"><b>$25</b><span>/ месяц</span></div>
+          <ul>
+            <li>$27.50 ежемесячных кредитов</li>
+            <li>До $10 переноса неиспользованных кредитов</li>
+            <li>200+ AI-моделей</li>
+            <li>Использование облачных инструментов</li>
+            <li>Высокие лимиты</li>
+            <li>Расширенные возможности агента</li>
+            <li>Возможность использования выделенного сервера для агента</li>
+          </ul>
+          <button class="btn btn--glass btn--block" data-register data-plan="plus">Получить STELLA PLUS</button>
+        </article>
+        <article class="plan plan--pro" data-tilt>
+          <div class="card__glare"></div>
+          <span class="plan__tag">10% BONUS</span>
+          <header><h3>PRO</h3><p>Для интенсивной работы и сложных задач</p></header>
+          <div class="plan__price"><b>$105</b><span>/ месяц</span></div>
+          <ul>
+            <li>$115.50 ежемесячных кредитов</li>
+            <li>До $50 переноса неиспользованных кредитов</li>
+            <li>200+ AI-моделей</li>
+            <li>Использование облачных инструментов</li>
+            <li>Высокие лимиты</li>
+            <li>Расширенные возможности агента</li>
+            <li>Выделенный сервер для STELLA</li>
+          </ul>
+          <button class="btn btn--primary btn--block" data-register data-plan="pro">Запустить STELLA PRO</button>
+        </article>
+        <article class="plan plan--ultra" data-tilt>
+          <div class="card__glare"></div>
+          <span class="plan__tag plan__tag--gold">10% BONUS</span>
+          <header><h3>ULTRA</h3><p>Для профессионального и постоянного использования</p></header>
+          <div class="plan__price"><b>$205</b><span>/ месяц</span></div>
+          <ul>
+            <li>$225.50 ежемесячных кредитов</li>
+            <li>До $100 переноса неиспользованных кредитов</li>
+            <li>200+ AI-моделей</li>
+            <li>Использование облачных инструментов</li>
+            <li>Высокие лимиты</li>
+            <li>Максимальные возможности STELLA</li>
+            <li>Выделенный сервер для агента</li>
+            <li>Максимальный уровень ресурсов</li>
+          </ul>
+          <button class="btn btn--gold btn--block" data-register data-plan="ultra">Unleash STELLA</button>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ ГДЕ РАБОТАЕТ (орбита) ═══════════════════════ -->
+  <section class="section where" id="where" data-scene="where">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>Окружение</p>
+        <h2 class="h2" data-split>STELLA работает там, где <em>вам нужна помощь</em></h2>
+      </div>
+      <div class="orbit" data-orbit>
+        <div class="orbit__plane">
+          <div class="orbit__ring orbit__ring--1"></div>
+          <div class="orbit__ring orbit__ring--2"></div>
+          <div class="orbit__spin">
+            <div class="orbit__node" style="--i:0"><div class="orbit__face"><svg><use href="#i-laptop"/></svg><b>Компьютер</b></div></div>
+            <div class="orbit__node" style="--i:1"><div class="orbit__face"><svg><use href="#i-cloud"/></svg><b>Облако</b></div></div>
+            <div class="orbit__node" style="--i:2"><div class="orbit__face"><svg><use href="#i-cpu"/></svg><b>AI</b></div></div>
+            <div class="orbit__node" style="--i:3"><div class="orbit__face"><svg><use href="#i-bolt"/></svg><b>Автоматизация</b></div></div>
+            <div class="orbit__node" style="--i:4"><div class="orbit__face"><svg><use href="#i-server"/></svg><b>Сервер</b></div></div>
+          </div>
+        </div>
+        <div class="orbit__center"><svg><use href="#i-spark"/></svg><span>STELLA</span></div>
+      </div>
+      <div class="envs">
+        <div class="env" data-reveal><svg><use href="#i-laptop"/></svg><b>Компьютер</b><span>Работа с файлами, приложениями и задачами.</span></div>
+        <div class="env" data-reveal><svg><use href="#i-cloud"/></svg><b>Облако</b><span>Использование облачных инструментов и вычислительных ресурсов.</span></div>
+        <div class="env" data-reveal><svg><use href="#i-cpu"/></svg><b>AI</b><span>Доступ к множеству различных AI-моделей.</span></div>
+        <div class="env" data-reveal><svg><use href="#i-bolt"/></svg><b>Автоматизация</b><span>Выполнение многошаговых процессов.</span></div>
+        <div class="env" data-reveal><svg><use href="#i-server"/></svg><b>Выделенный сервер</b><span>Отдельное окружение для работы AI-агента на подходящих тарифах.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ НАЧНИТЕ С FREE ═══════════════════════ -->
+  <section class="section start" id="start" data-scene="start">
+    <div class="container start__inner">
+      <p class="eyebrow" data-reveal>Начните с FREE</p>
+      <h2 class="start__title" data-split>Передайте рутину <em>своему агенту</em></h2>
+      <p class="lead" data-reveal>Попробуйте STELLA бесплатно и решите, насколько много рутины вы хотите передать своему AI-агенту. <b>$0 для старта.</b> Когда возможностей станет недостаточно — переходите на расширенный тариф.</p>
+      <button class="btn btn--primary btn--xxl" data-register data-plan="free" data-magnetic><span>Начать бесплатно</span><svg><use href="#i-arrow"/></svg></button>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <a class="nav__logo" href="#top"><svg><use href="#i-spark"/></svg><span>STELLA</span></a>
+      <p>Ваш личный AI-агент для работы, автоматизации и повседневных задач.</p>
+    </div>
+    <div class="footer__links">
+      <a href="#agent">Возможности</a>
+      <a href="#pricing">Тарифы</a>
+      <button type="button" class="link-btn" data-open-policy>Политика конфиденциальности</button>
+    </div>
+    <p class="footer__copy">© <span data-year>2026</span> STELLA. Все права защищены.</p>
+  </div>
+</footer>
+
+<!-- ═══════════════════════ РЕГИСТРАЦИЯ ═══════════════════════ -->
+<div class="reg" id="reg" role="dialog" aria-modal="true" aria-labelledby="regTitle" hidden data-lenis-prevent>
+  <div class="reg__backdrop" data-reg-close></div>
+  <div class="reg__panel" data-reg-panel>
+    <header class="reg__head">
+      <div class="reg__brand"><svg><use href="#i-spark"/></svg><div><b>STELLA</b><small>Создание вашего личного агента</small></div></div>
+      <div class="reg__count">Шаг <b data-reg-num>1</b> из <span data-reg-total>9</span></div>
+      <button class="reg__close" type="button" data-reg-close aria-label="Закрыть"><svg><use href="#i-close"/></svg></button>
+      <div class="reg__progress"><i data-reg-bar></i></div>
+    </header>
+
+    <div class="reg__demo" data-demo-banner hidden>Демо-режим: сервер не подключён, коды и заявки никуда не отправляются. Запустите <code>npm start</code>.</div>
+
+    <div class="reg__stage" data-reg-stage>
+
+      <!-- 1. Знакомство -->
+      <section class="reg-step" data-step="profile" hidden>
+        <p class="reg-step__kicker">Знакомство</p>
+        <h3 class="reg-step__title" id="regTitle">Давайте познакомимся</h3>
+        <p class="reg-step__text">Как к вам обращаться? Ваш агент будет знать вас по имени.</p>
+        <form class="reg-form" data-form="profile" novalidate>
+          <div class="field-row">
+            <label class="field"><span>Имя</span><input name="firstName" autocomplete="given-name" maxlength="50" placeholder="Анна" required><em class="field__err" data-err="firstName"></em></label>
+            <label class="field"><span>Фамилия</span><input name="lastName" autocomplete="family-name" maxlength="50" placeholder="Смирнова" required><em class="field__err" data-err="lastName"></em></label>
+          </div>
+          <fieldset class="field">
+            <legend>Откуда вы о нас узнали?</legend>
+            <div class="chips">
+              <label class="chip"><input type="radio" name="source" value="friends"><span><svg><use href="#i-user"/></svg>От друзей / коллег</span></label>
+              <label class="chip"><input type="radio" name="source" value="portal"><span><svg><use href="#i-globe"/></svg>Через электронный портал</span></label>
+              <label class="chip"><input type="radio" name="source" value="tiktok"><span><svg><use href="#i-bolt"/></svg>TikTok</span></label>
+              <label class="chip"><input type="radio" name="source" value="instagram"><span><svg><use href="#i-spark"/></svg>Instagram</span></label>
+              <label class="chip"><input type="radio" name="source" value="app_ads"><span><svg><use href="#i-phone"/></svg>Реклама в приложении</span></label>
+            </div>
+            <em class="field__err" data-err="source"></em>
+          </fieldset>
+          <button class="btn btn--primary btn--block btn--lg" type="submit"><span>Продолжить</span><svg><use href="#i-arrow"/></svg></button>
+        </form>
+      </section>
+
+      <!-- 2. Капча -->
+      <section class="reg-step" data-step="captcha" hidden>
+        <p class="reg-step__kicker">Безопасность</p>
+        <h3 class="reg-step__title">Подтвердите, что вы человек</h3>
+        <p class="reg-step__text" data-captcha-text>Перетащите фрагмент вправо, чтобы он встал точно на своё место.</p>
+        <div class="captcha" data-captcha>
+          <div class="captcha__view">
+            <canvas data-captcha-bg></canvas>
+            <canvas class="captcha__piece" data-captcha-piece></canvas>
+            <div class="captcha__status" data-captcha-status></div>
+            <div class="captcha__scan"></div>
+          </div>
+          <div class="captcha__track" data-captcha-track>
+            <div class="captcha__fill" data-captcha-fill></div>
+            <span class="captcha__hint">Потяните вправо</span>
+            <button type="button" class="captcha__handle" data-captcha-handle aria-label="Ползунок: перетащите вправо или используйте стрелки"><svg><use href="#i-arrow"/></svg></button>
+          </div>
+          <button type="button" class="link-btn" data-captcha-refresh>↻ Другое изображение</button>
+        </div>
+        <div class="turnstile" data-turnstile hidden></div>
+      </section>
+
+      <!-- 3. Проверка браузера -->
+      <section class="reg-step" data-step="scan" hidden>
+        <p class="reg-step__kicker">Совместимость</p>
+        <h3 class="reg-step__title">Проверяем ваш браузер</h3>
+        <p class="reg-step__text">Убедимся, что STELLA будет работать у вас стабильно и безопасно.</p>
+        <div class="scan">
+          <div class="scan__radar" aria-hidden="true"><i></i><i></i><i></i><div class="scan__beam"></div><svg><use href="#i-browser"/></svg></div>
+          <ul class="scan__list" data-scan-list></ul>
+        </div>
+        <div class="scan__result" data-scan-result hidden></div>
+        <button class="btn btn--primary btn--block btn--lg" type="button" data-scan-next disabled><span>Продолжить</span><svg><use href="#i-arrow"/></svg></button>
+      </section>
+
+      <!-- 4. Политика -->
+      <section class="reg-step" data-step="policy" hidden>
+        <p class="reg-step__kicker">Соглашение</p>
+        <h3 class="reg-step__title">Политика конфиденциальности</h3>
+        <p class="reg-step__text">Пожалуйста, ознакомьтесь и примите условия.</p>
+        <div class="policy" data-policy tabindex="0">
+          <h4>1. Общие положения</h4>
+          <p>Настоящая политика определяет, как сервис STELLA (далее — «Сервис») собирает, использует и защищает данные пользователей при регистрации и создании персонального AI-агента.</p>
+          <h4>2. Какие данные мы собираем</h4>
+          <p>Имя и фамилию; номер телефона; ответ на вопрос «Откуда вы о нас узнали»; выбранный тариф и настройки агента; техническую информацию о браузере и устройстве (тип браузера, операционная система, язык, разрешение экрана, часовой пояс), а также IP-адрес.</p>
+          <h4>3. Для чего мы используем данные</h4>
+          <p>Для регистрации и подтверждения номера телефона; для создания и настройки вашего AI-агента; для отправки кода подтверждения и инструкций по запуску агента через WhatsApp; для связи с вами по вопросам работы Сервиса; для защиты от злоупотреблений и автоматических регистраций.</p>
+          <h4>4. Передача данных</h4>
+          <p>Мы не продаём ваши данные. Данные могут обрабатываться сервисами доставки сообщений (WhatsApp) и внутренними инструментами уведомления команды (Telegram) исключительно для целей, указанных выше.</p>
+          <h4>5. Хранение и защита</h4>
+          <p>Данные хранятся не дольше, чем это необходимо для работы Сервиса. Коды подтверждения хранятся в зашифрованном виде и удаляются после использования или истечения срока действия.</p>
+          <h4>6. Ваши права</h4>
+          <p>Вы можете запросить доступ к своим данным, их исправление или удаление, а также отозвать согласие на обработку, написав нам в WhatsApp на номер, с которого пришёл код.</p>
+          <h4>7. Условия использования</h4>
+          <p>Вы обязуетесь использовать агента законно: не применять его для мошенничества, спама, обмана людей и нарушения прав третьих лиц. Действия агента выполняются от вашего имени и по вашим поручениям.</p>
+          <p class="policy__end">Конец документа ✓</p>
+        </div>
+        <label class="check"><input type="checkbox" data-policy-check><span class="check__box"><svg><use href="#i-check"/></svg></span><span>Я принимаю Политику конфиденциальности и Условия использования и даю согласие на обработку персональных данных</span></label>
+        <button class="btn btn--primary btn--block btn--lg" type="button" data-policy-next disabled><span>Принять и продолжить</span><svg><use href="#i-arrow"/></svg></button>
+      </section>
+
+      <!-- 5. Загрузка -->
+      <section class="reg-step reg-step--center" data-step="loading" hidden>
+        <div class="cube3d" aria-hidden="true">
+          <div class="cube3d__box"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <h3 class="reg-step__title">Подготавливаем ваш профиль</h3>
+        <p class="reg-step__text" data-loading-text>Создаём защищённое соединение…</p>
+        <div class="meter"><i data-loading-bar></i></div>
+        <b class="meter__pct" data-loading-pct>0%</b>
+      </section>
+
+      <!-- 6. Телефон -->
+      <section class="reg-step" data-step="phone" hidden>
+        <p class="reg-step__kicker">Номер телефона</p>
+        <h3 class="reg-step__title">Подтвердите номер телефона</h3>
+        <p class="reg-step__text">Мы отправим 6-значный код в <b class="wa-text">WhatsApp</b>. На этот же номер позже придёт инструкция для запуска агента.</p>
+        <form class="reg-form" data-form="phone" novalidate>
+          <div class="phone-input">
+            <select data-country aria-label="Код страны"></select>
+            <input type="tel" name="phone" inputmode="tel" autocomplete="tel-national" placeholder="999 123-45-67" aria-label="Номер телефона">
+          </div>
+          <em class="field__err" data-err="phone"></em>
+          <button class="btn btn--wa btn--block btn--lg" type="submit"><svg><use href="#i-chat"/></svg><span>Получить код в WhatsApp</span></button>
+        </form>
+        <form class="reg-form" data-form="otp" novalidate hidden>
+          <p class="otp__sent">Код отправлен в WhatsApp на <b data-otp-phone></b></p>
+          <div class="otp" data-otp>
+            <input inputmode="numeric" autocomplete="one-time-code" maxlength="6" aria-label="Цифра 1">
+            <input inputmode="numeric" maxlength="1" aria-label="Цифра 2">
+            <input inputmode="numeric" maxlength="1" aria-label="Цифра 3">
+            <input inputmode="numeric" maxlength="1" aria-label="Цифра 4">
+            <input inputmode="numeric" maxlength="1" aria-label="Цифра 5">
+            <input inputmode="numeric" maxlength="1" aria-label="Цифра 6">
+          </div>
+          <em class="field__err" data-err="otp"></em>
+          <div class="otp__dev" data-otp-dev hidden></div>
+          <button class="btn btn--primary btn--block btn--lg" type="submit"><span>Подтвердить</span><svg><use href="#i-check"/></svg></button>
+          <div class="otp__row">
+            <button type="button" class="link-btn" data-otp-resend disabled>Отправить ещё раз <span data-otp-timer></span></button>
+            <button type="button" class="link-btn" data-otp-change>Изменить номер</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- 7. Тариф -->
+      <section class="reg-step" data-step="plan" hidden>
+        <p class="reg-step__kicker">Тариф</p>
+        <h3 class="reg-step__title">Выберите свой уровень STELLA</h3>
+        <p class="reg-step__text">Начните бесплатно или сразу получите больше возможностей. Тариф можно сменить в любой момент.</p>
+        <div class="pick" data-plan-pick role="radiogroup" aria-label="Тариф">
+          <label class="pick__item"><input type="radio" name="plan" value="free"><span class="pick__card"><b>FREE</b><em>$0</em><small>Бесплатные модели, базовые возможности</small></span></label>
+          <label class="pick__item"><input type="radio" name="plan" value="plus"><span class="pick__card"><b>PLUS</b><em>$25<i>/мес</i></em><small>200+ моделей, облачные инструменты, $27.50 кредитов</small></span></label>
+          <label class="pick__item pick__item--pro"><input type="radio" name="plan" value="pro"><span class="pick__card"><b>PRO <sup>+10%</sup></b><em>$105<i>/мес</i></em><small>Выделенный сервер, $115.50 кредитов</small></span></label>
+          <label class="pick__item pick__item--ultra"><input type="radio" name="plan" value="ultra"><span class="pick__card"><b>ULTRA <sup>+10%</sup></b><em>$205<i>/мес</i></em><small>Максимум ресурсов, $225.50 кредитов</small></span></label>
+        </div>
+        <button class="btn btn--primary btn--block btn--lg" type="button" data-plan-next><span>Продолжить с тарифом <b data-plan-name>FREE</b></span><svg><use href="#i-arrow"/></svg></button>
+      </section>
+
+      <!-- 8. Ваш агент -->
+      <section class="reg-step" data-step="agent" hidden>
+        <p class="reg-step__kicker">Ваш агент</p>
+        <h3 class="reg-step__title">Знакомьтесь — ваш личный агент</h3>
+        <div class="story">
+          <div class="story__item"><svg><use href="#i-spark"/></svg><div><b>Что это</b><span>Не чат, а исполнитель. Агент сам звонит, пишет, открывает сайты и работает с файлами.</span></div></div>
+          <div class="story__item"><svg><use href="#i-bolt"/></svg><div><b>Для чего</b><span>Чтобы рутина делалась без вас: звонки, переписка, переговоры, сбор данных, документы.</span></div></div>
+          <div class="story__item"><svg><use href="#i-repeat"/></svg><div><b>Как работает</b><span>Вы ставите цель → агент разбивает её на шаги → выполняет → присылает результат.</span></div></div>
+        </div>
+        <label class="field"><span>Как назовём вашего агента?</span><input data-agent-name maxlength="30" value="STELLA" autocomplete="off"></label>
+        <fieldset class="field">
+          <legend>Что агент будет делать в первую очередь?</legend>
+          <div class="chips chips--multi" data-agent-tasks>
+            <label class="chip"><input type="checkbox" value="calls" checked><span>Звонки голосом</span></label>
+            <label class="chip"><input type="checkbox" value="whatsapp" checked><span>Переписка в WhatsApp</span></label>
+            <label class="chip"><input type="checkbox" value="deals"><span>Переговоры о цене</span></label>
+            <label class="chip"><input type="checkbox" value="parsing"><span>Парсинг сайтов</span></label>
+            <label class="chip"><input type="checkbox" value="remote"><span>Управление ПК</span></label>
+            <label class="chip"><input type="checkbox" value="browser"><span>Действия в браузере</span></label>
+            <label class="chip"><input type="checkbox" value="files"><span>Работа с файлами</span></label>
+            <label class="chip"><input type="checkbox" value="docs"><span>Документы и отчёты</span></label>
+            <label class="chip"><input type="checkbox" value="code"><span>Код и разработка</span></label>
+            <label class="chip"><input type="checkbox" value="edu"><span>Учебные материалы</span></label>
+          </div>
+        </fieldset>
+        <button class="btn btn--primary btn--block btn--xl btn--create" type="button" data-agent-create><svg><use href="#i-spark"/></svg><span>Создать агента</span></button>
+      </section>
+
+      <!-- 9. Готово -->
+      <section class="reg-step reg-step--center" data-step="done" hidden>
+        <div class="assemble" data-assemble aria-hidden="true">
+          <div class="assemble__ring"></div><div class="assemble__ring"></div><div class="assemble__ring"></div>
+          <div class="assemble__core"></div>
+          <svg class="assemble__check"><use href="#i-check"/></svg>
+        </div>
+        <div data-done-progress>
+          <h3 class="reg-step__title">Создаём вашего агента…</h3>
+          <p class="reg-step__text" data-done-line>Собираем нейроядро</p>
+          <div class="meter"><i data-done-bar></i></div>
+        </div>
+        <div class="done" data-done-final hidden>
+          <h3 class="reg-step__title">Агент «<span data-done-name>STELLA</span>» создан!</h3>
+          <p class="done__msg">На ваш номер <b data-done-phone></b> скоро отправят сообщение с инструкцией для запуска агента.</p>
+          <div class="done__ticket"><span>Заявка <b data-done-ticket></b></span><span>Тариф <b data-done-plan></b></span></div>
+          <button class="btn btn--primary btn--lg" type="button" data-reg-close><span>Отлично</span><svg><use href="#i-check"/></svg></button>
+        </div>
+        <div class="done done--error" data-done-error hidden>
+          <h3 class="reg-step__title">Не удалось создать агента</h3>
+          <p class="reg-step__text" data-done-error-text></p>
+          <button class="btn btn--primary btn--lg" type="button" data-done-retry><span>Попробовать снова</span></button>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js"></script>
+<script type="module" src="js/main.js"></script>
+<script type="module" src="js/register.js"></script>
+</body>
+</html>
