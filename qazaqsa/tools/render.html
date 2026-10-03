@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Рендер фото тортов</title>
+<!--
+  Служебная страница: рендерит 3D-торты в картинки assets/cakes/*.webp (для корзины)
+  и *.jpg (ссылка «фото» в сообщении WhatsApp).
+  Откройте через локальный сервер: /tools/render.html — и нажмите «Скачать всё».
+-->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@600&family=Cinzel:wght@500&family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #e9e1d6; font-family: Montserrat, sans-serif; padding: 16px; }
+  #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  #grid figure { margin: 0; background: #fff; border-radius: 12px; padding: 8px; font-size: 12px; }
+  #grid img { width: 100%; display: block; }
+  button { padding: 10px 16px; margin-bottom: 12px; }
+</style>
+<script type="importmap">{ "imports": { "three": "../js/vendor/three.module.min.js" } }</script>
+</head>
+<body>
+<button id="dl">Скачать всё</button>
+<div id="grid"></div>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from '../js/vendor/RoomEnvironment.js';
+import { buildCake, CAKES } from '../js/cakes.js';
+import { PRODUCTS, CONFIG } from '../js/data.js';
+
+const SIZE = 900;
+const canvas = document.createElement('canvas');
+canvas.width = canvas.height = SIZE;
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(SIZE, SIZE, false);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.NeutralToneMapping;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.setClearColor(0x000000, 0);
+
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.55;
+scene.add(new THREE.HemisphereLight(0xfff3e2, 0x5a3e2a, 0.7));
+const key = new THREE.DirectionalLight(0xfff0dc, 2.6);
+key.position.set(3.5, 6, 4);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.camera.left = key.shadow.camera.bottom = -2.5;
+key.shadow.camera.right = key.shadow.camera.top = 2.5;
+key.shadow.bias = -0.0004;
+key.shadow.normalBias = 0.02;
+key.shadow.radius = 4;
+scene.add(key);
+const rim = new THREE.DirectionalLight(0xffd8ac, 1.4);
+rim.position.set(-4, 3, -4);
+scene.add(rim);
+
+const cam = new THREE.PerspectiveCamera(26, 1, 0.1, 50);
+cam.position.set(1.2, 2.9, 5.5);
+cam.lookAt(0, 0.3, 0);
+
+const out = {};
+const grid = document.getElementById('grid');
+await document.fonts.ready;
+
+function poster(img, p) {
+  const c = document.createElement('canvas');
+  c.width = c.height = 1080;
+  const x = c.getContext('2d');
+  const g = x.createRadialGradient(540, 470, 60, 540, 540, 760);
+  g.addColorStop(0, '#fbf6ee'); g.addColorStop(1, '#e6d8c5');
+  x.fillStyle = g; x.fillRect(0, 0, 1080, 1080);
+  x.drawImage(img, 90, 70, 900, 900);
+  x.fillStyle = '#3b2619';
+  x.textAlign = 'center';
+  x.font = '600 64px "Cormorant"';
+  x.fillText(p.name, 540, 960);
+  x.font = '500 26px Cinzel';
+  x.fillStyle = '#a77b3f';
+  x.fillText('QAZAQSA  CHEESECAKE', 540, 1020);
+  return c.toDataURL('image/jpeg', 0.88);
+}
+
+const list = [{ id: 'hero', cake: 'hero', name: 'Hero' }, ...PRODUCTS];
+for (const p of list) {
+  const cake = buildCake(CAKES[p.cake], { segments: 160 });
+  cake.group.rotation.y = 0.85;
+  cake.setSlice(p.id === 'mix' ? 0.2 : 0.42, 0.0, 0);
+  scene.add(cake.group);
+  renderer.render(scene, cam);
+  const webp = canvas.toDataURL('image/webp', 0.9);
+  scene.remove(cake.group);
+  const img = new Image();
+  img.src = webp;
+  await img.decode();
+  // для корзины — уменьшенная копия
+  const sm = document.createElement('canvas');
+  sm.width = sm.height = 420;
+  sm.getContext('2d').drawImage(img, 0, 0, 420, 420);
+  out[p.id] = { webp: sm.toDataURL('image/webp', 0.86), jpg: p.id === 'hero' ? null : poster(img, p) };
+  const f = document.createElement('figure');
+  f.innerHTML = `<img src="${out[p.id].jpg || webp}"><figcaption>${p.id}</figcaption>`;
+  grid.appendChild(f);
+}
+window.__renders = out;
+document.title = 'done';
+
+document.getElementById('dl').onclick = () => {
+  for (const [id, r] of Object.entries(out)) {
+    for (const [ext, url] of Object.entries(r)) {
+      if (!url) continue;
+      const a = document.createElement('a');
+      a.href = url; a.download = `${id}.${ext}`; a.click();
+    }
+  }
+};
+</script>
+</body>
+</html>

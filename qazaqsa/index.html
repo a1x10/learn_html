@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Qazaqsa Cheesecake — чизкейки и торты в Алматы</title>
+  <meta name="description" content="Qazaqsa Cheesecake — қазақша чизкейк, баскский, тары, дубайский и ещё 14 вкусов. Закажите онлайн в WhatsApp. Алматы.">
+  <meta name="theme-color" content="#1c130e">
+  <meta property="og:title" content="Qazaqsa Cheesecake">
+  <meta property="og:description" content="Чизкейки и торты ручной работы. 17 вкусов — заказ в WhatsApp.">
+  <meta property="og:image" content="assets/cakes/kazakh.jpg">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant:ital,wght@0,500;0,600;0,700;1,500&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js" } }</script>
+</head>
+<body class="is-loading">
+
+<!-- ============ Заставка ============ -->
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader__inner">
+    <svg class="emblem loader__emblem" viewBox="0 0 64 78" aria-hidden="true">
+      <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path pathLength="1" d="M7 75V31a25 25 0 0 1 50 0v44Z"/>
+        <path pathLength="1" d="M12 75V31.5a20 20 0 0 1 40 0V75" opacity=".55"/>
+        <circle pathLength="1" cx="32" cy="30" r="10"/>
+        <path pathLength="1" d="M22.6 27.2Q32 33.6 41.4 27.2"/><path pathLength="1" d="M22.6 32.8Q32 26.4 41.4 32.8"/>
+        <path pathLength="1" d="M29.2 20.6Q35.6 30 29.2 39.4"/><path pathLength="1" d="M34.8 20.6Q28.4 30 34.8 39.4"/>
+        <path pathLength="1" d="M24.6 36.8 15 66"/><path pathLength="1" d="M27.6 39 23.5 66"/><path pathLength="1" d="M32 40v26"/>
+        <path pathLength="1" d="M36.4 39l4.1 27"/><path pathLength="1" d="M39.4 36.8 49 66"/>
+        <path pathLength="1" d="M12 66h40"/>
+        <path pathLength="1" d="M32 14.5v-3"/><path pathLength="1" d="M21 19l-2-2.2"/><path pathLength="1" d="M43 19l2-2.2"/>
+      </g>
+    </svg>
+    <div class="loader__word" aria-label="QAZAQSA">
+      <span>Q</span><span>A</span><span>Z</span><span>A</span><span>Q</span><span>S</span><span>A</span>
+    </div>
+    <div class="loader__sub">CHEESECAKE</div>
+    <div class="loader__tag" data-i18n="loader.tag">Чизкейки и торты ручной работы</div>
+    <div class="loader__bar"><i></i></div>
+    <div class="loader__pct"><span id="loaderPct">0</span>%</div>
+  </div>
+  <div class="loader__curtain loader__curtain--a"></div>
+  <div class="loader__curtain loader__curtain--b"></div>
+</div>
+
+<!-- общий 3D-холст -->
+<canvas id="gl" class="gl" aria-hidden="true"></canvas>
+
+<!-- ============ Шапка ============ -->
+<header class="header" id="header">
+  <a class="brand" href="#top" data-scroll aria-label="Qazaqsa Cheesecake — наверх">
+    <svg class="emblem brand__mark" viewBox="0 0 64 78" aria-hidden="true"><use href="#emblem"/></svg>
+    <span class="brand__text"><b>QAZAQSA</b><small>CHEESECAKE</small></span>
+  </a>
+  <nav class="nav" aria-label="Разделы">
+    <a href="#menu" data-scroll data-i18n="nav.menu">Меню</a>
+    <a href="#how" data-scroll data-i18n="nav.how">Как заказать</a>
+    <a href="#gallery" data-scroll data-i18n="nav.gallery">Галерея</a>
+    <a href="#contacts" data-scroll data-i18n="nav.contacts">Контакты</a>
+  </nav>
+  <div class="header__actions">
+    <div class="lang" role="group" aria-label="Язык">
+      <button type="button" data-lang="ru" class="is-on">RU</button>
+      <button type="button" data-lang="kz">ҚАЗ</button>
+    </div>
+    <button type="button" class="cart-btn" id="cartBtn" aria-label="Корзина">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1.2 11.2a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 7Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
+      <span class="cart-btn__label" data-i18n="cart">Корзина</span>
+      <span class="cart-btn__count" id="cartCount">0</span>
+    </button>
+    <button type="button" class="burger" id="burger" aria-label="Меню" aria-expanded="false"><i></i><i></i></button>
+  </div>
+</header>
+
+<div class="mnav" id="mnav" aria-hidden="true">
+  <a href="#menu" data-scroll data-i18n="nav.menu">Меню</a>
+  <a href="#how" data-scroll data-i18n="nav.how">Как заказать</a>
+  <a href="#gallery" data-scroll data-i18n="nav.gallery">Галерея</a>
+  <a href="#contacts" data-scroll data-i18n="nav.contacts">Контакты</a>
+  <a class="mnav__wa" data-wa-quick href="#" target="_blank" rel="noopener">WhatsApp · +7 771 533 03 63</a>
+</div>
+
+<main id="top">
+
+  <!-- ============ HERO: торт делает полный круг при скролле ============ -->
+  <section class="hero" id="hero">
+    <div class="hero__stage" id="heroStage">
+      <div class="hero__bg" aria-hidden="true"></div>
+      <img class="hero__fallback" src="assets/cakes/hero.webp" alt="" aria-hidden="true">
+
+      <div class="hero__title" aria-hidden="true">
+        <span class="hero__word">QAZAQSA</span>
+        <span class="hero__sub">CHEESECAKE</span>
+      </div>
+      <h1 class="sr-only">Qazaqsa Cheesecake — чизкейки и торты ручной работы в Алматы</h1>
+
+      <div class="hero__intro">
+        <p class="eyebrow" data-i18n="hero.eyebrow">Алматы · чизкейки и торты ручной работы</p>
+        <p class="hero__lead" data-i18n="hero.lead">Казахский чизкейк с характером: нежный крем, карамельная корочка и 17 вкусов на любой праздник.</p>
+        <div class="hero__btns">
+          <a class="btn btn--dark" href="#menu" data-scroll-play><span data-i18n="hero.cta">Выбрать торт</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="btn btn--ghost" data-wa-quick href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" class="ico-wa" aria-hidden="true"><use href="#ico-wa"/></svg>
+            <span data-i18n="hero.wa">Написать в WhatsApp</span></a>
+        </div>
+      </div>
+
+      <div class="hero__hud" aria-hidden="true">
+        <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" class="hud__track"/><circle cx="60" cy="60" r="52" class="hud__fill" id="hudFill"/></svg>
+        <span class="hud__deg" id="hudDeg">0°</span>
+        <span class="hud__lbl">360</span>
+      </div>
+
+      <div class="hero__hint" aria-hidden="true">
+        <span class="mouse"><i></i></span>
+        <span data-i18n="hero.hint">Листайте вниз или нажмите на торт</span>
+      </div>
+
+      <div class="callout callout--l" data-range="0.16,0.36">
+        <span class="callout__n">01</span>
+        <h3 data-i18n="c1.t">Карамельная корочка</h3>
+        <p data-i18n="c1.d">Запекаем при высокой температуре: сверху — тёмная карамель, внутри — нежнейший крем.</p>
+      </div>
+      <div class="callout callout--r" data-range="0.37,0.56">
+        <span class="callout__n">02</span>
+        <h3 data-i18n="c2.t">Сливочная текстура</h3>
+        <p data-i18n="c2.d">Плотный, но тающий крем — тот самый вкус настоящего чизкейка.</p>
+      </div>
+      <div class="callout callout--l callout--low" data-range="0.57,0.76">
+        <span class="callout__n">03</span>
+        <h3 data-i18n="c3.t">Хрустящий тары</h3>
+        <p data-i18n="c3.d">Фирменный штрих: жареное просо и вкус, знакомый каждому с детства.</p>
+      </div>
+
+      <div class="hero__outro" aria-hidden="true">
+        <span class="eyebrow" data-i18n="outro.k">Меню</span>
+        <span class="hero__outro-t" data-i18n="outro.t">Выберите свой вкус</span>
+        <span class="hero__outro-arrow"><svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg></span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- бегущая строка -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      <span>Қазақша чизкейк</span><i>✦</i><span>Испан чизкейк</span><i>✦</i><span>Тары қосылған</span><i>✦</i><span>Дубайский</span><i>✦</i><span>Орео</span><i>✦</i><span>Лотус</span><i>✦</i><span>Тирамису</span><i>✦</i><span>Марс</span><i>✦</i><span>Сникерс</span><i>✦</i><span>Брауни</span><i>✦</i><span>Наполеон</span><i>✦</i><span>Киндер буэно</span><i>✦</i><span>Nutella</span><i>✦</i>
+      <span>Қазақша чизкейк</span><i>✦</i><span>Испан чизкейк</span><i>✦</i><span>Тары қосылған</span><i>✦</i><span>Дубайский</span><i>✦</i><span>Орео</span><i>✦</i><span>Лотус</span><i>✦</i><span>Тирамису</span><i>✦</i><span>Марс</span><i>✦</i><span>Сникерс</span><i>✦</i><span>Брауни</span><i>✦</i><span>Наполеон</span><i>✦</i><span>Киндер буэно</span><i>✦</i><span>Nutella</span><i>✦</i>
+    </div>
+  </div>
+
+  <!-- ============ Меню ============ -->
+  <section class="section menu" id="menu">
+    <div class="wrap">
+      <div class="section__head reveal">
+        <span class="eyebrow" data-i18n="menu.k">17 вкусов</span>
+        <h2 class="h2" data-i18n="menu.t">Меню</h2>
+        <p class="section__lead" data-i18n="menu.lead">Нажмите на торт, чтобы рассмотреть его в 3D. Добавляйте в корзину — заказ уйдёт в WhatsApp.</p>
+      </div>
+      <div class="filters reveal" role="tablist">
+        <button type="button" class="filters__btn is-on" data-filter="all" data-i18n="f.all">Все</button>
+        <button type="button" class="filters__btn" data-filter="cheesecake" data-i18n="f.cheesecake">Чизкейки</button>
+        <button type="button" class="filters__btn" data-filter="cake" data-i18n="f.cake">Торты</button>
+        <span class="filters__pill" aria-hidden="true"></span>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <!-- ============ Микс ============ -->
+  <section class="section feature" id="mix">
+    <div class="wrap feature__wrap">
+      <div class="feature__stage reveal" id="featureStage">
+        <img class="feature__fallback" src="assets/cakes/mix.webp" alt="" aria-hidden="true">
+        <div class="feature__ring" aria-hidden="true"></div>
+      </div>
+      <div class="feature__text reveal">
+        <span class="eyebrow" data-i18n="mix.k">Не можете выбрать?</span>
+        <h2 class="h2" data-i18n="mix.t">Возьмите всё сразу</h2>
+        <p data-i18n="mix.d">Микс чизкейк — восемь разных вкусов в одном торте.</p>
+        <div class="feature__price"><span>Микс чизкейк</span><b id="mixPrice">11 000 ₸</b></div>
+        <div class="feature__btns">
+          <button type="button" class="btn btn--dark" data-add-id="mix"><span data-i18n="add">В корзину</span></button>
+          <button type="button" class="btn btn--ghost" data-open-id="mix"><span data-i18n="more">Подробнее</span></button>
+        </div>
+        <figure class="feature__photo tilt">
+          <img src="assets/photos/mix.webp" alt="Микс чизкейк — реальное фото" loading="lazy">
+          <figcaption data-i18n="mix.real">Реальное фото</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Как заказать ============ -->
+  <section class="section how" id="how">
+    <div class="wrap">
+      <div class="section__head reveal">
+        <span class="eyebrow" data-i18n="how.k">Просто и быстро</span>
+        <h2 class="h2" data-i18n="how.t">Как заказать</h2>
+      </div>
+      <ol class="steps">
+        <li class="step tilt reveal">
+          <span class="step__n">01</span>
+          <span class="step__ico"><svg viewBox="0 0 48 48"><path d="M7 30 31 15l10 15Z"/><path d="M7 30v8h34v-8"/><path d="M7 34h34" opacity=".5"/><circle cx="31" cy="11" r="3"/></svg></span>
+          <h3 data-i18n="how.1t">Выберите торт</h3>
+          <p data-i18n="how.1d">Покрутите торты в 3D и выберите вкус и вес.</p>
+        </li>
+        <li class="step tilt reveal">
+          <span class="step__n">02</span>
+          <span class="step__ico"><svg viewBox="0 0 48 48"><path d="M12 16h24l-2.4 20a3 3 0 0 1-3 2.6H17.4a3 3 0 0 1-3-2.6Z"/><path d="M18 19v-4a6 6 0 0 1 12 0v4"/></svg></span>
+          <h3 data-i18n="how.2t">Добавьте в корзину</h3>
+          <p data-i18n="how.2d">Можно несколько тортов сразу — сумма посчитается сама.</p>
+        </li>
+        <li class="step tilt reveal">
+          <span class="step__n">03</span>
+          <span class="step__ico"><svg viewBox="0 0 24 24" class="ico-wa"><use href="#ico-wa"/></svg></span>
+          <h3 data-i18n="how.3t">Отправьте в WhatsApp</h3>
+          <p data-i18n="how.3d">Нажмите «Заказать» — сообщение со списком, фото и суммой уже готово.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ Галерея ============ -->
+  <section class="section gallery" id="gallery">
+    <div class="wrap">
+      <div class="section__head reveal">
+        <span class="eyebrow" data-i18n="gal.k">Без фильтров</span>
+        <h2 class="h2" data-i18n="gal.t">Настоящие фото</h2>
+      </div>
+      <div class="gallery__grid">
+        <figure class="photo tilt reveal">
+          <img src="assets/photos/basque.webp" alt="Чизкейк в разрезе" loading="lazy">
+          <figcaption data-i18n="gal.1">Чизкейк в разрезе</figcaption>
+        </figure>
+        <figure class="photo tilt reveal">
+          <img src="assets/photos/mix.webp" alt="Микс чизкейк" loading="lazy">
+          <figcaption data-i18n="gal.2">Микс чизкейк — 8 вкусов</figcaption>
+        </figure>
+        <a class="photo photo--ig tilt reveal" id="igLink" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" class="fill"/></svg>
+          <b>@cheesecake_qazaqsha</b>
+          <span data-i18n="gal.cta">Больше фото в Instagram</span>
+          <i class="photo__arrow">↗</i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section faq" id="faq">
+    <div class="wrap wrap--narrow">
+      <div class="section__head reveal"><h2 class="h2" data-i18n="faq.t">Частые вопросы</h2></div>
+      <div class="faq__list">
+        <details class="reveal"><summary data-i18n="faq.1q">Как оформить заказ?</summary><p data-i18n="faq.1a"></p></details>
+        <details class="reveal"><summary data-i18n="faq.2q">За сколько дней нужно заказывать?</summary><p data-i18n="faq.2a"></p></details>
+        <details class="reveal"><summary data-i18n="faq.3q">Можно сделать надпись или выбрать дату?</summary><p data-i18n="faq.3a"></p></details>
+        <details class="reveal"><summary data-i18n="faq.4q">Как хранить чизкейк?</summary><p data-i18n="faq.4a"></p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Контакты ============ -->
+  <section class="section contacts" id="contacts">
+    <div class="contacts__orn" aria-hidden="true"></div>
+    <div class="wrap contacts__wrap">
+      <div class="contacts__info">
+        <span class="eyebrow eyebrow--gold" data-i18n="ct.k">Ждём вас</span>
+        <h2 class="h2" data-i18n="ct.t">Контакты</h2>
+        <ul class="clist">
+          <li class="reveal">
+            <span class="clist__ico"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
+            <div><small data-i18n="ct.addr">Адрес</small><b id="ctAddr">Алматы, мкр. Жетысу-3, 1а</b>
+              <a class="link" id="ctMap" href="#" target="_blank" rel="noopener" data-i18n="ct.map">Открыть в 2ГИС</a></div>
+          </li>
+          <li class="reveal">
+            <span class="clist__ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span>
+            <div><small data-i18n="ct.hours">Часы работы</small><b id="ctHours">Ежедневно 09:00–21:00</b></div>
+          </li>
+          <li class="reveal">
+            <span class="clist__ico"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span>
+            <div><small data-i18n="ct.phone">Телефон и WhatsApp</small><a class="big" id="ctPhone" href="tel:+77715330363">+7 771 533 03 63</a></div>
+          </li>
+          <li class="reveal">
+            <span class="clist__ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/></svg></span>
+            <div><small data-i18n="ct.ig">Instagram</small><a class="big" id="ctIg" href="#" target="_blank" rel="noopener">@cheesecake_qazaqsha</a></div>
+          </li>
+        </ul>
+        <div class="contacts__btns reveal">
+          <a class="btn btn--gold" data-wa-quick href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" class="ico-wa" aria-hidden="true"><use href="#ico-wa"/></svg><span data-i18n="ct.write">Написать</span></a>
+          <a class="btn btn--line" href="tel:+77715330363"><span data-i18n="ct.call">Позвонить</span></a>
+        </div>
+      </div>
+      <div class="contacts__map reveal">
+        <iframe id="mapFrame" title="Карта" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__wrap">
+    <a class="brand brand--light" href="#top" data-scroll>
+      <svg class="emblem brand__mark" viewBox="0 0 64 78" aria-hidden="true"><use href="#emblem"/></svg>
+      <span class="brand__text"><b>QAZAQSA</b><small>CHEESECAKE</small></span>
+    </a>
+    <p>© <span id="year">2026</span> Qazaqsa Cheesecake. <span data-i18n="foot.rights">Все права защищены.</span></p>
+    <a class="footer__up" href="#top" data-scroll><span data-i18n="foot.up">Наверх</span> ↑</a>
+  </div>
+</footer>
+
+<!-- плавающие кнопки -->
+<a class="fab-wa" data-wa-quick href="#" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24" class="ico-wa" aria-hidden="true"><use href="#ico-wa"/></svg>
+</a>
+<button type="button" class="cartbar" id="cartBar">
+  <span class="cartbar__l"><b id="cartBarCount">0</b><span data-i18n="cart">Корзина</span></span>
+  <span class="cartbar__r" id="cartBarTotal">0 ₸</span>
+</button>
+
+<!-- ============ Корзина ============ -->
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer__backdrop" data-close></div>
+  <div class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+    <header class="drawer__head">
+      <h2 id="cartTitle" data-i18n="cart.t">Ваш заказ</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Закрыть">✕</button>
+    </header>
+    <div class="drawer__body">
+      <div class="cart-empty" id="cartEmpty">
+        <svg viewBox="0 0 120 90" aria-hidden="true"><ellipse cx="60" cy="78" rx="44" ry="7" class="sh"/><path d="M20 46h80v18a8 8 0 0 1-8 8H28a8 8 0 0 1-8-8Z" class="b"/><path d="M20 46c0-12 18-20 40-20s40 8 40 20" class="t"/><path d="M60 26 74 40" class="c"/></svg>
+        <b data-i18n="cart.empty">Корзина пока пуста</b>
+        <p data-i18n="cart.emptyd">Выберите торт в меню — он появится здесь.</p>
+        <button type="button" class="btn btn--dark" data-goto-menu><span data-i18n="cart.go">Перейти в меню</span></button>
+      </div>
+      <ul class="cart-list" id="cartList"></ul>
+      <form class="cart-form" id="cartForm" autocomplete="on">
+        <label class="field"><span data-i18n="cart.name">Ваше имя</span><input name="name" type="text" maxlength="60" autocomplete="given-name"></label>
+        <label class="field"><span data-i18n="cart.date">Дата получения</span><input name="date" type="date"></label>
+        <div class="seg seg--wide" role="radiogroup">
+          <label><input type="radio" name="get" value="pick" checked><span data-i18n="cart.pick">Самовывоз</span></label>
+          <label><input type="radio" name="get" value="deliv"><span data-i18n="cart.deliv">Доставка</span></label>
+        </div>
+        <label class="field field--addr"><span data-i18n="cart.addr">Адрес доставки</span><input name="addr" type="text" maxlength="160" autocomplete="street-address"></label>
+        <label class="field"><textarea name="comment" rows="2" maxlength="300" data-i18n-ph="cart.comment" placeholder="Комментарий"></textarea></label>
+      </form>
+    </div>
+    <footer class="drawer__foot" id="cartFoot">
+      <div class="total"><span data-i18n="cart.total">Итого</span><b id="cartTotal">0 ₸</b></div>
+      <button type="button" class="btn btn--wa" id="orderBtn">
+        <svg viewBox="0 0 24 24" class="ico-wa" aria-hidden="true"><use href="#ico-wa"/></svg>
+        <span data-i18n="cart.order">Заказать в WhatsApp</span>
+      </button>
+      <div class="drawer__row">
+        <p class="note" data-i18n="cart.note">Откроется WhatsApp с готовым сообщением.</p>
+        <button type="button" class="link link--muted" id="clearBtn" data-i18n="cart.clear">Очистить</button>
+      </div>
+    </footer>
+  </div>
+</aside>
+
+<!-- ============ Карточка торта (3D) ============ -->
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal__backdrop" data-close></div>
+  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="mName">
+    <button type="button" class="icon-btn modal__close" data-close aria-label="Закрыть">✕</button>
+    <div class="modal__stage" id="modalStage">
+      <img class="modal__fallback" id="mFallback" src="" alt="">
+      <span class="modal__drag"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg><span data-i18n="modal.drag">Потяните, чтобы покрутить</span></span>
+    </div>
+    <div class="modal__info">
+      <span class="eyebrow" id="mCat"></span>
+      <h3 class="modal__name" id="mName"></h3>
+      <p class="modal__desc" id="mDesc"></p>
+      <figure class="modal__real" id="mReal"><img alt="" src=""><figcaption data-i18n="mix.real">Реальное фото</figcaption></figure>
+      <div class="modal__row" id="mSizesRow"><span class="modal__lbl" data-i18n="modal.weight">Вес</span><div class="seg" id="mSizes"></div></div>
+      <div class="modal__row"><span class="modal__lbl" data-i18n="modal.qty">Количество</span>
+        <div class="stepper"><button type="button" id="mMinus" aria-label="−">−</button><span id="mQty">1</span><button type="button" id="mPlus" aria-label="+">+</button></div>
+      </div>
+      <div class="modal__price" id="mPrice"></div>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--dark" id="mAdd"><span data-i18n="add">В корзину</span></button>
+        <a class="btn btn--wa" id="mDirect" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" class="ico-wa" aria-hidden="true"><use href="#ico-wa"/></svg><span data-i18n="modal.direct">Заказать сразу</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="hero-cursor" id="heroCursor" aria-hidden="true"><span data-i18n="hero.cursor">Нажмите</span></div>
+
+<!-- SVG-символы -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Эмблема: арка + шаңырақ (купол юрты) -->
+    <symbol id="emblem" viewBox="0 0 64 78">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path class="e-arch" d="M7 75V31a25 25 0 0 1 50 0v44Z"/>
+        <path class="e-arch2" d="M12 75V31.5a20 20 0 0 1 40 0V75" opacity=".55"/>
+        <circle class="e-ring" cx="32" cy="30" r="10"/>
+        <path class="e-cross" d="M22.6 27.2Q32 33.6 41.4 27.2M22.6 32.8Q32 26.4 41.4 32.8M29.2 20.6Q35.6 30 29.2 39.4M34.8 20.6Q28.4 30 34.8 39.4"/>
+        <path class="e-poles" d="M24.6 36.8 15 66M27.6 39 23.5 66M32 40v26M36.4 39l4.1 27M39.4 36.8 49 66"/>
+        <path class="e-base" d="M12 66h40"/>
+        <path class="e-rays" d="M32 14.5v-3M21 19l-2-2.2M43 19l2-2.2" opacity=".8"/>
+      </g>
+    </symbol>
+    <symbol id="ico-wa" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12.04 2a9.9 9.9 0 0 0-8.5 15l-1.4 5.1 5.2-1.4A9.9 9.9 0 1 0 12.04 2Zm0 18.1a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3a8.2 8.2 0 1 1 7 3.9Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.3.8 3.2.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
