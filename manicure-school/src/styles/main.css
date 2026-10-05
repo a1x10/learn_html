@@ -2800,6 +2800,21 @@ footer,
   color: rgba(244, 234, 232, 0.78);
 }
 
+.form-done__msg {
+  margin: 0;
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: var(--noir);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-family: var(--f-mono);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--milk);
+}
+
 .form-done__again {
   border: 0;
   background: none;

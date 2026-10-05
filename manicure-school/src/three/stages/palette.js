@@ -64,6 +64,12 @@ export class PaletteStage extends Stage {
     this.idle = 0;
   }
 
+  // после отправки заявки: кольцо делает оборот, искры вспыхивают
+  celebrate() {
+    this.burst = 1;
+    this.targetAngle += Math.PI * 2;
+  }
+
   resize() {
     this.dist = fitDistance(this.camera, 3.9, 7.0);
   }
@@ -79,7 +85,11 @@ export class PaletteStage extends Stage {
       o.b.rotation.y = o.lift * Math.sin(t * 0.6) * 0.5;
       o.b.setOpen(o.lift * 0.12);
     });
-    this.sparkles.material.uniforms.uTime.value = t;
+    this.burst = damp(this.burst || 0, 0, 1.2, dt);
+    const u = this.sparkles.material.uniforms;
+    u.uTime.value = t;
+    u.uOpacity.value = 1 + this.burst * 2;
+    u.uSize.value = 26 * (1 + this.burst * 1.5);
     this.camera.position.set(pointer.sx * 0.5, 1.5 - pointer.sy * 0.3, this.dist || 10);
     this.camera.lookAt(0, 0.1, 0);
   }

@@ -610,7 +610,7 @@
         <header class="section-head">
           <p class="eyebrow">Вопросы</p>
           <h2 class="h2" id="faq-title" data-split>Частые <em>вопросы</em></h2>
-          <p class="faq__lead">Не нашли ответ? Напишите нам в <a href="https://t.me/laque_school" target="_blank" rel="noopener" data-tg-link>Telegram</a>, отвечаем в течение дня.</p>
+          <p class="faq__lead">Не нашли ответ? <a href="#apply">Оставьте заявку</a>, и мы ответим на любой вопрос о курсе.</p>
         </header>
         <div class="faq__list">
           <details class="qa" data-reveal>
@@ -690,7 +690,9 @@
           <div class="form-done" hidden>
             <p class="form-done__title">Заявка готова, <span data-done-name></span>!</p>
             <p class="form-done__text" data-done-text>Отправьте её нам в Telegram одним нажатием: так мы ответим быстрее.</p>
-            <a class="btn btn--lacquer" href="#" target="_blank" rel="noopener" data-done-link><span class="btn__label">Открыть Telegram</span></a>
+            <pre class="form-done__msg" data-done-msg hidden></pre>
+            <button class="btn btn--line" type="button" data-done-copy hidden><span class="btn__label">Скопировать текст</span></button>
+            <a class="btn btn--lacquer" href="#" target="_blank" rel="noopener" data-done-link hidden><span class="btn__label">Открыть Telegram</span></a>
             <button class="form-done__again" type="button" data-done-again>Заполнить заново</button>
           </div>
         </div>
@@ -715,8 +717,9 @@
         </nav>
         <div>
           <p class="footer__h">Связаться</p>
-          <a href="https://t.me/laque_school" target="_blank" rel="noopener" data-tg-link>Telegram: @laque_school</a>
-          <p class="footer__muted">Почта и телефон появятся здесь</p>
+          <a href="#" target="_blank" rel="noopener" data-tg-link hidden>Telegram</a>
+          <a href="#apply">Форма записи</a>
+          <p class="footer__muted" data-contacts-note>Telegram, почта и телефон появятся здесь</p>
         </div>
         <div>
           <p class="footer__h">Документы</p>

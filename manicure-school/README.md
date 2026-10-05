@@ -39,7 +39,7 @@
 | 7. Отзывы | Карточки `.review`; удалить `<p class="review__tag">образец</p>` и текст `.reviews__note`. Можно вставлять скриншоты переписки как `<img>` внутри `.review` |
 | 8. Цвета | Токены в начале `src/styles/main.css` (`--cherry`, `--milk`, `--blush` и др.) и оттенки лака в `src/config.js` → `shades` (первый — флакон на первом экране) |
 | Цены и даты | Тарифы `.plan` в `index.html`: цена в `data-full`, платёж в месяц в `data-month`, зачёркнутая цена, подсказки `data-full-hint` / `data-month-hint`, списки. Даты — `startDate` и `earlyBirdUntil` в `src/config.js` |
-| Контакты и заявки | `src/config.js`: `telegram`, `whatsapp`, `formEndpoint` (адрес обработчика, принимает POST JSON `{name, contact, plan, shade}`). Пока `formEndpoint` пустой, заявка собирается в готовое сообщение и открывается в Telegram |
+| Контакты и заявки | `src/config.js`: `telegram`, `whatsapp`, `formEndpoint` (адрес обработчика, принимает POST JSON `{name, contact, plan, shade}`). Если указан только Telegram или WhatsApp, заявка собирается в готовое сообщение и открывается в мессенджере. Пока ничего не указано, после отправки показывается текст заявки с кнопкой «Скопировать», а в подвале — пометка, что контакты появятся позже |
 
 После правок в `src/` пересоберите сайт (см. ниже). Правки только в `index.html` пересборки не требуют.
 

@@ -138,7 +138,15 @@ export function initDates() {
     el.textContent = label;
     el.setAttribute('datetime', CONFIG.startDate.slice(0, 10));
   });
-  if (CONFIG.telegram) document.querySelectorAll('[data-tg-link]').forEach((a) => (a.href = `https://t.me/${CONFIG.telegram}`));
+  if (CONFIG.telegram) {
+    document.querySelectorAll('[data-tg-link]').forEach((a) => {
+      a.href = `https://t.me/${CONFIG.telegram}`;
+      a.textContent = `Telegram: @${CONFIG.telegram}`;
+      a.hidden = false;
+    });
+    const note = document.querySelector('[data-contacts-note]');
+    if (note) note.textContent = 'Почта и телефон появятся здесь';
+  }
   document.querySelectorAll('[data-policy]').forEach((a) => a.addEventListener('click', (e) => e.preventDefault()));
 }
 
@@ -228,11 +236,15 @@ export function initForm(palette) {
       }
     }
     const link = done.querySelector('[data-done-link]');
+    const msg = done.querySelector('[data-done-msg]');
+    const copy = done.querySelector('[data-done-copy]');
     done.querySelector('[data-done-name]').textContent = name;
     const txt = done.querySelector('[data-done-text]');
+    msg.hidden = true;
+    copy.hidden = true;
+    link.hidden = true;
     if (sent) {
       txt.textContent = 'Мы получили заявку и напишем вам в течение дня.';
-      link.hidden = true;
     } else if (CONFIG.telegram) {
       txt.textContent = 'Отправьте её нам в Telegram одним нажатием: сообщение уже заполнено.';
       link.href = `https://t.me/${CONFIG.telegram}?text=${encodeURIComponent(text)}`;
@@ -242,6 +254,26 @@ export function initForm(palette) {
       link.href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(text)}`;
       link.querySelector('.btn__label').textContent = 'Открыть WhatsApp';
       link.hidden = false;
+    } else {
+      // контакты школы ещё не подключены — показываем текст заявки
+      txt.textContent = 'Отправка заявок подключается после запуска сайта. Пока текст заявки можно скопировать:';
+      msg.textContent = text;
+      msg.hidden = false;
+      copy.hidden = false;
+      copy.onclick = async () => {
+        const label = copy.querySelector('.btn__label');
+        try {
+          await navigator.clipboard.writeText(text);
+          label.textContent = 'Скопировано';
+        } catch (_) {
+          const r = document.createRange();
+          r.selectNodeContents(msg);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(r);
+          label.textContent = 'Текст выделен, скопируйте его';
+        }
+      };
     }
     form.hidden = true;
     done.hidden = false;
