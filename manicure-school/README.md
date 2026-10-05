@@ -86,7 +86,11 @@ python3 -m http.server 8080   # открыть http://localhost:8080
 
 ## Как выложить
 
-Подходит любой статический хостинг: загрузите `index.html` и папку `assets/`.
+Сейчас сайт опубликован через GitHub Pages: **https://a1x10.github.io/learn_html/manicure-school/** — всё, что попадает в ветку `main` репозитория, через минуту появляется по этой ссылке.
+
+Картинка-превью для мессенджеров — `assets/og-cover.jpg` (1200×630), иконки — `assets/favicon.svg` и `assets/apple-touch-icon.png`. При переезде на свой домен поменяйте адрес в мета-тегах `og:url` и `og:image` в `index.html`.
+
+Подходит и любой другой статический хостинг: загрузите `index.html` и папку `assets/`.
 - **GitHub Pages:** Settings → Pages → Deploy from a branch → ветка и папка `/ (root)`. Сайт будет по адресу `https://<аккаунт>.github.io/learn_html/manicure-school/`.
 - **Netlify / Vercel / Cloudflare Pages:** перетащите папку `manicure-school` или укажите её как корень проекта, команда сборки не нужна (собранные файлы уже лежат в `assets/`).
 - **Обычный хостинг:** скопируйте `index.html` и `assets/` в корень сайта по FTP.

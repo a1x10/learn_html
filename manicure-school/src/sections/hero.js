@@ -28,6 +28,18 @@ export function initHero(stage) {
 
   let p = 0;
   let floodX = window.innerWidth / 2;
+
+  // где начинается текст внизу — чтобы 3D-слово не заходило под него
+  const tagline = pin.querySelector('.hero__tagline');
+  const bottom = pin.querySelector('.hero__bottom');
+  const measureSafe = () => {
+    const H = pin.clientHeight || window.innerHeight;
+    const top = Math.min(tagline.offsetTop || H, bottom.offsetTop || H);
+    stage?.setSafeBottom?.(top / H);
+  };
+  measureSafe();
+  window.addEventListener('resize', measureSafe);
+  document.fonts?.ready?.then(measureSafe);
   let st = null;
   if (!env.reduced) {
     st = ScrollTrigger.create({

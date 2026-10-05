@@ -132,11 +132,22 @@ export class HeroStage extends Stage {
     const dist = this.baseDist + Math.abs(this.word.position.z);
     const visH = 2 * dist * Math.tan((cam.fov * Math.PI) / 360);
     const visW = visH * cam.aspect;
-    const S = (visW * (portrait ? 0.92 : 0.9)) / this.wordAdvance; // кегль в мировых единицах
+    // кегль: по ширине, но не больше полосы между надзаголовком и текстом внизу
+    const sw = (visW * (portrait ? 0.92 : 0.9)) / this.wordAdvance;
+    let S = sw;
+    let yTop;
+    if (portrait) {
+      yTop = visH * 0.245;
+    } else {
+      const topF = 0.25;
+      const botF = Math.max(topF + 0.22, (this.safeBottom ?? 0.68) - 0.025);
+      const band = (botF - topF) * visH;
+      S = Math.min(sw, band / 0.98); // заглавная + выносной элемент «р»
+      const extra = Math.max(0, band - S * 0.98);
+      yTop = (0.5 - topF) * visH - extra * 0.35;
+    }
     this.wordScale = S;
     const start = (-this.wordAdvance * S) / 2;
-    // базовая линия: верх слова примерно на 30–35% высоты экрана
-    const yTop = visH * (portrait ? 0.245 : 0.14);
     const capH = 0.72 * S;
     const baseline = yTop - capH;
     for (const m of this.letters) {
@@ -148,6 +159,13 @@ export class HeroStage extends Stage {
       m.scale.set(w, h, 1);
       m.userData.home = new THREE.Vector3(left + w / 2, top - h / 2, 0);
     }
+  }
+
+  // доля высоты экрана, где начинается текст внизу первого экрана
+  setSafeBottom(f) {
+    if (Math.abs((this.safeBottom ?? 0) - f) < 0.002) return;
+    this.safeBottom = f;
+    this.layoutWord();
   }
 
   resize(w, h) {
