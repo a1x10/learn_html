@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="ru" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>LAQUÉ — онлайн-курс маникюра с нуля</title>
+  <meta name="description" content="Онлайн-курс маникюра для новичков: 9 модулей, 45 видеоуроков, проверка домашних заданий и сертификат. От первого опила до первых клиентов за 8 недель.">
+  <meta name="theme-color" content="#130B0E">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="LAQUÉ">
+  <meta property="og:title" content="LAQUÉ — маникюр с нуля до первых клиентов">
+  <meta property="og:description" content="Онлайн-курс для новичков: 9 модулей, 45 видеоуроков, проверка домашних заданий и эфиры с автором.">
+  <!-- при переезде на свой домен замените адрес в og:url и og:image -->
+  <meta property="og:url" content="https://a1x10.github.io/learn_html/manicure-school/">
+  <meta property="og:image" content="https://a1x10.github.io/learn_html/manicure-school/assets/og-cover.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Флакон лака LAQUÉ перед словом «Маникюр»">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,500&family=Martian+Mono:wght@400;500&family=Onest:wght@300;400;500;600&family=Prata&display=swap">
+  <link rel="stylesheet" href="assets/app.css">
+  <script>document.documentElement.className = document.documentElement.className.replace('no-js', 'js');</script>
+</head>
+<body>
+  <!-- Прелоадер: ноготь наполняется лаком -->
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="preloader__inner">
+      <svg class="preloader__nail" viewBox="0 0 100 156">
+        <defs>
+          <clipPath id="nail-clip"><path d="M50 3C75 3 92 32 92 64v58c0 19-17 31-42 31S8 141 8 122V64C8 32 25 3 50 3z"/></clipPath>
+          <linearGradient id="nail-gloss" x1="0" x2="1">
+            <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+            <stop offset=".5" stop-color="#fff" stop-opacity=".55"/>
+            <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <g clip-path="url(#nail-clip)">
+          <rect class="preloader__bed" width="100" height="156"/>
+          <rect class="preloader__fill" y="156" width="100" height="156"/>
+          <rect class="preloader__gloss" x="22" y="0" width="10" height="156" fill="url(#nail-gloss)"/>
+        </g>
+        <path class="preloader__outline" d="M50 3C75 3 92 32 92 64v58c0 19-17 31-42 31S8 141 8 122V64C8 32 25 3 50 3z"/>
+      </svg>
+      <p class="preloader__brand">LAQUÉ</p>
+      <p class="preloader__count"><span data-preload-count>0</span>%</p>
+      <p class="preloader__note">Наносим первый слой</p>
+    </div>
+    <div class="preloader__curtain"></div>
+  </div>
+
+  <canvas class="webgl" id="webgl" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="cursor" aria-hidden="true"><div class="cursor__ring"><span class="cursor__label"></span></div><div class="cursor__dot"></div></div>
+  <div class="progress" aria-hidden="true"><span class="progress__fill"></span></div>
+
+  <header class="header" id="header">
+    <a class="logo" href="#top" aria-label="LAQUÉ, на главную">
+      <span class="logo__mark">LAQUÉ</span>
+      <span class="logo__sub">школа маникюра</span>
+    </a>
+    <nav class="nav" aria-label="Разделы">
+      <a href="#program">Программа</a>
+      <a href="#format">Формат</a>
+      <a href="#works">Дизайны</a>
+      <a href="#author">Автор</a>
+      <a href="#pricing">Тарифы</a>
+      <a href="#faq">Вопросы</a>
+    </nav>
+    <a class="btn btn--lacquer btn--small header__cta" href="#apply" data-magnetic><span class="btn__label">Записаться</span></a>
+    <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Открыть меню"><span></span><span></span></button>
+  </header>
+
+  <div class="menu" id="menu" hidden>
+    <nav class="menu__nav" aria-label="Меню">
+      <a href="#program"><span>01</span>Программа</a>
+      <a href="#format"><span>02</span>Формат</a>
+      <a href="#works"><span>03</span>Дизайны</a>
+      <a href="#author"><span>04</span>Автор</a>
+      <a href="#pricing"><span>05</span>Тарифы</a>
+      <a href="#faq"><span>06</span>Вопросы</a>
+    </nav>
+    <a class="btn btn--lacquer menu__cta" href="#apply">Записаться на поток</a>
+  </div>
+
+  <main id="top">
+    <!-- ══════════ ПЕРВЫЙ ЭКРАН ══════════ -->
+    <section class="hero" id="hero" data-bg="#130B0E" data-theme="dark" aria-labelledby="hero-title">
+      <div class="hero__pin">
+        <div class="stage hero__stage" data-stage="hero" aria-hidden="true"></div>
+        <div class="hero__flood" aria-hidden="true"></div>
+
+        <p class="hero__eyebrow" data-hero-in>
+          <span>Онлайн-школа маникюра</span>
+          <span class="dot" aria-hidden="true"></span>
+          <span>Старт потока <time datetime="2026-11-09" data-start-date>9 ноября</time></span>
+        </p>
+
+        <h1 class="hero__title" id="hero-title">
+          <span class="hero__word">Маникюр</span>
+          <span class="hero__tagline" data-hero-in><em>с нуля</em> до первых клиентов</span>
+        </h1>
+
+        <div class="hero__bottom">
+          <p class="hero__lead" data-hero-in>Восемь недель практики под присмотром мастера: от первого опила до покрытия, которое носится 3–4&nbsp;недели.</p>
+          <div class="hero__actions" data-hero-in>
+            <a class="btn btn--lacquer" href="#pricing" data-magnetic><span class="btn__label">Выбрать тариф</span></a>
+            <a class="btn btn--ghost" href="#program" data-magnetic><span class="btn__label">Смотреть программу</span></a>
+          </div>
+        </div>
+
+        <p class="hero__meta" data-hero-in>45 уроков · проверка домашних заданий · сертификат</p>
+        <p class="hero__shade" data-hero-in><span>Nº 01</span> Cherry Jam</p>
+        <div class="hero__scroll" data-hero-in><span>Листайте</span><i></i></div>
+
+        <svg class="hero__lines" aria-hidden="true"></svg>
+        <ul class="hero__callouts" aria-label="Чему научитесь">
+          <li class="callout" data-anchor="brush" data-side="right"><span class="callout__num">01</span>Покрытие под кутикулу без затёков</li>
+          <li class="callout" data-anchor="edge" data-side="left"><span class="callout__num">02</span>Ровный блик и тонкий торец</li>
+          <li class="callout" data-anchor="liquid" data-side="right"><span class="callout__num">03</span>Носка 3–4 недели без сколов</li>
+          <li class="callout" data-anchor="cap" data-side="left"><span class="callout__num">04</span>Стерильно, как в хорошем салоне</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ══════════ МАНИФЕСТ ══════════ -->
+    <section class="manifesto" id="about" data-bg="#7E0B24" data-theme="dark">
+      <div class="container">
+        <p class="eyebrow">О курсе</p>
+        <p class="manifesto__text" data-words>Научим делать маникюр, за который не стыдно взять деньги. Даже если сегодня вы ни разу не держали в руках пилку.</p>
+        <ul class="specs">
+          <li class="specs__item" data-reveal><span class="specs__num" data-count="9">9</span><span class="specs__label">модулей: от рабочего места до первых клиентов</span></li>
+          <li class="specs__item" data-reveal><span class="specs__num" data-count="45">45</span><span class="specs__label">видеоуроков с крупным планом рук</span></li>
+          <li class="specs__item" data-reveal><span class="specs__num" data-count="8">8</span><span class="specs__label">недель в ритме потока, с дедлайнами и поддержкой</span></li>
+          <li class="specs__item" data-reveal><span class="specs__num">3–4</span><span class="specs__label">недели носится покрытие, сделанное по технологии</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- бегущая строка -->
+    <div class="marquee" data-bg="#F4EAE8" data-theme="light" aria-hidden="true">
+      <div class="marquee__row" data-marquee="1">
+        <div class="marquee__track">
+          <span>Опил</span><i></i><span>Кутикула</span><i></i><span>База</span><i></i><span>Выравнивание</span><i></i><span>Покрытие под кутикулу</span><i></i><span>Френч</span><i></i><span>Градиент</span><i></i><span>Втирка</span><i></i><span>Стразы</span><i></i><span>Фольга</span><i></i><span>Первые клиенты</span><i></i>
+        </div>
+      </div>
+      <div class="marquee__row marquee__row--mono" data-marquee="-1">
+        <div class="marquee__track">
+          <span>100 / 180 / 240 грит</span><i></i><span>60 сек в LED-лампе</span><i></i><span>квадрат · овал · миндаль · балерина</span><i></i><span>апекс · торец · блик</span><i></i><span>дезинфекция → ПСО → стерилизация</span><i></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ ДЛЯ КОГО ══════════ -->
+    <section class="audience section" id="audience" data-bg="#F4EAE8" data-theme="light">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow">Для кого курс</p>
+          <h2 class="h2" data-split>Подойдёт, даже если вы <em>никогда не делали маникюр</em></h2>
+        </header>
+        <div class="audience__grid">
+          <article class="acard" data-reveal data-tilt>
+            <div class="stage acard__stage" data-stage="mini" data-model="tip" aria-hidden="true"></div>
+            <h3 class="acard__title">Никогда не делали маникюр</h3>
+            <p>Начинаем с устройства ногтя и того, как держать пилку. Первые две недели вы тренируетесь на типсах, а не на живых ногтях.</p>
+          </article>
+          <article class="acard" data-reveal data-tilt>
+            <div class="stage acard__stage" data-stage="mini" data-model="bottle" aria-hidden="true"></div>
+            <h3 class="acard__title">Хотите новую профессию</h3>
+            <p>Маникюр нужен клиентам в любом городе. Кроме техники научим считать себестоимость, собирать портфолио и находить первых клиентов.</p>
+          </article>
+          <article class="acard" data-reveal data-tilt>
+            <div class="stage acard__stage" data-stage="mini" data-model="brush" aria-hidden="true"></div>
+            <h3 class="acard__title">Делаете себе, но выходит неаккуратно</h3>
+            <p>Разберём, почему гель-лак затекает под кутикулу, отслаивается и скалывается, и как сделать, чтобы это не повторялось.</p>
+          </article>
+          <article class="acard" data-reveal data-tilt>
+            <div class="stage acard__stage" data-stage="mini" data-model="gem" aria-hidden="true"></div>
+            <h3 class="acard__title">Ищете гибкий график</h3>
+            <p>Уроки в записи, учитесь в своём темпе. После курса можно принимать дома, арендовать место в студии или ездить к клиентам.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ ПРОГРАММА ══════════ -->
+    <section class="program" id="program" data-bg="#130B0E" data-theme="dark" aria-labelledby="program-title">
+      <div class="program__pin">
+        <div class="program__visual">
+          <div class="stage program__stage" data-stage="nail" aria-hidden="true"></div>
+          <p class="program__caption" aria-live="polite"><span class="program__caption-num">Nº 01</span><span class="program__caption-text">Натуральный ноготь</span></p>
+        </div>
+        <div class="program__content">
+          <header class="program__head">
+            <p class="eyebrow">Программа курса</p>
+            <h2 class="h2" id="program-title">От первого опила <em>до готового маникюра</em></h2>
+          </header>
+          <ol class="program__nav" aria-label="Модули">
+            <li><button type="button" data-goto="0" aria-label="Модуль 1">01</button></li>
+            <li><button type="button" data-goto="1" aria-label="Модуль 2">02</button></li>
+            <li><button type="button" data-goto="2" aria-label="Модуль 3">03</button></li>
+            <li><button type="button" data-goto="3" aria-label="Модуль 4">04</button></li>
+            <li><button type="button" data-goto="4" aria-label="Модуль 5">05</button></li>
+            <li><button type="button" data-goto="5" aria-label="Модуль 6">06</button></li>
+            <li><button type="button" data-goto="6" aria-label="Модуль 7">07</button></li>
+            <li><button type="button" data-goto="7" aria-label="Модуль 8">08</button></li>
+            <li><button type="button" data-goto="8" aria-label="Модуль 9">09</button></li>
+          </ol>
+          <div class="program__modules">
+            <article class="module" data-design="overgrown" data-caption="Натуральный ноготь">
+              <p class="module__meta">Модуль 01 · 5 уроков</p>
+              <h3 class="module__title">Рабочее место и безопасность</h3>
+              <ul class="module__lessons">
+                <li>Инструменты и материалы: что купить на старте</li>
+                <li>Три этапа обработки: дезинфекция, ПСО, стерилизация</li>
+                <li>Стол, свет и посадка мастера</li>
+                <li>Санитарные нормы для работы дома и в студии</li>
+                <li>Безопасность мастера и клиента</li>
+              </ul>
+              <p class="module__result"><span>Результат</span>Собираете рабочее место и готовите инструмент к работе по правилам.</p>
+            </article>
+            <article class="module" data-design="natural" data-caption="Форма «миндаль»">
+              <p class="module__meta">Модуль 02 · 5 уроков</p>
+              <h3 class="module__title">Анатомия ногтя и форма</h3>
+              <ul class="module__lessons">
+                <li>Строение ногтя и кожи вокруг</li>
+                <li>Типы ногтевой пластины и проблемные ногти</li>
+                <li>Пилки и абразивность: 100, 180, 240 грит</li>
+                <li>Формы: квадрат, овал, миндаль, балерина</li>
+                <li>Опил свободного края без расслоений</li>
+              </ul>
+              <p class="module__result"><span>Результат</span>Уверенно держите пилку и выводите одинаковую форму на всех пальцах.</p>
+            </article>
+            <article class="module" data-design="clean" data-caption="Чистая кутикула">
+              <p class="module__meta">Модуль 03 · 6 уроков</p>
+              <h3 class="module__title">Аппаратный и комбинированный маникюр</h3>
+              <ul class="module__lessons">
+                <li>Аппарат, обороты и выбор фрез</li>
+                <li>Постановка руки и упор</li>
+                <li>Обработка кутикулы и боковых валиков</li>
+                <li>Ножницы и кусачки: срез без заусенцев</li>
+                <li>Аппаратная и комбинированная техники</li>
+                <li>Частые ошибки: порезы, «дорожки», ожоги</li>
+              </ul>
+              <p class="module__result"><span>Результат</span>Чистый маникюр без порезов и заусенцев.</p>
+            </article>
+            <article class="module" data-design="base" data-caption="Камуфлирующая база">
+              <p class="module__meta">Модуль 04 · 5 уроков</p>
+              <h3 class="module__title">Подготовка и база</h3>
+              <ul class="module__lessons">
+                <li>Обезжиривание и дегидратор</li>
+                <li>Праймер: когда нужен и как наносить</li>
+                <li>Тонкий слой базы и втирание</li>
+                <li>Выравнивание пластины</li>
+                <li>Архитектура: апекс, торец и блик</li>
+              </ul>
+              <p class="module__result"><span>Результат</span>Ровная база с правильной архитектурой, которая не отслаивается.</p>
+            </article>
+            <article class="module" data-design="cherry" data-caption="Цвет Cherry Jam">
+              <p class="module__meta">Модуль 05 · 6 уроков</p>
+              <h3 class="module__title">Цветное покрытие под кутикулу</h3>
+              <ul class="module__lessons">
+                <li>Сколько гель-лака набирать на кисть</li>
+                <li>Работа у кутикулы и боковых валиков</li>
+                <li>Запечатывание торца</li>
+                <li>Плотные и светлые оттенки</li>
+                <li>Полимеризация: сколько держать в лампе</li>
+                <li>Затёки, волны, сколы: причины и исправление</li>
+              </ul>
+              <p class="module__result"><span>Результат</span>Покрытие под кутикулу без затёков и с ровным бликом.</p>
+            </article>
+            <article class="module" data-design="french" data-caption="Молочный френч">
+              <p class="module__meta">Модуль 06 · 5 уроков</p>
+              <h3 class="module__title">Френч и градиент</h3>
+              <ul class="module__lessons">
+                <li>Классический френч с ровной линией улыбки</li>
+                <li>Обратный и цветной френч</li>
+                <li>Градиент спонжем и кистью</li>
+                <li>«Бэби бумер»: переход от нюда к белому</li>
+                <li>Как не перегрузить ноготь материалом</li>
+              </ul>
+              <p class="module__result"><span>Результат</span>Френч и градиент, одинаковые на всех десяти ногтях.</p>
+            </article>
+            <article class="module" data-design="foil" data-caption="Фольга и стразы">
+              <p class="module__meta">Модуль 07 · 6 уроков</p>
+              <h3 class="module__title">Дизайн</h3>
+              <ul class="module__lessons">
+                <li>Втирка и хромовые пигменты</li>
+                <li>Стразы: раскладка и фиксация</li>
+                <li>Фольга и поталь</li>
+                <li>Слайдеры</li>
+                <li>Роспись тонкой кистью</li>
+                <li>Кошачий глаз</li>
+              </ul>
+              <p class="module__result"><span>Результат</span>Пять популярных дизайнов для вашего портфолио.</p>
+            </article>
+            <article class="module" data-design="final" data-caption="Финишный глянец">
+              <p class="module__meta">Модуль 08 · 4 урока</p>
+              <h3 class="module__title">Финиш, снятие и уход</h3>
+              <ul class="module__lessons">
+                <li>Глянцевый и матовый топ</li>
+                <li>Снятие покрытия аппаратом без вреда для ногтя</li>
+                <li>Коррекция и ремонт</li>
+                <li>Как снять работу на телефон для портфолио</li>
+              </ul>
+              <p class="module__result"><span>Результат</span>Стойкий глянец и фото работ, которые не стыдно выложить.</p>
+            </article>
+            <article class="module" data-design="final" data-caption="Готовая работа" data-showcase>
+              <p class="module__meta">Модуль 09 · 3 урока</p>
+              <h3 class="module__title">Первые клиенты</h3>
+              <ul class="module__lessons">
+                <li>Себестоимость процедуры и первый прайс</li>
+                <li>Портфолио и соцсети</li>
+                <li>Запись, напоминания и постоянные клиенты</li>
+              </ul>
+              <p class="module__result"><span>Результат</span>Прайс, портфолио и план, где искать первых клиентов.</p>
+            </article>
+          </div>
+          <div class="program__progress" aria-hidden="true"><span></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ ФОРМАТ ══════════ -->
+    <section class="format section" id="format" data-bg="#F4EAE8" data-theme="light">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow">Как проходит обучение</p>
+          <h2 class="h2" data-split>Уроки в записи, <em>разбор ошибок вживую</em></h2>
+        </header>
+        <div class="format__layout">
+          <ol class="steps">
+            <li class="step" data-reveal>
+              <span class="step__num">01</span>
+              <div><h3 class="step__title">Смотрите урок</h3><p>10–25 минут, крупный план рук, без воды. Можно с телефона и в любое время.</p></div>
+            </li>
+            <li class="step" data-reveal>
+              <span class="step__num">02</span>
+              <div><h3 class="step__title">Повторяете</h3><p>Сначала на типсах и тренировочном пальце, потом на себе и на моделях.</p></div>
+            </li>
+            <li class="step" data-reveal>
+              <span class="step__num">03</span>
+              <div><h3 class="step__title">Отправляете фото</h3><p>После каждого модуля домашнее задание: фото работы с нужных ракурсов.</p></div>
+            </li>
+            <li class="step" data-reveal>
+              <span class="step__num">04</span>
+              <div><h3 class="step__title">Получаете разбор</h3><p>Куратор отвечает в течение 24 часов: что получилось, что исправить и как.</p></div>
+            </li>
+            <li class="step" data-reveal>
+              <span class="step__num">05</span>
+              <div><h3 class="step__title">Сдаёте итоговую работу</h3><p>Полный маникюр с покрытием на модели. После проверки выдаём сертификат.</p></div>
+            </li>
+          </ol>
+
+          <div class="platform" data-platform aria-label="Пример личного кабинета ученицы">
+            <div class="platform__bar"><i></i><i></i><i></i><span>Личный кабинет · LAQUÉ</span></div>
+            <div class="platform__video">
+              <img class="platform__poster" alt="" data-render="cherry" width="640" height="360">
+              <button class="platform__play" type="button" aria-label="Пример видеоурока"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>
+              <div class="platform__timeline"><span class="platform__time">12:40</span><span class="platform__track"><span></span></span><span class="platform__time">18:05</span></div>
+            </div>
+            <div class="platform__body">
+              <p class="platform__module">Модуль 05 · Урок 3</p>
+              <p class="platform__lesson">Работа у кутикулы и боковых валиков</p>
+              <div class="platform__progress"><span>Прогресс курса</span><b>62%</b><i><em></em></i></div>
+              <ul class="platform__list">
+                <li class="is-done">5.1 Сколько гель-лака набирать на кисть</li>
+                <li class="is-done">5.2 Запечатывание торца</li>
+                <li class="is-current">5.3 Работа у кутикулы и валиков</li>
+                <li>5.4 Плотные и светлые оттенки</li>
+              </ul>
+              <div class="platform__chat">
+                <p class="platform__msg platform__msg--me">Отправила фото домашнего задания 🙌</p>
+                <p class="platform__msg">Блик ровный! Торец запечатан не до конца: пройдитесь кистью по свободному краю и досушите 60 секунд.</p>
+                <p class="platform__note">Пример переписки с куратором</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ РАБОЧЕЕ МЕСТО ══════════ -->
+    <section class="kit" id="kit" data-bg="#130B0E" data-theme="dark" aria-labelledby="kit-title">
+      <div class="kit__pin">
+        <div class="stage kit__stage" data-stage="kit" aria-hidden="true"></div>
+        <div class="kit__labels" aria-hidden="true">
+          <span class="kit__label" data-item="lamp">LED-лампа</span>
+          <span class="kit__label" data-item="efile">Аппарат</span>
+          <span class="kit__label" data-item="bits">Фрезы</span>
+          <span class="kit__label" data-item="file">Пилка 180/240</span>
+          <span class="kit__label" data-item="bottles">База · цвет · топ</span>
+          <span class="kit__label" data-item="pusher">Пушер</span>
+          <span class="kit__label" data-item="brushes">Кисти</span>
+          <span class="kit__label" data-item="oil">Масло</span>
+        </div>
+        <div class="kit__content">
+          <p class="eyebrow">Стартовый набор</p>
+          <h2 class="h2" id="kit-title">Рабочее место <em>с нуля</em></h2>
+          <p class="kit__text">В первом уроке даём список с конкретными позициями и ценами: что купить сразу, а с чем можно подождать.</p>
+          <ul class="kit__list">
+            <li><span>LED-лампа 36–48 Вт</span><b>2–4 тыс. ₽</b></li>
+            <li><span>Аппарат от 30 000 об/мин</span><b>4–9 тыс. ₽</b></li>
+            <li><span>Фрезы: пламя, шарик, цилиндр</span><b>1,5–3 тыс. ₽</b></li>
+            <li><span>Пилки 180/240 и бафы</span><b>0,5–1 тыс. ₽</b></li>
+            <li><span>База, топ и 3–5 цветов</span><b>3–6 тыс. ₽</b></li>
+            <li><span>Пушер, кисти, масло</span><b>1–2 тыс. ₽</b></li>
+            <li><span>Сухожар для стерилизации</span><b>3–6 тыс. ₽</b></li>
+          </ul>
+          <p class="kit__total"><span>Примерно на старт</span><b>15–30 тыс. ₽</b></p>
+          <p class="kit__note">Цены ориентировочные, октябрь 2026</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ ДИЗАЙНЫ ══════════ -->
+    <section class="works" id="works" data-bg="#EAD7D5" data-theme="light" aria-labelledby="works-title">
+      <div class="works__pin">
+        <header class="works__head">
+          <p class="eyebrow">Дизайны курса</p>
+          <h2 class="h2" id="works-title" data-split>Что вы научитесь <em>делать</em></h2>
+          <p class="works__note">3D-визуализации дизайнов из программы. Здесь появятся фото работ автора и учениц.</p>
+        </header>
+        <div class="works__viewport">
+          <div class="works__track">
+            <figure class="work" data-design="milky-french" data-angle="0.2"><div class="work__img"><img alt="Молочный френч на ногтях формы овал" width="600" height="750"></div><figcaption><span>Модуль 06</span>Молочный френч</figcaption></figure>
+            <figure class="work" data-design="cherry" data-angle="-0.25"><div class="work__img"><img alt="Глянцевое вишнёвое покрытие" width="600" height="750"></div><figcaption><span>Модуль 05</span>Вишнёвый джем</figcaption></figure>
+            <figure class="work" data-design="baby-boomer" data-angle="0.3"><div class="work__img"><img alt="Градиент бэби бумер" width="600" height="750"></div><figcaption><span>Модуль 06</span>Бэби бумер</figcaption></figure>
+            <figure class="work" data-design="pearl-chrome" data-angle="-0.15"><div class="work__img"><img alt="Жемчужная втирка" width="600" height="750"></div><figcaption><span>Модуль 07</span>Жемчужная втирка</figcaption></figure>
+            <figure class="work" data-design="cat-eye" data-angle="0.35"><div class="work__img"><img alt="Кошачий глаз на винной базе" width="600" height="750"></div><figcaption><span>Модуль 07</span>Кошачий глаз</figcaption></figure>
+            <figure class="work" data-design="gold-foil" data-angle="-0.3"><div class="work__img"><img alt="Нюдовое покрытие с золотой фольгой" width="600" height="750"></div><figcaption><span>Модуль 07</span>Золотая фольга</figcaption></figure>
+            <figure class="work" data-design="aura" data-angle="0.1"><div class="work__img"><img alt="Аура-маникюр" width="600" height="750"></div><figcaption><span>Модуль 07</span>Аура</figcaption></figure>
+            <figure class="work" data-design="line-art" data-angle="-0.2"><div class="work__img"><img alt="Тонкая роспись чёрной линией" width="600" height="750"></div><figcaption><span>Модуль 07</span>Тонкая роспись</figcaption></figure>
+            <figure class="work" data-design="red-french" data-angle="0.25"><div class="work__img"><img alt="Красный френч" width="600" height="750"></div><figcaption><span>Модуль 06</span>Красный френч</figcaption></figure>
+            <figure class="work" data-design="tortoise" data-angle="-0.1"><div class="work__img"><img alt="Черепаховый дизайн" width="600" height="750"></div><figcaption><span>Модуль 07</span>Черепаховый</figcaption></figure>
+            <figure class="work" data-design="silver-chrome" data-angle="0.3"><div class="work__img"><img alt="Серебряный хром" width="600" height="750"></div><figcaption><span>Модуль 07</span>Серебряный хром</figcaption></figure>
+            <figure class="work" data-design="crystals" data-angle="-0.25"><div class="work__img"><img alt="Стразы у кутикулы" width="600" height="750"></div><figcaption><span>Модуль 07</span>Стразы у кутикулы</figcaption></figure>
+          </div>
+        </div>
+        <div class="works__bar" aria-hidden="true"><span></span></div>
+      </div>
+    </section>
+
+    <!-- ══════════ АВТОР ══════════ -->
+    <section class="author section" id="author" data-bg="#F4EAE8" data-theme="light" aria-labelledby="author-title">
+      <div class="container author__grid">
+        <div class="author__photo" data-reveal="clip">
+          <div class="author__frame">
+            <!-- замените на <img src="assets/img/author.jpg" alt="Имя Фамилия"> -->
+            <div class="author__placeholder">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l2-2h6l2 2h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zm8 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg>
+              <span>Фото автора</span>
+            </div>
+          </div>
+          <p class="author__stamp" aria-hidden="true">LAQUÉ · автор курса · LAQUÉ · автор курса ·</p>
+        </div>
+        <div class="author__text">
+          <p class="eyebrow">Автор курса</p>
+          <h2 class="h2" id="author-title" data-split><span class="ph">Имя Фамилия</span></h2>
+          <p class="author__role">Мастер маникюра и преподаватель</p>
+          <div class="author__bio" data-reveal>
+            <p class="ph-block">Здесь будет история автора: сколько лет в профессии, где училась, сколько учениц выпустила и почему решила преподавать. Пара живых фраз от первого лица работает лучше длинного резюме.</p>
+          </div>
+          <ul class="author__facts">
+            <li data-reveal><b class="ph">—</b><span>лет в профессии</span></li>
+            <li data-reveal><b class="ph">—</b><span>выпускниц</span></li>
+            <li data-reveal><b class="ph">—</b><span>сертификатов</span></li>
+          </ul>
+          <div class="certs" aria-label="Сертификаты автора">
+            <div class="cert" data-reveal><span>Сертификат</span><i>фото будет здесь</i></div>
+            <div class="cert" data-reveal><span>Сертификат</span><i>фото будет здесь</i></div>
+            <div class="cert" data-reveal><span>Сертификат</span><i>фото будет здесь</i></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ ОТЗЫВЫ ══════════ -->
+    <section class="reviews section" id="reviews" data-bg="#EFE2E0" data-theme="light" aria-labelledby="reviews-title">
+      <div class="container">
+        <header class="section-head section-head--row">
+          <div>
+            <p class="eyebrow">Отзывы</p>
+            <h2 class="h2" id="reviews-title" data-split>Что говорят <em>ученицы</em></h2>
+          </div>
+          <p class="reviews__note">Образцы оформления. На сайте будут скриншоты настоящих отзывов.</p>
+        </header>
+      </div>
+      <div class="reviews__cols">
+        <div class="reviews__col" data-speed="38">
+          <div class="reviews__stack">
+            <article class="review"><p class="review__tag">образец</p><p class="review__text">Боялась, что не получится: руки дрожали даже с пилкой. Через месяц сделала маникюр маме, и она попросила записать её ещё раз.</p><p class="review__who"><span class="review__ava">А</span>Алина<i>поток 1</i></p></article>
+            <article class="review"><p class="review__tag">образец</p><p class="review__text">Самое полезное: разбор домашки. Куратор с первого фото увидела, почему у меня волны на базе.</p><p class="review__who"><span class="review__ava">М</span>Мария<i>поток 1</i></p></article>
+            <article class="review"><p class="review__tag">образец</p><p class="review__text">Уроки короткие, смотрела в декрете, пока малыш спит. Сейчас беру первых клиенток дома.</p><p class="review__who"><span class="review__ava">С</span>Светлана<i>поток 2</i></p></article>
+          </div>
+        </div>
+        <div class="reviews__col reviews__col--down" data-speed="46">
+          <div class="reviews__stack">
+            <article class="review review--accent"><p class="review__tag">образец</p><p class="review__text">Френч наконец одинаковый на всех ногтях! Секрет оказался в постановке руки, а не в кисти.</p><p class="review__who"><span class="review__ava">О</span>Ольга<i>поток 2</i></p></article>
+            <article class="review"><p class="review__tag">образец</p><p class="review__text">Понравилось, что про стерилизацию объясняют подробно. Теперь спокойно отвечаю клиентам на вопросы.</p><p class="review__who"><span class="review__ava">Д</span>Дарина<i>поток 1</i></p></article>
+            <article class="review"><p class="review__tag">образец</p><p class="review__text">Покрытие держится три недели, раньше скалывалось через пять дней. Разница в подготовке ногтя.</p><p class="review__who"><span class="review__ava">И</span>Ирина<i>поток 3</i></p></article>
+          </div>
+        </div>
+        <div class="reviews__col" data-speed="42">
+          <div class="reviews__stack">
+            <article class="review"><p class="review__tag">образец</p><p class="review__text">Эфиры с автором — отдельная радость. Можно спросить что угодно, даже про то, как поднять цены.</p><p class="review__who"><span class="review__ava">К</span>Ксения<i>поток 2</i></p></article>
+            <article class="review review--accent"><p class="review__tag">образец</p><p class="review__text">Пришла с нуля, ушла с портфолио из двенадцати работ и прайсом. Первая запись пришла через неделю после выпуска.</p><p class="review__who"><span class="review__ava">В</span>Вероника<i>поток 1</i></p></article>
+            <article class="review"><p class="review__tag">образец</p><p class="review__text">Типсы в начале очень выручили: не страшно ошибаться и можно повторять сколько нужно.</p><p class="review__who"><span class="review__ava">Е</span>Екатерина<i>поток 3</i></p></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ ТАРИФЫ ══════════ -->
+    <section class="pricing section" id="pricing" data-bg="#130B0E" data-theme="dark" aria-labelledby="pricing-title">
+      <div class="container">
+        <header class="section-head section-head--center">
+          <p class="eyebrow">Тарифы</p>
+          <h2 class="h2" id="pricing-title" data-split>Три тарифа, <em>как три слоя покрытия</em></h2>
+          <div class="pricing__controls">
+            <div class="toggle" role="group" aria-label="Способ оплаты">
+              <button type="button" class="toggle__btn is-active" data-pay="full" aria-pressed="true">Сразу</button>
+              <button type="button" class="toggle__btn" data-pay="month" aria-pressed="false">Частями</button>
+              <span class="toggle__thumb" aria-hidden="true"></span>
+            </div>
+            <p class="pricing__timer" data-countdown>
+              <span class="pricing__timer-label">Ранняя цена ещё</span>
+              <span class="pricing__timer-value"><b data-cd="d">00</b>д <b data-cd="h">00</b>:<b data-cd="m">00</b>:<b data-cd="s">00</b></span>
+            </p>
+          </div>
+        </header>
+
+        <div class="pricing__grid">
+          <article class="plan" data-reveal>
+            <div class="stage plan__stage" data-stage="plan" data-variant="base" aria-hidden="true"></div>
+            <div class="plan__card">
+              <p class="plan__layer">Слой 1</p>
+              <h3 class="plan__name">База</h3>
+              <p class="plan__for">Учусь сама, в своём темпе</p>
+              <div class="plan__price">
+                <s class="plan__old">9 900 ₽</s>
+                <p class="plan__now"><span class="price" data-full="6900" data-month="575">6 900</span> <span class="plan__unit">₽</span></p>
+                <p class="plan__hint" data-full-hint="или от 575 ₽/мес частями" data-month-hint="12 платежей, всего 6 900 ₽">или от 575 ₽/мес частями</p>
+              </div>
+              <ul class="plan__list">
+                <li>Все 45 видеоуроков</li>
+                <li>Конспекты, чек-листы и список материалов</li>
+                <li>Тесты после каждого модуля</li>
+                <li>Общий чат учениц</li>
+                <li>Бонус-урок «Как снимать работы на телефон»</li>
+                <li>Доступ 6 месяцев</li>
+                <li>Электронный сертификат о прохождении</li>
+                <li class="is-off">Без проверки домашних заданий</li>
+              </ul>
+              <a class="btn btn--line plan__btn" href="#apply" data-plan="База">Выбрать «Базу»</a>
+            </div>
+          </article>
+
+          <article class="plan plan--featured" data-reveal>
+            <div class="stage plan__stage" data-stage="plan" data-variant="color" aria-hidden="true"></div>
+            <div class="plan__card">
+              <p class="plan__badge">Рекомендуем</p>
+              <p class="plan__layer">Слой 2</p>
+              <h3 class="plan__name">Цвет</h3>
+              <p class="plan__for">Учусь с проверкой и поддержкой</p>
+              <div class="plan__price">
+                <s class="plan__old">19 900 ₽</s>
+                <p class="plan__now"><span class="price" data-full="14900" data-month="1242">14 900</span> <span class="plan__unit">₽</span></p>
+                <p class="plan__hint" data-full-hint="или от 1 242 ₽/мес частями" data-month-hint="12 платежей, всего 14 900 ₽">или от 1 242 ₽/мес частями</p>
+              </div>
+              <ul class="plan__list">
+                <li>Всё из тарифа «База»</li>
+                <li>Проверка домашних заданий куратором, до 3 пересдач</li>
+                <li>Ответ куратора в течение 24 часов</li>
+                <li>4 эфира с автором: разбор ошибок и вопросы</li>
+                <li>Разбор вашего первого прайса</li>
+                <li>Доступ 12 месяцев</li>
+                <li>Именной сертификат после итоговой работы</li>
+              </ul>
+              <a class="btn btn--lacquer plan__btn" href="#apply" data-plan="Цвет" data-magnetic><span class="btn__label">Выбрать «Цвет»</span></a>
+            </div>
+          </article>
+
+          <article class="plan plan--top" data-reveal>
+            <div class="stage plan__stage" data-stage="plan" data-variant="top" aria-hidden="true"></div>
+            <div class="plan__card">
+              <p class="plan__badge plan__badge--gold">8 мест на поток</p>
+              <p class="plan__layer">Слой 3</p>
+              <h3 class="plan__name">Топ</h3>
+              <p class="plan__for">Учусь лично с автором</p>
+              <div class="plan__price">
+                <s class="plan__old">44 900 ₽</s>
+                <p class="plan__now"><span class="price" data-full="34900" data-month="2909">34 900</span> <span class="plan__unit">₽</span></p>
+                <p class="plan__hint" data-full-hint="или от 2 909 ₽/мес частями" data-month-hint="12 платежей, всего 34 900 ₽">или от 2 909 ₽/мес частями</p>
+              </div>
+              <ul class="plan__list">
+                <li>Всё из тарифа «Цвет»</li>
+                <li>Домашние задания проверяет автор, с видеоразбором</li>
+                <li>4 личные онлайн-встречи по 60 минут</li>
+                <li>Личный чат с автором на 3 месяца</li>
+                <li>Подбор стартового набора под ваш бюджет</li>
+                <li>Разбор портфолио, соцсетей и прайса</li>
+                <li>Доступ навсегда, включая обновления</li>
+                <li>Печатный сертификат с доставкой</li>
+              </ul>
+              <a class="btn btn--gold plan__btn" href="#apply" data-plan="Топ"><span class="btn__label">Выбрать «Топ»</span></a>
+            </div>
+          </article>
+        </div>
+        <p class="pricing__note">Можно начать с «Базы» и перейти на старший тариф, доплатив разницу. Оплата частями оформляется через банк-партнёр, условия зависят от банка.</p>
+      </div>
+    </section>
+
+    <!-- ══════════ ВОПРОСЫ ══════════ -->
+    <section class="faq section" id="faq" data-bg="#F4EAE8" data-theme="light" aria-labelledby="faq-title">
+      <div class="container faq__grid">
+        <header class="section-head">
+          <p class="eyebrow">Вопросы</p>
+          <h2 class="h2" id="faq-title" data-split>Частые <em>вопросы</em></h2>
+          <p class="faq__lead">Не нашли ответ? <a href="#apply">Оставьте заявку</a>, и мы ответим на любой вопрос о курсе.</p>
+        </header>
+        <div class="faq__list">
+          <details class="qa" data-reveal>
+            <summary><span>Я никогда не делала маникюр. У меня получится?</span><i aria-hidden="true"></i></summary>
+            <div class="qa__body"><p>Да. Курс рассчитан на новичков: первые две недели вы работаете на типсах и тренировочном пальце, и только потом переходите к живым ногтям. Уроки сняты крупным планом, каждое движение видно.</p></div>
+          </details>
+          <details class="qa" data-reveal>
+            <summary><span>Сколько стоят материалы для старта?</span><i aria-hidden="true"></i></summary>
+            <div class="qa__body"><p>Обычно 15–30 тысяч рублей: лампа, аппарат, фрезы, пилки, база, топ, несколько цветов и сухожар. В первом уроке даём список с конкретными позициями и показываем, на чём можно сэкономить.</p></div>
+          </details>
+          <details class="qa" data-reveal>
+            <summary><span>Сколько времени нужно на обучение?</span><i aria-hidden="true"></i></summary>
+            <div class="qa__body"><p>Урок длится 10–25 минут. Чтобы идти в ритме потока, достаточно 1–1,5 часа в день, 4–5 дней в неделю. Если выпадаете из графика, уроки остаются доступны.</p></div>
+          </details>
+          <details class="qa" data-reveal>
+            <summary><span>Как проверяют домашние задания?</span><i aria-hidden="true"></i></summary>
+            <div class="qa__body"><p>После каждого модуля вы загружаете фото работы на платформу. Куратор отвечает в течение 24 часов: что получилось, что исправить и как. В тарифе «Топ» работы проверяет автор курса и записывает видеоразбор.</p></div>
+          </details>
+          <details class="qa" data-reveal>
+            <summary><span>На ком тренироваться?</span><i aria-hidden="true"></i></summary>
+            <div class="qa__body"><p>Сначала на типсах, затем на себе и на моделях: подругах, маме, коллегах. В модуле «Первые клиенты» рассказываем, где найти моделей и как с ними договориться.</p></div>
+          </details>
+          <details class="qa" data-reveal>
+            <summary><span>Выдаётся ли сертификат?</span><i aria-hidden="true"></i></summary>
+            <div class="qa__body"><p>Да, после итоговой работы. Это сертификат школы, а не государственный диплом. Клиентам обычно важнее портфолио, и за время курса вы его соберёте.</p></div>
+          </details>
+          <details class="qa" data-reveal>
+            <summary><span>Можно ли оплатить частями?</span><i aria-hidden="true"></i></summary>
+            <div class="qa__body"><p>Да, оплату можно разбить на 12 платежей через банк-партнёр. Переключите «Частями» над тарифами, чтобы увидеть ежемесячную сумму.</p></div>
+          </details>
+          <details class="qa" data-reveal>
+            <summary><span>Что, если курс мне не подойдёт?</span><i aria-hidden="true"></i></summary>
+            <div class="qa__body"><p>Вернём деньги, если напишете в течение 14 дней после старта и пройдёте не больше двух модулей.</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ ЗАПИСЬ ══════════ -->
+    <section class="cta" id="apply" data-bg="#130B0E" data-theme="dark" aria-labelledby="cta-title">
+      <div class="container cta__grid">
+        <div class="cta__visual">
+          <div class="stage cta__stage" data-stage="palette" aria-hidden="true"></div>
+          <div class="palette" role="group" aria-label="Выберите оттенок">
+            <p class="palette__label">Ваш первый оттенок: <b data-shade-name>Cherry Jam</b></p>
+            <div class="palette__chips" data-palette></div>
+          </div>
+        </div>
+        <div class="cta__form-wrap">
+          <p class="eyebrow">Запись на поток</p>
+          <h2 class="h2" id="cta-title" data-split>Начните с <em>первого опила</em></h2>
+          <p class="cta__text">Оставьте контакты: ответим на вопросы, поможем выбрать тариф и пришлём список материалов для старта.</p>
+          <form class="form" id="apply-form" novalidate>
+            <div class="field">
+              <input id="f-name" name="name" type="text" autocomplete="given-name" required placeholder=" ">
+              <label for="f-name">Как вас зовут</label>
+            </div>
+            <div class="field">
+              <input id="f-contact" name="contact" type="text" autocomplete="tel" required placeholder=" ">
+              <label for="f-contact">Телефон или ник в Telegram</label>
+            </div>
+            <fieldset class="chips">
+              <legend>Тариф</legend>
+              <label class="chip"><input type="radio" name="plan" value="База" id="f-plan-base"><span>База</span></label>
+              <label class="chip"><input type="radio" name="plan" value="Цвет" id="f-plan-color" checked><span>Цвет</span></label>
+              <label class="chip"><input type="radio" name="plan" value="Топ" id="f-plan-top"><span>Топ</span></label>
+              <label class="chip"><input type="radio" name="plan" value="Ещё не решила" id="f-plan-none"><span>Ещё не решила</span></label>
+            </fieldset>
+            <label class="check" for="f-agree">
+              <input type="checkbox" id="f-agree" name="agree" required>
+              <span class="check__box" aria-hidden="true"></span>
+              <span>Соглашаюсь с <a href="#" data-policy>политикой конфиденциальности</a></span>
+            </label>
+            <button class="btn btn--lacquer btn--wide" type="submit" data-magnetic><span class="btn__label">Записаться на поток</span></button>
+            <p class="form__error" role="alert" hidden></p>
+          </form>
+          <div class="form-done" hidden>
+            <p class="form-done__title">Заявка готова, <span data-done-name></span>!</p>
+            <p class="form-done__text" data-done-text>Отправьте её нам в Telegram одним нажатием: так мы ответим быстрее.</p>
+            <pre class="form-done__msg" data-done-msg hidden></pre>
+            <button class="btn btn--line" type="button" data-done-copy hidden><span class="btn__label">Скопировать текст</span></button>
+            <a class="btn btn--lacquer" href="#" target="_blank" rel="noopener" data-done-link hidden><span class="btn__label">Открыть Telegram</span></a>
+            <button class="form-done__again" type="button" data-done-again>Заполнить заново</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" data-bg="#130B0E" data-theme="dark">
+    <div class="container">
+      <div class="footer__top">
+        <p class="footer__claim">Маникюр <em>с нуля</em><br>до первых клиентов</p>
+        <a class="btn btn--lacquer" href="#apply" data-magnetic><span class="btn__label">Записаться</span></a>
+      </div>
+      <div class="footer__cols">
+        <nav aria-label="Разделы сайта">
+          <p class="footer__h">Разделы</p>
+          <a href="#program">Программа</a>
+          <a href="#format">Формат</a>
+          <a href="#works">Дизайны</a>
+          <a href="#pricing">Тарифы</a>
+          <a href="#faq">Вопросы</a>
+        </nav>
+        <div>
+          <p class="footer__h">Связаться</p>
+          <a href="#" target="_blank" rel="noopener" data-tg-link hidden>Telegram</a>
+          <a href="#apply">Форма записи</a>
+          <p class="footer__muted" data-contacts-note>Telegram, почта и телефон появятся здесь</p>
+        </div>
+        <div>
+          <p class="footer__h">Документы</p>
+          <a href="#" data-policy>Политика конфиденциальности</a>
+          <a href="#">Договор-оферта</a>
+        </div>
+      </div>
+      <p class="footer__word" aria-hidden="true">LAQUÉ</p>
+      <div class="footer__bottom">
+        <span>© 2026 LAQUÉ. Онлайн-школа маникюра</span>
+        <button class="footer__up" type="button" data-to-top>Наверх ↑</button>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/app.js" defer></script>
+</body>
+</html>
