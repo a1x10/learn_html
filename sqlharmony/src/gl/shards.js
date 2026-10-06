@@ -38,6 +38,9 @@ const vertexHead = /* glsl */ `
   uniform float uHoverR;
   uniform vec3 uFoxCenter;
   uniform float uBreath;
+  uniform float uBlink;
+  uniform vec4 uEyeLine; // eye inner corner (xy) and outer corner (zw), right eye
+  uniform vec2 uEyeR;    // falloff radii
   varying float vFree;
   varying float vHot;
 
@@ -65,7 +68,10 @@ const vertexBody = /* glsl */ `
   vec3 sw = normalize(aRand.xyz - 0.5 + 0.0001);
   c += sw * sin(3.14159265 * t) * uSwirl * (0.35 + aRand.w);
 
-  float wFox = uFoxA * (1.0 - t) + uFoxB * t;
+  // after an interrupted morph, slot A is a snapshot that remembers each shard's fox weight
+  float foxA = uFoxA;
+  if (abs(uFormA - ${FORM.SNAP}.0) < 0.5) foxA = shardForm(${FORM.SNAPW}.0).x;
+  float wFox = foxA * (1.0 - t) + uFoxB * t;
 
   // living surface: a slow wave runs over the fox from chin to ears.
   // Evaluated per vertex (not per shard) so neighbouring facets stay sealed.
@@ -87,9 +93,24 @@ const vertexBody = /* glsl */ `
   float sB = (FB.w < 0.0 ? aSize : FB.w) * uScaleB;
   float s = mix(sA, sB, t);
 
-  float ang = (uTime * (0.2 + aRand.w * 0.9) * uSpin + aRand.w * 40.0) * (1.0 - wFox);
+  // free tumbling; wrapped to ±π so returning to the fox never unwinds many turns
+  float af = uTime * (0.2 + aRand.w * 0.9) * uSpin + aRand.w * 40.0;
+  af = mod(af + 3.14159265, 6.28318531) - 3.14159265;
+  float ang = af * (1.0 - wFox);
   vec3 axis = normalize(aRand.zxy - 0.5 + 0.0001);
-  vec3 local = uRefRot * (position - aCenter) * (s / max(aSize, 0.0001));
+  // blink: the area around each eye folds onto the line between its corners.
+  // A smooth field over positions, so facets stretch instead of tearing apart.
+  vec3 bp = position;
+  if (uBlink > 0.0) {
+    float ax = abs(bp.x);
+    vec2 ei = uEyeLine.xy; vec2 eo = uEyeLine.zw;
+    vec2 ec = (ei + eo) * 0.5;
+    vec2 dd = (vec2(ax, bp.y) - ec) / uEyeR;
+    float fall = exp(-dot(dd, dd) * 1.6) * smoothstep(-0.05, 0.25, bp.z);
+    float lineY = ei.y + (clamp(ax, ei.x, eo.x) - ei.x) * (eo.y - ei.y) / (eo.x - ei.x);
+    bp.y = mix(bp.y, lineY, uBlink * fall * wFox);
+  }
+  vec3 local = uRefRot * (bp - aCenter) * (s / max(aSize, 0.0001));
   local = rotAxis(local, axis, ang);
 
   vec3 transformed = c + local + breath;
@@ -99,6 +120,7 @@ const vertexBody = /* glsl */ `
 export class Shards {
   constructor({ levels = 2 } = {}) {
     const tris = subdivide(foxTriangles({ height: 2 }), levels);
+    const lm = foxTriangles.landmarks;
     const N = tris.length;
     this.N = N;
     const position = new Float32Array(N * 9);
@@ -201,6 +223,9 @@ export class Shards {
       uHoverR: { value: 0.9 },
       uFoxCenter: { value: new THREE.Vector3() },
       uBreath: { value: 0.012 },
+      uBlink: { value: 0 },
+      uEyeLine: { value: new THREE.Vector4() },
+      uEyeR: { value: new THREE.Vector2(0.26, 0.17) },
       uGlow: { value: 0.55 },
       uSelfLit: { value: 0.1 },
       uFlash: { value: 0 },
@@ -211,8 +236,8 @@ export class Shards {
       flatShading: true,
       roughness: 0.36,
       metalness: 0.0,
-      clearcoat: 1,
-      clearcoatRoughness: 0.14,
+      clearcoat: 0.85,
+      clearcoatRoughness: 0.22,
       side: THREE.DoubleSide,
       envMapIntensity: 1.15,
     });
@@ -233,6 +258,11 @@ export class Shards {
     };
     mat.customProgramCacheKey = () => 'fox-shards';
     this.material = mat;
+    this.uniforms.uEyeLine.value.set(lm.eyeI[0], lm.eyeI[1], lm.eyeO[0], lm.eyeO[1]);
+    // eye size in normalised space sets the falloff
+    const ew = lm.eyeO[0] - lm.eyeI[0];
+    const eh = lm.eyeT[1] - lm.eyeB[1];
+    this.uniforms.uEyeR.value.set(ew * 0.75, eh * 0.95);
     this.mesh = new THREE.Mesh(geo, mat);
     this.mesh.frustumCulled = false;
     this.object = this.mesh;
@@ -268,7 +298,8 @@ export class Shards {
     p.scale = 1;
     const fn = this.places[slot.place];
     if (fn) fn(p);
-    outMat.compose(p.pos, p.quat, new THREE.Vector3(p.scale, p.scale, p.scale));
+    (this._sv ||= new THREE.Vector3()).setScalar(p.scale);
+    outMat.compose(p.pos, p.quat, this._sv);
     return p.scale;
   }
 
@@ -323,6 +354,9 @@ export class Shards {
     const sa = this._placement(this.A, this._matA);
     const sb = this._placement(this.B, this._matB);
     const snap = this.forms[FORM.SNAP];
+    const snapW = this.forms[FORM.SNAPW];
+    const nextW = this._nextW || (this._nextW = new Float32Array(N));
+    const foxBw = this.B.form === FORM.FOX ? 1 : 0;
     const ow = u.uOrderW.value;
     const st = u.uStagger.value;
     const sw = u.uSwirl.value;
@@ -351,8 +385,12 @@ export class Shards {
       snap[i * 4 + 1] = va.y;
       snap[i * 4 + 2] = va.z;
       snap[i * 4 + 3] = sizeA + (sizeB - sizeA) * t;
+      const foxAw = this.A.form === FORM.SNAP ? snapW[i * 4] : this.A.form === FORM.FOX ? 1 : 0;
+      nextW[i] = foxAw * (1 - t) + foxBw * t;
     }
+    for (let i = 0; i < N; i++) snapW[i * 4] = nextW[i];
     this._writeForm(this.texData, FORM.SNAP, snap);
+    this._writeForm(this.texData, FORM.SNAPW, snapW);
     this.tex.needsUpdate = true;
     this.A = { form: FORM.SNAP, place: 'identity' };
     this.mix = 0;

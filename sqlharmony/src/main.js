@@ -47,7 +47,7 @@ function noiseDataURL(size = 180) {
 async function boot() {
   root.classList.remove('no-js');
   root.classList.add('js', env.reduced ? 'reduced' : 'anim');
-  if (env.fine) root.classList.add('has-cursor');
+  if (env.fine && !env.reduced) root.classList.add('has-cursor');
   window.scrollTo(0, 0);
   const pre = createPreloader();
   const grain = $('.grain');
@@ -73,7 +73,7 @@ async function boot() {
   let world = null;
   const gl = {};
   try {
-    world = new World($('#gl'), { mobile: env.mobile, reduced: env.reduced });
+    world = new World($('#gl'), { mobile: env.mobile, reduced: env.reduced, touch: env.touch });
     if (world.failed) world = null;
   } catch (e) {
     console.warn('WebGL off:', e);
@@ -133,6 +133,17 @@ async function boot() {
   await pre.finish();
   root.classList.add('is-ready');
   lenis?.start();
+  // a link like /#faq: jump there now that pinned sections have their real height
+  if (location.hash.length > 1) {
+    const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (target) {
+      const el = target.parentElement?.classList.contains('pin-spacer') ? target.parentElement : target;
+      const y = el.getBoundingClientRect().top + window.scrollY;
+      if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
+      else window.scrollTo(0, y);
+      ScrollTrigger.update();
+    }
+  }
   gl.director?.intro();
   hero.intro();
   ui.intro?.();

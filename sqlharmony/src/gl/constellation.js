@@ -51,7 +51,7 @@ export class Constellation {
     this.hubGlow = glowSprite('#ff6a1a', 1.2);
     this.hubGlow.scale.setScalar(2.2);
     const hubLabel = makeLabel('SQL HARMONY', { color: '#ffd2ad', size: 52 });
-    hubLabel.position.set(0, -0.72, 0);
+    hubLabel.position.set(0, 0.66, 0);
     hubLabel.scale.multiplyScalar(0.27);
     this.hubLabel = hubLabel;
     this.tilt.add(this.hubGlow, this.hub, hubLabel);
@@ -141,7 +141,7 @@ export class Constellation {
       return;
     }
     // hover: which instance node is under the cursor
-    this.ray.setFromCamera(this.world.pointer, this.world.camera);
+    this.ray.setFromCamera(this.world.pointerRaw, this.world.camera);
     const hit = this.ray.intersectObjects(this.hits, false)[0];
     const hv = hit ? hit.object.userData.index : -1;
     if (hv !== this.hovered) {

@@ -145,8 +145,9 @@ export function initWorkbench(env2) {
     pointer.y = e.clientY / innerHeight - 0.5;
   });
 
+  let st = null;
   if (!env.reduced) {
-    ScrollTrigger.create({
+    st = ScrollTrigger.create({
       trigger: sec,
       pin,
       start: 'top top',
@@ -161,8 +162,16 @@ export function initWorkbench(env2) {
   requestAnimationFrame(fit);
 
   const setClass = (el, cls, on) => el && el.classList.toggle(cls, on);
+  // moments in the demo that the 3D swarm answers with a flash
+  const beats = [0.47, 0.8, 0.93];
+  let lastP = 0;
+  const beat = (p) => {
+    for (const b of beats) if (lastP < b && p >= b) document.dispatchEvent(new CustomEvent('shards-flash', { detail: b === 0.47 ? 0.55 : 0.35 }));
+    lastP = p;
+  };
 
   const render = (p) => {
+    beat(p);
     // 1. out of perspective
     const t1 = env.reduced ? 1 : smooth(0, 0.2, p);
     const rx = lerp(34, 0, t1) - pointer.y * 4 * t1;
@@ -238,6 +247,8 @@ export function initWorkbench(env2) {
   };
 
   return (dt) => {
+    // nothing to do while the section is far away
+    if (st && !st.isActive && (window.scrollY < st.start - window.innerHeight * 1.2 || window.scrollY > st.end + window.innerHeight * 1.2)) return;
     frameDt = dt;
     const k = 1 - Math.pow(0.0005, dt);
     p += (target - p) * k;

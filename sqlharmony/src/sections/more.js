@@ -44,6 +44,7 @@ export function initAI(orb) {
     () => {
       apply.classList.remove('is-press');
       card.classList.add('is-fixed');
+      document.dispatchEvent(new CustomEvent('shards-flash', { detail: 0.5 }));
       if (orb) {
         orb.think = 0;
         orb.ok = 1;
@@ -71,6 +72,7 @@ export function initAI(orb) {
 export function initInstances(constellation) {
   const tabs = $$('.inst-tabs [role="tab"]');
   const name = $('.inst-status__name');
+  const live = $('.inst-status .sr-only');
   if (!tabs.length) return;
   const bar = $('.inst-tabs');
   const glider = document.createElement('span');
@@ -90,6 +92,8 @@ export function initInstances(constellation) {
     moveGlider(i);
     tabs.forEach((t, k) => t.setAttribute('aria-selected', String(k === i)));
     constellation?.setActive(i);
+    // screen readers hear the final name only (and only when the visitor chose it)
+    if (fromUser && live) live.textContent = `Working in ${tabs[i].textContent}`;
     if (name) {
       if (env.reduced) name.textContent = tabs[i].textContent;
       else gsap.to(name, { duration: 0.6, scrambleText: { text: tabs[i].textContent, chars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', speed: 0.6 } });

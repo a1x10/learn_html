@@ -30,6 +30,7 @@ if (q.get('hover')) {
   shards.uniforms.uPointer.value.set(+(q.get('hx') || 0.3), +(q.get('hy') || 0.4), 0);
   shards.uniforms.uHover.value = +q.get('hover');
 }
+if (q.get('blink')) shards.uniforms.uBlink.value = +q.get('blink');
 const T = +(q.get('t') || 2);
 world.time = T;
 world.render(0.016);

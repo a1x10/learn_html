@@ -4,6 +4,7 @@ export const env = {
   reduced: mq('(prefers-reduced-motion: reduce)'),
   fine: mq('(pointer: fine)') && mq('(hover: hover)'),
   mobile: mq('(max-width: 760px)') || (mq('(pointer: coarse)') && Math.min(screen.width, screen.height) < 820),
+  touch: mq('(pointer: coarse)'),
   artifact: document.documentElement.classList.contains('is-artifact'),
 };
 

@@ -15,17 +15,25 @@ export function initHero({ word, chips, floor, director }) {
 
   if (!env.reduced) {
     gsap.set(words, { yPercent: 118, rotate: 3, transformOrigin: '0% 100%' });
-    gsap.set([pill, bottom, scroll], { autoAlpha: 0, y: 24 });
-    gsap.set(meta, { autoAlpha: 0, y: 14 });
-    gsap.set(nav, { yPercent: -100, autoAlpha: 0 });
+    // opacity (not visibility) so keyboard users can reach the links during the intro
+    gsap.set([pill, bottom, scroll], { opacity: 0, y: 24 });
+    gsap.set(meta, { opacity: 0, y: 14 });
+    gsap.set(nav, { yPercent: -100, opacity: 0 });
 
-    // leaving the hero: copy lifts and dissolves
-    const out = gsap.timeline({ scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
-    out.to(words[0], { yPercent: -60, autoAlpha: 0, filter: 'blur(8px)', ease: 'power1.in', duration: 0.6 }, 0.05);
-    out.to(words[1], { yPercent: -40, autoAlpha: 0, filter: 'blur(8px)', ease: 'power1.in', duration: 0.6 }, 0.1);
-    out.to(bottom, { y: -60, autoAlpha: 0, ease: 'power1.in', duration: 0.45 }, 0);
-    out.to([pill, scroll, ...meta], { autoAlpha: 0, duration: 0.25 }, 0);
   }
+  // leaving the hero: copy lifts and dissolves. Built once the intro has finished, so the
+  // scrubbed tweens start from the visible state even if the visitor scrolled during the intro.
+  let outBuilt = false;
+  const buildOut = () => {
+    if (outBuilt || env.reduced) return;
+    outBuilt = true;
+    const v = { opacity: 1, y: 0, immediateRender: false };
+    const out = gsap.timeline({ scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
+    out.fromTo(words[0], { yPercent: 0, autoAlpha: 1, filter: 'blur(0px)', immediateRender: false }, { yPercent: -60, autoAlpha: 0, filter: 'blur(8px)', ease: 'power1.in', duration: 0.6 }, 0.05);
+    out.fromTo(words[1], { yPercent: 0, autoAlpha: 1, filter: 'blur(0px)', immediateRender: false }, { yPercent: -40, autoAlpha: 0, filter: 'blur(8px)', ease: 'power1.in', duration: 0.6 }, 0.1);
+    out.fromTo(bottom, v, { y: -60, opacity: 0, ease: 'power1.in', duration: 0.45 }, 0);
+    out.fromTo([pill, scroll, ...meta], v, { opacity: 0, duration: 0.25 }, 0);
+  };
 
   if (floor) document.addEventListener('fox-poke', () => gsap.fromTo(floor.uniforms.uPulse, { value: 1.2 }, { value: 0, duration: 2.4, ease: 'power2.out', overwrite: true }));
 
@@ -41,11 +49,12 @@ export function initHero({ word, chips, floor, director }) {
       if (floor) tl.fromTo(floor.uniforms.uFade, { value: 0 }, { value: 1, duration: 2.4, ease: 'power2.out' }, 0.4);
       if (chips) tl.to(chips, { reveal: 1, duration: 2.2, ease: 'power3.out' }, 2.0);
       tl.to(words, { yPercent: 0, rotate: 0, duration: 1.5, stagger: 0.12 }, 1.15);
-      tl.to(pill, { autoAlpha: 1, y: 0, duration: 1.2 }, 1.5);
-      tl.to(bottom, { autoAlpha: 1, y: 0, duration: 1.3 }, 1.6);
-      tl.to(meta, { autoAlpha: 1, y: 0, duration: 1, stagger: 0.07 }, 1.75);
-      tl.to(scroll, { autoAlpha: 1, y: 0, duration: 1 }, 2.1);
-      tl.to(nav, { yPercent: 0, autoAlpha: 1, duration: 1.3 }, 1.4);
+      tl.to(pill, { opacity: 1, y: 0, duration: 1.2 }, 1.5);
+      tl.to(bottom, { opacity: 1, y: 0, duration: 1.3 }, 1.6);
+      tl.to(meta, { opacity: 1, y: 0, duration: 1, stagger: 0.07 }, 1.75);
+      tl.to(scroll, { opacity: 1, y: 0, duration: 1 }, 2.1);
+      tl.to(nav, { yPercent: 0, opacity: 1, duration: 1.3 }, 1.4);
+      tl.call(buildOut);
       return tl;
     },
     frame() {

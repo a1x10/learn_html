@@ -105,12 +105,14 @@ export function initVideo() {
     } else {
       box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0" title="SQL Harmony demo" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
     }
+    for (const el of document.querySelectorAll('main, header, footer')) el.inert = true;
     gsap.fromTo($('.modal__backdrop', modal), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 });
-    gsap.fromTo(frame, { scale: 0.86, y: 40, autoAlpha: 0, rotateX: 8 }, { scale: 1, y: 0, autoAlpha: 1, rotateX: 0, duration: 0.9, ease: 'expo.out' });
-    $('.modal__close', modal).focus();
+    gsap.fromTo(frame, { scale: 0.86, y: 40, opacity: 0, rotateX: 8 }, { scale: 1, y: 0, opacity: 1, rotateX: 0, duration: 0.9, ease: 'expo.out' });
+    $('.modal__close', modal).focus({ preventScroll: true });
   };
   const close = () => {
-    gsap.to(frame, { scale: 0.92, autoAlpha: 0, duration: 0.35, ease: 'power2.in' });
+    for (const el of document.querySelectorAll('main, header, footer')) el.inert = false;
+    gsap.to(frame, { scale: 0.92, opacity: 0, duration: 0.35, ease: 'power2.in' });
     gsap.to($('.modal__backdrop', modal), {
       autoAlpha: 0,
       duration: 0.4,
@@ -118,7 +120,7 @@ export function initVideo() {
         modal.hidden = true;
         box.innerHTML = '';
         lenis?.start();
-        link.focus();
+        link.focus({ preventScroll: true });
       },
     });
   };

@@ -1,4 +1,5 @@
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { $, $$, env } from '../core/env.js';
 
 // Header that hides on the way down and returns on the way up, scroll progress line,
@@ -15,6 +16,12 @@ export function initNav() {
   const links = $$('.nav__links a');
   let lastY = window.scrollY;
   let hidden = false;
+  // page height changes only on layout refreshes; reading it every frame forces layout
+  let maxScroll = 1;
+  const measure = () => (maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight));
+  measure();
+  ScrollTrigger.addEventListener('refresh', measure);
+  window.addEventListener('resize', measure);
 
   const setMenu = (open) => {
     root.classList.toggle('menu-open', open);
@@ -51,7 +58,7 @@ export function initNav() {
     closeMenu: () => setMenu(false),
     frame() {
       const y = window.scrollY;
-      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const max = maxScroll;
       const p = max > 0 ? y / max : 0;
       if (bar) bar.style.transform = `scaleX(${p})`;
       if (railLine) railLine.style.transform = `scaleY(${p})`;

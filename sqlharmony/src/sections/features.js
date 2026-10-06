@@ -8,6 +8,7 @@ import { $, $$, env, clamp } from '../core/env.js';
 export function initFeatures(director) {
   const sec = $('.features');
   if (!sec) return () => {};
+  const root = document.documentElement;
   const pin = $('.features__pin', sec);
   const track = $('.features__track', sec);
   const panels = $$('.feature', sec);
@@ -30,9 +31,20 @@ export function initFeatures(director) {
     panels.forEach((p, k) => p.classList.toggle('is-active', k === i));
   };
 
+  // reduced motion: the cards stack (CSS) and every demo shows its finished state
+  if (env.reduced) {
+    demos.forEach((d) => d?.rest());
+    director?.setFeature(0);
+    return () => {};
+  }
+
+  let tween = null;
   const dist = () => Math.max(0, track.scrollWidth - window.innerWidth);
-  if (!env.reduced) {
-    const tween = gsap.to(track, {
+  const mm = gsap.matchMedia();
+  // tall enough: pinned horizontal track
+  mm.add('(min-height: 561px)', () => {
+    root.classList.remove('feat-stack');
+    tween = gsap.to(track, {
       x: () => -dist(),
       ease: 'none',
       scrollTrigger: {
@@ -47,30 +59,58 @@ export function initFeatures(director) {
         },
       },
     });
-    // a little depth: panels away from the centre turn and sink
     return () => {
-      const cx = window.innerWidth / 2;
-      let best = 0;
-      let bestD = Infinity;
-      panels.forEach((p, i) => {
-        const r = p.getBoundingClientRect();
-        const off = (r.left + r.width / 2 - cx) / window.innerWidth;
-        const d = Math.abs(off);
-        if (d < bestD) {
-          bestD = d;
-          best = i;
-        }
-        const k = clamp(d * 1.4);
-        p.style.transform = `perspective(1400px) rotateY(${-off * 16}deg) translateZ(${-k * 120}px) scale(${1 - k * 0.06})`;
-        p.style.opacity = String(1 - k * 0.45);
+      tween = null;
+      panels.forEach((p) => {
+        p.style.transform = '';
+        p.style.opacity = '';
       });
-      const st = tween.scrollTrigger;
-      if (st && st.isActive) setActive(best);
-      else if (st && st.progress <= 0) setActive(0);
     };
-  }
+  });
+  // landscape phones and short windows: the cards stack, each demo plays while its card is on screen
+  mm.add('(max-height: 560px)', () => {
+    root.classList.add('feat-stack');
+    const sts = panels.map((p, i) => ScrollTrigger.create({ trigger: p, start: 'top 70%', end: 'bottom 30%', onToggle: (self) => self.isActive && setActive(i) }));
+    return () => {
+      root.classList.remove('feat-stack');
+      sts.forEach((t) => t.kill());
+    };
+  });
+
   setActive(0);
-  return () => {};
+  let idle = false;
+  return () => {
+    const st = tween?.scrollTrigger;
+    if (!st) return;
+    // only touch the DOM while the pinned track is (nearly) on screen
+    const near = st.isActive || (window.scrollY > st.start - window.innerHeight && window.scrollY < st.end + window.innerHeight);
+    if (!near) {
+      if (!idle) {
+        idle = true;
+        if (st.progress <= 0) setActive(0);
+      }
+      return;
+    }
+    idle = false;
+    // a little depth: panels away from the centre turn and sink
+    const cx = window.innerWidth / 2;
+    let best = 0;
+    let bestD = Infinity;
+    panels.forEach((p, i) => {
+      const r = p.getBoundingClientRect();
+      const off = (r.left + r.width / 2 - cx) / window.innerWidth;
+      const d = Math.abs(off);
+      if (d < bestD) {
+        bestD = d;
+        best = i;
+      }
+      const k = clamp(d * 1.4);
+      p.style.transform = `perspective(1400px) rotateY(${-off * 16}deg) translateZ(${-k * 120}px) scale(${1 - k * 0.06})`;
+      p.style.opacity = String(1 - k * 0.45);
+    });
+    if (st.isActive) setActive(best);
+    else if (st.progress <= 0) setActive(0);
+  };
 }
 
 // ——— 01 copy: a column lights up, its cells fly into the clipboard ———
@@ -116,7 +156,14 @@ function makeCopyDemo(panel) {
   });
   tl.to(clip, { duration: 1.1, scrambleText: { text: final, chars: "'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-", speed: 0.8 } }, 1.5);
   tl.to({}, { duration: 1.8 });
-  return tl;
+  return {
+    play: () => tl.play(),
+    pause: () => tl.pause(),
+    rest: () => {
+      demo.classList.add('is-picked');
+      clip.textContent = final;
+    },
+  };
 }
 
 // ——— 02 history: typing a search filters the list down to matches ———
@@ -139,7 +186,15 @@ function makeHistoryDemo(panel) {
   tl.call(() => hit[0]?.classList.add('is-hit'), null, 2.1);
   tl.fromTo(hit[0] || {}, { x: 0 }, { x: 6, duration: 0.15, yoyo: true, repeat: 1 }, 2.15);
   tl.to({}, { duration: 2.2 });
-  return tl;
+  return {
+    play: () => tl.play(),
+    pause: () => tl.pause(),
+    rest: () => {
+      q.textContent = word;
+      miss.forEach((li) => (li.style.display = 'none'));
+      hit[0]?.classList.add('is-hit');
+    },
+  };
 }
 
 // ——— 03 format: a one-line query reflows into tidy SQL (FLIP) ———
@@ -205,7 +260,11 @@ function makeFormatDemo(panel) {
     1.15
   );
   tl.to({}, { duration: 2.8 });
-  return tl;
+  return {
+    play: () => tl.play(),
+    pause: () => tl.pause(),
+    rest: () => tidy(),
+  };
 }
 
 // ——— 04 excel: cells light up and stream into an .xlsx file ———
@@ -226,5 +285,13 @@ function makeExcelDemo(panel) {
   tl.call(() => (name.textContent = 'results.xlsx  ✓'), null, 1.85);
   tl.to(cells, { scale: 0.9, duration: 0.2, yoyo: true, repeat: 1, stagger: 0.02 }, 1.9);
   tl.to({}, { duration: 1.6 });
-  return tl;
+  return {
+    play: () => tl.play(),
+    pause: () => tl.pause(),
+    rest: () => {
+      cells.forEach((c) => c.classList.add('is-lit'));
+      gsap.set(bar, { scaleX: 1 });
+      name.textContent = 'results.xlsx  ✓';
+    },
+  };
 }

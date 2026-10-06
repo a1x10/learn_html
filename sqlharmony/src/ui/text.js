@@ -51,11 +51,17 @@ export function initText() {
   });
 
   const fadeUps = $$('.lead, .ticks li, .desk-list li, .studio__cards .card, .download, .inst-tabs, .inst-status, .qa, .spec, .cta__buttons, .cta__dev, .ring__caption, .features__side, .footer__top');
-  fadeUps.forEach((el) => gsap.set(el, { autoAlpha: 0, y: 34 }));
+  // opacity only (not visibility): links and buttons inside stay reachable with the keyboard;
+  // tabbing to one scrolls it into view, which reveals it
+  fadeUps.forEach((el) => gsap.set(el, { opacity: 0, y: 34 }));
   ScrollTrigger.batch(fadeUps, {
     start: 'top 92%',
     once: true,
-    onEnter: (batch) => gsap.to(batch, { autoAlpha: 1, y: 0, duration: 1.2, ease: 'expo.out', stagger: 0.08, overwrite: true }),
+    onEnter: (batch) => gsap.to(batch, { opacity: 1, y: 0, duration: 1.2, ease: 'expo.out', stagger: 0.08, overwrite: true }),
+  });
+  document.addEventListener('focusin', (e) => {
+    const el = fadeUps.find((f) => f.contains(e.target));
+    if (el && +getComputedStyle(el).opacity < 1) gsap.to(el, { opacity: 1, y: 0, duration: 0.6, overwrite: true });
   });
 
   // manifesto: every word starts dim and lights up in reading order with the scroll

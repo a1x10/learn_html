@@ -51,9 +51,10 @@ const FinalShader = {
 };
 
 export class World {
-  constructor(canvas, { mobile = false, reduced = false } = {}) {
+  constructor(canvas, { mobile = false, reduced = false, touch = false } = {}) {
     this.canvas = canvas;
     this.mobile = mobile;
+    this.touch = touch;
     this.reduced = reduced;
     this.things = [];
     this.anchors = new Set();
@@ -115,14 +116,15 @@ export class World {
     this._frames = [];
     this._last = performance.now();
     this._slowStrikes = 0;
+    this._fast = 0;
+    this._cool = 0;
 
-    window.addEventListener(
-      'pointermove',
-      (e) => {
-        this.pointerRaw.set((e.clientX / window.innerWidth) * 2 - 1, -((e.clientY / window.innerHeight) * 2 - 1));
-      },
-      { passive: true }
-    );
+    const onPointer = (e) => {
+      this.pointerRaw.set((e.clientX / window.innerWidth) * 2 - 1, -((e.clientY / window.innerHeight) * 2 - 1));
+    };
+    window.addEventListener('pointermove', onPointer, { passive: true });
+    // taps on touch screens never move the pointer first
+    window.addEventListener('pointerdown', onPointer, { passive: true });
   }
 
   _buildPost() {
@@ -147,7 +149,7 @@ export class World {
     let h = window.innerHeight;
     // touch browsers resize the viewport when the address bar slides; the canvas is
     // sized to the large viewport (100lvh), so only grow, unless the width changed
-    if (this.mobile && w === this.w && h < this.h) h = this.h;
+    if (this.touch && w === this.w && h < this.h) h = this.h;
     if (w === this.w && h === this.h && this.renderer.getPixelRatio() === this.dpr) return;
     this.w = w;
     this.h = h;
@@ -252,7 +254,7 @@ export class World {
     cam.lookAt(this.lookAt);
 
     // layout viewport can change without a resize event (phones, zoom): follow it
-    if (window.innerWidth !== this.w || (!this.mobile && window.innerHeight !== this.h)) this.resize();
+    if (window.innerWidth !== this.w || (!this.touch && window.innerHeight !== this.h)) this.resize();
 
     this.final.uniforms.uTime.value = t;
     const vel = Math.min(Math.abs(this.scrollVel) / 4000, 1);
@@ -262,7 +264,8 @@ export class World {
     this._adapt();
   }
 
-  // drop resolution, then bloom, if frames are slow
+  // drop resolution, then bloom, if frames are really slow (below ~25 fps; a browser
+  // capped at 30 fps in power-saving mode is not slow). Climb back if it gets fast again.
   _adapt() {
     const now = performance.now();
     const ft = now - this._last;
@@ -273,13 +276,29 @@ export class World {
     this._frames.sort((a, b) => a - b);
     const med = this._frames[30];
     this._frames.length = 0;
-    if (med > 24) {
+    this._cool = Math.max(0, (this._cool || 0) - 1);
+    if (med > 40) {
+      this._fast = 0;
       if (this.dpr > 1) {
         this.dpr = Math.max(1, this.dpr - 0.25);
+        this._cool = 6;
         this.resize();
-      } else if (this.bloom.enabled && ++this._slowStrikes > 1) {
+      } else if (this.bloom.enabled && this.useBloom && ++this._slowStrikes > 1) {
         this.bloom.enabled = false;
+        this._cool = 6;
       }
+    } else if (med < 17.5 && this._cool === 0) {
+      if (++this._fast >= 4) {
+        this._fast = 0;
+        this._cool = 6;
+        if (this.useBloom && !this.bloom.enabled) this.bloom.enabled = true;
+        else if (this.dpr < this.maxDpr) {
+          this.dpr = Math.min(this.maxDpr, Math.min(window.devicePixelRatio || 1, this.dpr + 0.25));
+          this.resize();
+        }
+      }
+    } else {
+      this._fast = 0;
     }
   }
 }

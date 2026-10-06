@@ -17,8 +17,9 @@ export const FORM = {
   GALAXY: 8,
   SCATTER: 9,
   SNAP: 10,
+  SNAPW: 11, // per-shard fox weight at the moment of a snapshot (x)
 };
-export const FORM_COUNT = 11;
+export const FORM_COUNT = 12;
 
 function rng(seed) {
   return () => {
@@ -296,5 +297,6 @@ export function buildFormations(centers, N) {
   }
 
   forms[FORM.SNAP] = new Float32Array(N * 4);
+  forms[FORM.SNAPW] = new Float32Array(N * 4);
   return forms;
 }

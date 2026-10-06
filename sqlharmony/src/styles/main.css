@@ -134,6 +134,17 @@ pre {
 [hidden] {
   display: none !important;
 }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 .container {
   width: 100%;
@@ -3546,23 +3557,41 @@ main > section,
   }
 }
 
-/* without scroll animation (no JS or reduced motion) the feature cards simply stack */
-html:not(.anim) .features__pin {
+/* without scroll animation (no JS, reduced motion, very short screens) the feature cards stack */
+html:not(.anim) .features__pin,
+.feat-stack .features__pin {
   height: auto;
   overflow: visible;
 }
-html:not(.anim) .features__track {
+html:not(.anim) .features__track,
+.feat-stack .features__track {
   flex-direction: column;
   padding-inline: var(--gutter);
 }
-html:not(.anim) .feature {
+html:not(.anim) .feature,
+.feat-stack .feature {
   width: 100%;
   max-width: 1120px;
+  height: auto;
   margin-inline: auto;
 }
 html:not(.anim) .features__progress,
-html:not(.anim) .features__count {
+html:not(.anim) .features__count,
+.feat-stack .features__progress,
+.feat-stack .features__count {
   display: none;
+}
+/* short landscape screens: the workbench keeps only the current step under the window */
+@media (max-height: 560px) {
+  .workbench__head .eyebrow {
+    display: none;
+  }
+  .workbench__steps .step:not(.is-on) {
+    display: none;
+  }
+  .workbench__steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 html:not(.anim) .workbench__pin {
   height: auto;

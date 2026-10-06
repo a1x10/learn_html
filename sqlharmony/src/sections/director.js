@@ -97,7 +97,7 @@ export function initDirector(world, shards, { backdrop, mobile, reduced = false 
   };
 
   // —— placements ——
-  shards.place('hero', (p) => {
+  const heroPlace = (p) => {
     const a = heroA;
     // sticky with a little parallax: the fox stays on screen while it breaks apart
     const docTop = a.px.top + window.scrollY;
@@ -109,7 +109,10 @@ export function initDirector(world, shards, { backdrop, mobile, reduced = false 
     p.quat.setFromEuler(eul);
     state.fox.pos.copy(p.pos);
     state.fox.scale = p.scale;
-  });
+  };
+  shards.place('hero', heroPlace);
+  // the word, chips and floor follow the hero fox even while the shards are elsewhere
+  const heroProbe = { pos: new THREE.Vector3(), quat: new THREE.Quaternion(), scale: 1 };
   // the cloud and the halo are wide shapes: on a portrait screen they stand on end
   const portrait = () => world.w < world.h;
   shards.place('cloud', (p) => {
@@ -184,6 +187,20 @@ export function initDirector(world, shards, { backdrop, mobile, reduced = false 
   setTone('hero');
 
   const heroHeight = () => hero.offsetHeight;
+  document.addEventListener('shards-flash', (e) => {
+    gsap.fromTo(shards.uniforms.uFlash, { value: e.detail || 0.4 }, { value: 0, duration: 1.1, ease: 'power3.out', overwrite: true });
+  });
+
+  // the fox blinks now and then (sometimes twice)
+  if (!reduced) {
+    const blink = () => {
+      const u = shards.uniforms.uBlink;
+      const tl = gsap.timeline({ onComplete: () => gsap.delayedCall(2.5 + Math.random() * 4, blink) });
+      tl.to(u, { value: 1, duration: 0.09, ease: 'power2.in' }).to(u, { value: 0, duration: 0.16, ease: 'power2.out' });
+      if (Math.random() < 0.3) tl.to(u, { value: 1, duration: 0.08, ease: 'power2.in' }, '+=0.12').to(u, { value: 0, duration: 0.15, ease: 'power2.out' });
+    };
+    gsap.delayedCall(4.5, blink);
+  }
   let pointerMoved = false;
   window.addEventListener('pointermove', () => (pointerMoved = true), { once: true, passive: true });
 
@@ -216,6 +233,7 @@ export function initDirector(world, shards, { backdrop, mobile, reduced = false 
       gsap.fromTo(shards.uniforms.uFlash, { value: 0 }, { value: 0.5, duration: 0.5, delay: 2.4, yoyo: true, repeat: 1, ease: 'sine.inOut' });
     },
     frame() {
+      heroPlace(heroProbe);
       if (reduced) {
         // reduced motion: only the whole fox, in the hero and in the finale, no flights
         const inCta = state.section === 'Start' || state.section === 'Contact';

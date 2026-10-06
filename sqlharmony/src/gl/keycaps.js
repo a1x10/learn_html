@@ -127,7 +127,7 @@ export class Keycaps {
       k.target = Math.max(auto, k.hover || 0);
     }
     // hover press via raycast from the pointer
-    this.ray.setFromCamera(this.world.pointer, this.world.camera);
+    this.ray.setFromCamera(this.world.pointerRaw, this.world.camera);
     this.bodies ||= this.keys.map((k) => k.body);
     const hits = this.ray.intersectObjects(this.bodies, false);
     const hit = hits[0]?.object;

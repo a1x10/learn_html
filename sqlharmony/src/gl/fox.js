@@ -206,6 +206,12 @@ export function foxTriangles({ height = 2, palette = FOX_COLORS, seed = 7 } = {}
   const cy = (minY + maxY) / 2;
   const cz = (minZ + maxZ) / 2;
   const norm = (p) => [p[0] * s, (p[1] - cy) * s, (p[2] - cz) * s];
+  foxTriangles.landmarks = {
+    eyeI: norm(P.eyeI),
+    eyeO: norm(P.eyeO),
+    eyeT: norm(P.eyeT),
+    eyeB: norm(P.eyeB),
+  };
 
   return tris.map((t) => {
     const base = hexToRgb(palette[t.role]);

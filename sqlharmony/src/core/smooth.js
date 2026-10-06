@@ -57,6 +57,9 @@ export function initAnchors(onNavigate) {
     const spacer = el.parentElement && el.parentElement.classList.contains('pin-spacer') ? el.parentElement : el;
     scrollToTarget(id === '#top' ? 0 : spacer);
     onNavigate?.(id);
+    // keyboard users continue from the section they jumped to
+    if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '-1');
+    el.focus({ preventScroll: true });
   });
   document.querySelectorAll('[data-to-top]').forEach((b) => b.addEventListener('click', () => scrollToTarget(0, { duration: 2.6 })));
 }
