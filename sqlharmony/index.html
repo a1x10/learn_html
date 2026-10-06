@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>SQL Harmony — the SQL workbench for Oracle Fusion</title>
+    <meta
+      name="description"
+      content="SQL Harmony is a free SQL workbench for Oracle Fusion Cloud: a VS Code-style editor, multi-instance support, query history, Excel export and ChatGPT-powered help. Web app and Windows desktop."
+    />
+    <meta name="theme-color" content="#05070e" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="SQL Harmony — Oracle Fusion SQL, in perfect harmony" />
+    <meta property="og:description" content="Free SQL workbench for Oracle Fusion Cloud. Web app and Windows desktop, PL/SQL mode, Excel export, ChatGPT-powered help." />
+    <meta property="og:url" content="https://a1x10.github.io/learn_html/sqlharmony/" />
+    <meta property="og:image" content="https://a1x10.github.io/learn_html/sqlharmony/assets/og-cover.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Geist:wght@300..700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/app.css" />
+    <script>
+      document.documentElement.classList.replace('no-js', 'js');
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "SQL Harmony",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web, Windows 10, Windows 11",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "description": "Free Oracle Fusion SQL query tool with PL/SQL mode, parameter support, Excel export and ChatGPT integration."
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="gl" class="gl" aria-hidden="true"></canvas>
+    <div class="grain" aria-hidden="true"></div>
+
+    <!-- Preloader -->
+    <div class="preloader" id="preloader" aria-hidden="true">
+      <div class="preloader__inner">
+        <svg class="preloader__fox" viewBox="-1.4 -1.1 2.8 2.2" fill="none"></svg>
+        <div class="preloader__code">
+          <span class="preloader__prompt">SQL&gt;</span>
+          <span class="preloader__typed" data-text="SELECT harmony FROM oracle_fusion;"></span><span class="preloader__caret"></span>
+        </div>
+        <div class="preloader__bar"><span></span></div>
+        <div class="preloader__meta">
+          <span class="preloader__status">Connecting to workbench</span>
+          <span class="preloader__count">000</span>
+        </div>
+      </div>
+      <div class="preloader__shutter preloader__shutter--top"></div>
+      <div class="preloader__shutter preloader__shutter--bottom"></div>
+    </div>
+
+    <!-- Cursor -->
+    <div class="cursor" aria-hidden="true">
+      <div class="cursor__ring"><span class="cursor__label"></span></div>
+      <div class="cursor__dot"></div>
+    </div>
+
+    <a class="skip" href="#main">Skip to content</a>
+
+    <!-- Navigation -->
+    <header class="nav" id="nav">
+      <a class="nav__logo" href="#top" aria-label="SQL Harmony, back to top">
+        <img class="mark" src="assets/img/mark.svg" alt="" width="34" height="34" />
+        <span class="nav__name">SQL Harmony</span>
+      </a>
+      <nav class="nav__links" aria-label="Main">
+        <a href="#workbench" class="roll"><span data-text="Workbench">Workbench</span></a>
+        <a href="#features" class="roll"><span data-text="Features">Features</span></a>
+        <a href="#ai" class="roll"><span data-text="AI">AI</span></a>
+        <a href="#desktop" class="roll"><span data-text="Desktop">Desktop</span></a>
+        <a href="#faq" class="roll"><span data-text="FAQ">FAQ</span></a>
+      </nav>
+      <div class="nav__actions">
+        <button class="sound" type="button" aria-pressed="false" aria-label="Turn ambient sound on" data-cursor="Sound">
+          <span></span><span></span><span></span><span></span><span></span>
+        </button>
+        <a class="nav__login roll" href="https://sqlharmony.com/"><span data-text="Log in">Log in</span></a>
+        <a class="btn btn--fox btn--sm" href="https://sqlharmony.com/" data-magnetic><span class="btn__label">Start free</span></a>
+        <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span></button>
+      </div>
+    </header>
+
+    <div class="menu" id="menu" aria-hidden="true">
+      <nav class="menu__links" aria-label="Mobile">
+        <a href="#workbench"><small>01</small>Workbench</a>
+        <a href="#features"><small>02</small>Features</a>
+        <a href="#ai"><small>03</small>AI help</a>
+        <a href="#instances"><small>04</small>Instances</a>
+        <a href="#desktop"><small>05</small>Desktop</a>
+        <a href="#faq"><small>06</small>FAQ</a>
+      </nav>
+      <div class="menu__foot">
+        <a class="btn btn--fox" href="https://sqlharmony.com/"><span class="btn__label">Create free account</span></a>
+        <a class="btn btn--ghost" href="https://sqlharmony.com/"><span class="btn__label">Log in</span></a>
+      </div>
+    </div>
+
+    <div class="progress" aria-hidden="true"><span></span></div>
+    <div class="rail" aria-hidden="true">
+      <span class="rail__num">01</span>
+      <span class="rail__line"><i></i></span>
+      <span class="rail__name">Intro</span>
+    </div>
+
+    <main id="main">
+      <!-- ===================== HERO ===================== -->
+      <section class="hero" id="top" data-section="Intro" data-tone="hero">
+        <div class="hero__stage" data-anchor="hero" data-cursor="Drag" aria-hidden="true"></div>
+        <div class="hero__inner container">
+          <a class="pill" href="#desktop" data-reveal="fade">
+            <span class="pill__tag">New</span>
+            <span class="pill__text">Free desktop app for Windows</span>
+            <span class="pill__arrow" aria-hidden="true">→</span>
+          </a>
+          <h1 class="hero__title">
+            <span class="hero__line"><span class="hero__words">Oracle Fusion SQL,</span></span>
+            <span class="hero__line"><span class="hero__words">in perfect <em class="serif">harmony.</em></span></span>
+          </h1>
+          <div class="hero__bottom">
+            <p class="hero__lead">
+              A free workbench for Oracle Fusion developers. Write and test queries faster with intelligent caching, seamless multi-instance support and
+              interactive help.
+            </p>
+            <div class="hero__ctas">
+              <a class="btn btn--fox btn--lg" href="https://sqlharmony.com/" data-magnetic><span class="btn__label">Create free account</span></a>
+              <a class="btn btn--ghost btn--lg" href="#desktop" data-magnetic><span class="btn__label">Download for Windows</span></a>
+            </div>
+          </div>
+          <ul class="hero__meta" aria-label="Highlights">
+            <li>Web app</li>
+            <li>Windows desktop</li>
+            <li>PL/SQL mode</li>
+            <li>ChatGPT inside</li>
+          </ul>
+          <div class="hero__scroll" aria-hidden="true"><span>Scroll</span><i></i></div>
+        </div>
+      </section>
+
+      <!-- ===================== MANIFESTO ===================== -->
+      <section class="manifesto" id="why" data-section="Why" data-tone="cloud">
+        <div class="container manifesto__inner">
+          <p class="eyebrow"><span class="eyebrow__dot"></span>Why SQL Harmony</p>
+          <p class="manifesto__text" data-words>
+            Every Fusion developer knows the routine. A query in one window, an instance in another, results pasted into
+            <span class="mark-word">Excel</span> by hand. SQL Harmony puts the whole loop in one place:
+            <span class="mark-word">write, run, refine, export.</span>
+          </p>
+        </div>
+      </section>
+
+      <!-- ===================== WORKBENCH ===================== -->
+      <section class="workbench" id="workbench" data-section="Workbench" data-tone="halo">
+        <div class="workbench__pin">
+          <div class="container workbench__head">
+            <p class="eyebrow"><span class="eyebrow__dot"></span>The workbench</p>
+            <h2 class="h2" data-split>Write it. Run it. <em class="serif">Reuse it.</em></h2>
+          </div>
+
+          <div class="workbench__stage">
+            <div class="app-wrap">
+              <div class="app" id="app" aria-label="SQL Harmony web app, animated example" role="img">
+                <div class="app__chrome">
+                  <span class="app__dots"><i></i><i></i><i></i></span>
+                  <span class="app__url"
+                    ><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2h.5a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h.5zm1.5 0h4V5a2 2 0 1 0-4 0v2z" /></svg
+                    >sqlharmony.com</span
+                  >
+                </div>
+                <div class="app__bar">
+                  <span class="ab ab--run"><b>⚡</b> Run SQL</span>
+                  <span class="ab">Dashboard</span>
+                  <span class="ab ab--on">Instances</span>
+                  <span class="ab">Help</span>
+                  <span class="ab ab--hide-s">Manage Users</span>
+                  <span class="ab ab--user">Logged in as You ▾</span>
+                </div>
+                <div class="app__instances" data-callout-target="instances">
+                  <span class="inst">DEV1</span><span class="inst is-on">DEV2</span><span class="inst">TEST</span><span class="inst">UAT</span><span class="inst">PROD</span>
+                </div>
+                <div class="app__tabs" data-callout-target="tabs">
+                  <span class="tab">invoices <i>×</i></span><span class="tab">suppliers <i>×</i></span><span class="tab is-on">Query 3 <i>×</i></span><span class="tab tab--add">+</span>
+                </div>
+                <div class="app__editor">
+                  <div class="ed__gutter" aria-hidden="true"></div>
+                  <pre class="ed__code"><code id="wb-code"></code></pre>
+                  <div class="ed__minimap" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                </div>
+                <div class="app__toolbar">
+                  <span class="tb tb--submit">Submit</span>
+                  <span class="tb tb--cancel">Cancel</span>
+                  <span class="tb-sep"></span>
+                  <span class="tb">⚡ max</span>
+                  <span class="tb tb--fix" data-callout-target="fix">✱ fix</span>
+                  <span class="tb-sep"></span>
+                  <span class="cb" data-callout-target="plsql"><i></i>PLSQL</span>
+                  <span class="cb cb--hide-s"><i></i>Count</span>
+                  <span class="tb-sep"></span>
+                  <span class="tb tb--hide-s">XPaste</span>
+                  <span class="tb tb--format" data-callout-target="format">≡ format</span>
+                  <span class="tb-sep tb--hide-s"></span>
+                  <span class="tb tb--cols">▥ cols</span>
+                  <span class="tb tb--xlsx" data-callout-target="xlsx">⤓ xlsx</span>
+                  <span class="app__status">Status: <b class="st">Ready</b></span>
+                  <span class="tb tb--hide-s" data-callout-target="params">Parameters</span>
+                  <span class="tb" data-callout-target="history">History</span>
+                </div>
+                <div class="app__grid">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th><i class="ck"></i>INVOICE_ID</th>
+                        <th class="col-pick"><i class="ck"></i>INVOICE_NUM</th>
+                        <th><i class="ck"></i>INVOICE_DATE</th>
+                        <th class="col-pick"><i class="ck"></i>INVOICE_AMOUNT</th>
+                        <th class="hide-s"><i class="ck"></i>AMOUNT_PAID</th>
+                        <th class="hide-s"><i class="ck"></i>CURRENCY</th>
+                      </tr>
+                    </thead>
+                    <tbody id="wb-rows"></tbody>
+                  </table>
+                </div>
+                <div class="app__toast" aria-hidden="true"><span class="app__toast-icon">✓</span><span class="app__toast-text">Copied</span></div>
+                <div class="app__sheen" aria-hidden="true"></div>
+              </div>
+              <div class="callouts" aria-hidden="true">
+                <span class="callout" data-for="instances">Every Fusion instance, one click away</span>
+                <span class="callout" data-for="tabs" data-dy="-6">Tabs for every query</span>
+                <span class="callout" data-for="plsql" data-dy="54">PL/SQL mode</span>
+                <span class="callout" data-for="fix">Ask ChatGPT to fix it</span>
+                <span class="callout" data-for="format">One-click formatting</span>
+                <span class="callout" data-for="xlsx" data-dy="54">Export to Excel</span>
+                <span class="callout" data-for="history">Query history</span>
+              </div>
+            </div>
+          </div>
+
+          <ol class="workbench__steps container">
+            <li class="step" data-step="0">
+              <span class="step__num">01</span>
+              <div>
+                <b class="step__title">Write</b>
+                <p>A VS Code-style editor with syntax highlighting and keyboard shortcuts.</p>
+              </div>
+            </li>
+            <li class="step" data-step="1">
+              <span class="step__num">02</span>
+              <div>
+                <b class="step__title">Run</b>
+                <p>Pick an instance, press Submit and read the results right under your query.</p>
+              </div>
+            </li>
+            <li class="step" data-step="2">
+              <span class="step__num">03</span>
+              <div>
+                <b class="step__title">Reuse</b>
+                <p>Copy columns, export to Excel, or find the query again in History.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ===================== KEYWORD RING ===================== -->
+      <section class="ring" id="ring" data-section="Dialect" data-tone="ring" aria-label="SQL and PL/SQL keywords">
+        <div class="ring__stage" data-anchor="ring"></div>
+        <p class="ring__caption container"><span>Fluent in SQL and PL/SQL.</span> <span>Built for Oracle Fusion Cloud.</span></p>
+        <div class="marquee" aria-hidden="true">
+          <div class="marquee__track">
+            <span>SELECT</span><i>✦</i><span>FROM</span><i>✦</i><span>LEFT JOIN</span><i>✦</i><span>WHERE</span><i>✦</i><span>GROUP BY</span><i>✦</i><span>HAVING</span><i>✦</i><span>ORDER BY</span><i>✦</i><span>BEGIN … END;</span><i>✦</i>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== FEATURES ===================== -->
+      <section class="features" id="features" data-section="Features" data-tone="features">
+        <div class="features__pin">
+          <div class="features__head container">
+            <div>
+              <p class="eyebrow"><span class="eyebrow__dot"></span>Everyday tools</p>
+              <h2 class="h2" data-split>Helpful features you'll <em class="serif">actually use.</em></h2>
+            </div>
+            <div class="features__side">
+              <p class="lead">Tools that make your SQL work easier and more efficient.</p>
+              <div class="features__count" aria-hidden="true"><span class="features__cur">01</span><span class="features__of">/ 04</span></div>
+            </div>
+          </div>
+
+          <div class="features__viewport">
+            <div class="features__track">
+              <!-- 01 copy -->
+              <article class="feature" data-form="COPY">
+                <div class="feature__icon" data-anchor="feat"><span class="feature__ghost" aria-hidden="true">01</span></div>
+                <div class="feature__body">
+                  <span class="feature__num">01 — Copy &amp; paste</span>
+                  <h3 class="feature__title">Easy copy &amp; paste</h3>
+                  <p class="feature__text">Quick column copying and formatting saves you time on repetitive tasks.</p>
+                  <div class="demo demo--copy" aria-hidden="true">
+                    <div class="mini-grid">
+                      <div class="mg-row mg-head"><span>SUPPLIER</span><span class="pick">SITE</span><span>AMOUNT</span></div>
+                      <div class="mg-row"><span>Acme Paper</span><span class="pick">LONDON-01</span><span>12 840.00</span></div>
+                      <div class="mg-row"><span>Northwind</span><span class="pick">BERLIN-02</span><span>3 310.75</span></div>
+                      <div class="mg-row"><span>Globex</span><span class="pick">MADRID-01</span><span>980.10</span></div>
+                      <div class="mg-row"><span>Initech</span><span class="pick">AUSTIN-04</span><span>7 125.00</span></div>
+                    </div>
+                    <div class="clip">
+                      <span class="clip__label">Clipboard</span>
+                      <code class="clip__text">'LONDON-01', 'BERLIN-02', 'MADRID-01', 'AUSTIN-04'</code>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <!-- 02 history -->
+              <article class="feature" data-form="HISTORY">
+                <div class="feature__icon" data-anchor="feat"><span class="feature__ghost" aria-hidden="true">02</span></div>
+                <div class="feature__body">
+                  <span class="feature__num">02 — History</span>
+                  <h3 class="feature__title">Query history</h3>
+                  <p class="feature__text">Find and reuse your previous queries without having to remember or rewrite them.</p>
+                  <div class="demo demo--history" aria-hidden="true">
+                    <div class="hist-search"><span class="hist-search__icon">⌕</span><span class="hist-search__q"></span><span class="hist-search__caret"></span></div>
+                    <ul class="hist-list">
+                      <li data-k="invoice"><b>SELECT … FROM ap_invoices_all</b><span>DEV2 · today 09:41</span></li>
+                      <li data-k="supplier"><b>SELECT … FROM poz_suppliers</b><span>TEST · today 09:12</span></li>
+                      <li data-k="invoice"><b>SELECT … FROM ap_invoice_lines_all</b><span>DEV2 · yesterday</span></li>
+                      <li data-k="journal"><b>SELECT … FROM gl_je_headers</b><span>UAT · Mon</span></li>
+                      <li data-k="person"><b>SELECT … FROM per_all_people_f</b><span>DEV1 · Mon</span></li>
+                    </ul>
+                  </div>
+                </div>
+              </article>
+
+              <!-- 03 format -->
+              <article class="feature" data-form="FORMAT">
+                <div class="feature__icon" data-anchor="feat"><span class="feature__ghost" aria-hidden="true">03</span></div>
+                <div class="feature__body">
+                  <span class="feature__num">03 — Formatting</span>
+                  <h3 class="feature__title">Quick formatting</h3>
+                  <p class="feature__text">Keep your queries clean and readable with one-click formatting.</p>
+                  <div class="demo demo--format" aria-hidden="true">
+                    <div class="fmt-bar"><span class="fmt-btn">≡ format</span><span class="fmt-hint">one click</span></div>
+                    <pre class="fmt-code"><code></code></pre>
+                  </div>
+                </div>
+              </article>
+
+              <!-- 04 excel -->
+              <article class="feature" data-form="GRID">
+                <div class="feature__icon" data-anchor="feat"><span class="feature__ghost" aria-hidden="true">04</span></div>
+                <div class="feature__body">
+                  <span class="feature__num">04 — Excel</span>
+                  <h3 class="feature__title">Excel support</h3>
+                  <p class="feature__text">Easy data import and export between SQL and Excel.</p>
+                  <div class="demo demo--excel" aria-hidden="true">
+                    <div class="xl-cells">
+                      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                    <div class="xl-arrow"><i></i></div>
+                    <div class="xl-file">
+                      <span class="xl-file__badge">XLSX</span>
+                      <span class="xl-file__name">results.xlsx</span>
+                      <span class="xl-file__bar"><i></i></span>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+          <div class="features__progress container" aria-hidden="true"><span><i></i></span></div>
+        </div>
+      </section>
+
+      <!-- ===================== AI ===================== -->
+      <section class="ai" id="ai" data-section="AI help" data-tone="ai">
+        <div class="container ai__grid">
+          <div class="ai__copy">
+            <p class="eyebrow"><span class="eyebrow__dot"></span>AI-powered assistance</p>
+            <h2 class="h2" data-split>Stuck on an error? <em class="serif">Ask the fox.</em></h2>
+            <p class="lead">Intelligent query suggestions and error detection powered by ChatGPT, right where you write.</p>
+            <ul class="ticks">
+              <li>Suggestions for the query you're writing</li>
+              <li>Error detection that explains what went wrong</li>
+              <li>A <code>fix</code> button right in the toolbar</li>
+            </ul>
+          </div>
+          <div class="ai__stage">
+            <div class="ai__orb" data-anchor="orb"></div>
+            <div class="ai-card" aria-label="Example: ChatGPT finds an invalid column name and suggests the fix" role="img">
+              <div class="ai-card__top">
+                <span class="ai-card__file">Query 3 · DEV2</span>
+                <span class="ai-card__fix">✱ fix</span>
+              </div>
+              <pre class="ai-card__code"><code><span class="k">SELECT</span> invoice_id,
+       <span class="bad">invoice_numbr</span><span class="good">invoice_num</span>,
+       invoice_amount
+<span class="k">FROM</span>   ap_invoices_all</code></pre>
+              <div class="ai-card__status"><span class="st-err">ORA-00904: "INVOICE_NUMBR": invalid identifier</span><span class="st-ok">Status: Successful Response</span></div>
+              <div class="ai-card__bubble-wrap">
+                <div class="ai-card__bubble">
+                  <span class="ai-card__who"><i></i>ChatGPT</span>
+                  <p class="ai-card__msg" data-msg="AP_INVOICES_ALL has no column INVOICE_NUMBR. Did you mean INVOICE_NUM?"></p>
+                  <span class="ai-card__apply">Apply fix</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== INSTANCES ===================== -->
+      <section class="instances" id="instances" data-section="Instances" data-tone="instances">
+        <div class="container">
+          <div class="instances__head">
+            <p class="eyebrow"><span class="eyebrow__dot"></span>Multi-instance</p>
+            <h2 class="h2" data-split>Every instance. <em class="serif">One editor.</em></h2>
+            <p class="lead">Keep DEV, TEST and PROD one click apart. Seamless multi-instance support and intelligent caching keep your daily Oracle work moving.</p>
+          </div>
+        </div>
+        <div class="instances__stage" data-anchor="constellation"></div>
+        <div class="container instances__foot">
+          <div class="inst-tabs" role="tablist" aria-label="Example instances">
+            <button role="tab" aria-selected="false" data-i="0">DEV1</button>
+            <button role="tab" aria-selected="true" data-i="1">DEV2</button>
+            <button role="tab" aria-selected="false" data-i="2">TEST</button>
+            <button role="tab" aria-selected="false" data-i="3">UAT</button>
+            <button role="tab" aria-selected="false" data-i="4">PROD</button>
+          </div>
+          <p class="inst-status" aria-live="polite"><span class="inst-status__dot"></span>Working in <b class="inst-status__name">DEV2</b> · same editor, same tabs</p>
+        </div>
+      </section>
+
+      <!-- ===================== STUDIO ===================== -->
+      <section class="studio" id="studio" data-section="Editor" data-tone="studio">
+        <div class="container studio__grid">
+          <div class="studio__keys" data-anchor="keys"></div>
+          <div class="studio__copy">
+            <p class="eyebrow"><span class="eyebrow__dot"></span>Professional development environment</p>
+            <h2 class="h2" data-split>Feels like <em class="serif">your</em> editor.</h2>
+            <div class="studio__cards">
+              <article class="card" data-tilt>
+                <span class="card__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 6 2 12l6 6M16 6l6 6-6 6" /></svg></span>
+                <h3>Modern editor experience</h3>
+                <p>Familiar VS Code-like environment with advanced features and keyboard shortcuts.</p>
+              </article>
+              <article class="card" data-tilt>
+                <span class="card__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 7h6l2 2h10v10H3zM3 7V5h6l2 2" /></svg></span>
+                <h3>Advanced query management</h3>
+                <p>Organize queries with tabs, folders and smart search.</p>
+              </article>
+              <article class="card" data-tilt>
+                <span class="card__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h10M4 12h16M4 17h7M17 4v6M14 7h6" /></svg></span>
+                <h3>Parameters &amp; PL/SQL</h3>
+                <p>Run queries with parameters, and switch to PL/SQL mode when you need it.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== DESKTOP ===================== -->
+      <section class="desktop" id="desktop" data-section="Desktop" data-tone="desktop">
+        <div class="desktop__pin">
+          <div class="desktop__stage" data-anchor="laptop"></div>
+          <div class="container desktop__grid">
+            <div class="desktop__copy">
+              <p class="eyebrow"><span class="eyebrow__dot eyebrow__dot--live"></span>New · released 30.09.2026</p>
+              <h2 class="h2" data-split>Now on your <em class="serif">desktop.</em></h2>
+              <p class="lead"><b>SQLHarmonyDesk</b> is a desktop SQL workbench for Oracle Fusion Cloud.</p>
+              <ul class="desk-list">
+                <li><span class="desk-list__i">01</span>Write and run SQL against Fusion, with paged results, tabs and PL/SQL mode.</li>
+                <li><span class="desk-list__i">02</span>Export results to CSV or XLSX.</li>
+                <li><span class="desk-list__i">03</span>Browse table and column metadata while you type.</li>
+                <li><span class="desk-list__i">04</span>Connect with Basic authentication or your identity provider's SSO.</li>
+              </ul>
+            </div>
+            <div class="download" id="download">
+              <div class="download__head">
+                <span class="download__os" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 5.5 10.5 4.4v7.1H3zM11.5 4.3 21 3v8.5h-9.5zM3 12.5h7.5v7.1L3 18.5zM11.5 12.5H21V21l-9.5-1.3z" /></svg></span>
+                <div>
+                  <b>SQLHarmonyDesk 0.5.0</b>
+                  <span>Windows 10 or 11, 64-bit · 5.5 MB · free</span>
+                </div>
+              </div>
+              <a class="btn btn--fox btn--lg btn--block" href="https://sqlharmony.com/desktop/dl/exe" data-magnetic data-cursor="Download"
+                ><span class="btn__label">Download for Windows</span></a
+              >
+              <p class="download__alt">Blocked by your network? <a href="https://sqlharmony.com/desktop/dl/zip">Download the zipped installer</a> (5.5 MB).</p>
+              <details class="download__more">
+                <summary>Windows will warn you when you run it</summary>
+                <div class="download__body">
+                  <p>
+                    The installer isn't code-signed yet, so Windows shows <em>"Windows protected your PC — unknown publisher"</em>. To continue, click
+                    <b>More info</b>, then <b>Run anyway</b>.
+                  </p>
+                  <p>To confirm the file is the one published, check its fingerprint in PowerShell:</p>
+                  <pre class="hash"><code>Get-FileHash .\SQLHarmonyDesk_0.5.0_x64-setup.exe -Algorithm SHA256</code></pre>
+                  <div class="hash-row">
+                    <code class="hash-val">274b8f9ff307041c4b5a7befcc622f34a094247d394290e598acc47ded79a186</code>
+                    <button class="copy" type="button" data-copy="274b8f9ff307041c4b5a7befcc622f34a094247d394290e598acc47ded79a186">Copy</button>
+                  </div>
+                  <div class="hash-row">
+                    <code class="hash-val"><span class="hash-tag">zip</span>ee355d227b1d98812143a80168646f21a258a62165c6fb9bdbfb91552e614ed3</code>
+                    <button class="copy" type="button" data-copy="ee355d227b1d98812143a80168646f21a258a62165c6fb9bdbfb91552e614ed3">Copy</button>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== VIDEO ===================== -->
+      <section class="demo-video" id="demo" data-section="Demo" data-tone="video">
+        <div class="container">
+          <div class="demo-video__head">
+            <p class="eyebrow"><span class="eyebrow__dot"></span>Watch how it works</p>
+            <h2 class="h2" data-split>A quick tour of the <em class="serif">core features.</em></h2>
+          </div>
+          <div class="video-wrap">
+            <a class="video" href="https://www.youtube.com/watch?v=lJc0BykJQZg" data-video="lJc0BykJQZg" data-cursor="Play" target="_blank" rel="noopener">
+              <img src="assets/img/app-screenshot.png" alt="SQL Harmony web app with instance tabs, query tabs, the SQL editor and a results grid" width="1894" height="867" loading="lazy" />
+              <span class="video__shade" aria-hidden="true"></span>
+              <span class="video__play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" /></svg></span>
+              <span class="video__label">Play the demo <small>YouTube</small></span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SPECS ===================== -->
+      <section class="specs" data-section="Specs" data-tone="specs" aria-label="Key facts">
+        <ul class="container specs__grid">
+          <li class="spec"><b class="spec__v"><span data-count="0" data-prefix="$">$0</span></b><span class="spec__k">for a SQL Harmony account</span></li>
+          <li class="spec"><b class="spec__v"><span data-count="5.5" data-decimals="1">5.5</span><small>MB</small></b><span class="spec__k">desktop installer</span></li>
+          <li class="spec"><b class="spec__v spec__v--txt">CSV · XLSX</b><span class="spec__k">export formats</span></li>
+          <li class="spec"><b class="spec__v spec__v--txt">Basic · SSO</b><span class="spec__k">ways to sign in on desktop</span></li>
+        </ul>
+      </section>
+
+      <!-- ===================== FAQ ===================== -->
+      <section class="faq" id="faq" data-section="FAQ" data-tone="faq">
+        <div class="container faq__grid">
+          <div class="faq__head">
+            <p class="eyebrow"><span class="eyebrow__dot"></span>FAQ</p>
+            <h2 class="h2" data-split>Questions, <em class="serif">answered.</em></h2>
+          </div>
+          <div class="faq__list">
+            <details class="qa">
+              <summary><span>Is SQL Harmony free?</span><i aria-hidden="true"></i></summary>
+              <div class="qa__a"><p>Yes. Create a free account to use the web app, and download the Windows desktop app at no cost.</p></div>
+            </details>
+            <details class="qa">
+              <summary><span>What does it work with?</span><i aria-hidden="true"></i></summary>
+              <div class="qa__a"><p>SQL Harmony is built for Oracle Fusion Cloud. You write SQL, or switch to PL/SQL mode, and run it against your Fusion instances.</p></div>
+            </details>
+            <details class="qa">
+              <summary><span>Can I work with several instances?</span><i aria-hidden="true"></i></summary>
+              <div class="qa__a"><p>Yes. Multi-instance support keeps environments like DEV, TEST and production one click apart in the same editor.</p></div>
+            </details>
+            <details class="qa">
+              <summary><span>How does the AI assistance work?</span><i aria-hidden="true"></i></summary>
+              <div class="qa__a"><p>The editor uses ChatGPT for query suggestions and error detection, so help arrives where you write instead of in another tab.</p></div>
+            </details>
+            <details class="qa">
+              <summary><span>Can I export results to Excel?</span><i aria-hidden="true"></i></summary>
+              <div class="qa__a"><p>Yes. Export results to XLSX, or to CSV in the desktop app, and bring data in from Excel when you need it.</p></div>
+            </details>
+            <details class="qa">
+              <summary><span>What do I need for the desktop app?</span><i aria-hidden="true"></i></summary>
+              <div class="qa__a">
+                <p>Windows 10 or 11, 64-bit. The installer is 5.5 MB. You can sign in with Basic authentication or your identity provider's SSO.</p>
+              </div>
+            </details>
+            <details class="qa">
+              <summary><span>Why does Windows warn me about the installer?</span><i aria-hidden="true"></i></summary>
+              <div class="qa__a">
+                <p>
+                  The installer isn't code-signed yet, so Windows shows "Windows protected your PC". Click More info, then Run anyway. You can compare the
+                  file's SHA-256 fingerprint with the one in the <a href="#download">download section</a>.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== CTA ===================== -->
+      <section class="cta" id="start" data-section="Start" data-tone="cta">
+        <div class="cta__pin">
+        <div class="cta__stage" data-anchor="cta" data-cursor="Drag" aria-hidden="true"></div>
+        <div class="container cta__inner">
+          <p class="eyebrow eyebrow--center"><span class="eyebrow__dot"></span>Free to start</p>
+          <h2 class="cta__title" data-split>Ready to enhance your <em class="serif">development?</em></h2>
+          <p class="lead cta__lead">Join developers who are writing better queries and shipping faster.</p>
+          <div class="cta__buttons">
+            <a class="btn btn--fox btn--xl" href="https://sqlharmony.com/" data-magnetic><span class="btn__label">Create free account</span></a>
+            <a class="btn btn--ghost btn--xl" href="#desktop" data-magnetic><span class="btn__label">Get the desktop app</span></a>
+          </div>
+          <a class="cta__dev link" href="https://www.linkedin.com/in/alexeymatveev/" target="_blank" rel="noopener">Connect with the developer on LinkedIn ↗</a>
+        </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer" data-section="Contact" data-tone="footer">
+      <div class="container">
+        <div class="footer__top">
+          <div class="footer__brand">
+            <img class="mark mark--lg" src="assets/img/mark.svg" alt="" width="64" height="64" />
+            <p>The SQL workbench for Oracle Fusion Cloud.</p>
+          </div>
+          <nav class="footer__cols" aria-label="Footer">
+            <div>
+              <b>Product</b>
+              <a class="link" href="https://sqlharmony.com/">Web app</a>
+              <a class="link" href="#desktop">Desktop app</a>
+              <a class="link" href="#demo">Demo video</a>
+            </div>
+            <div>
+              <b>Help</b>
+              <a class="link" href="#faq">FAQ</a>
+              <a class="link" href="https://sqlharmony.com/desktop/dl/zip">Zipped installer</a>
+              <a class="link" href="https://sqlharmony.com/desktop/">Download page</a>
+            </div>
+            <div>
+              <b>Contact</b>
+              <a class="link" href="https://www.linkedin.com/in/alexeymatveev/" target="_blank" rel="noopener">LinkedIn ↗</a>
+              <button class="link totop" type="button" data-to-top>Back to top ↑</button>
+            </div>
+          </nav>
+        </div>
+        <div class="footer__word" aria-hidden="true">
+          <span class="fw">S</span><span class="fw">Q</span><span class="fw">L</span><span class="fw fw--gap"> </span><span class="fw">H</span><span class="fw">a</span><span class="fw">r</span><span class="fw">m</span><span class="fw">o</span><span class="fw">n</span><span class="fw">y</span>
+        </div>
+        <div class="footer__bottom">
+          <p>© 2026 SQL Harmony</p>
+          <p>Oracle and Oracle Fusion are trademarks of Oracle and/or its affiliates. SQL Harmony is an independent product and is not affiliated with Oracle.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Video modal -->
+    <div class="modal" id="video-modal" role="dialog" aria-modal="true" aria-label="SQL Harmony demo video" hidden>
+      <div class="modal__backdrop" data-close></div>
+      <div class="modal__frame">
+        <div class="modal__video"></div>
+        <button class="modal__close" type="button" data-close aria-label="Close video">Close ✕</button>
+      </div>
+    </div>
+
+    <script src="assets/app.js" defer></script>
+  </body>
+</html>
