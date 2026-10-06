@@ -112,6 +112,19 @@ export function initVideo() {
   const btn = document.querySelector('[data-video]');
   if (!btn) return;
   const id = btn.dataset.video;
+  // в предпросмотре на claude.ai чужие сайты встраивать нельзя — там ролик открывается на YouTube в новой вкладке
+  if (document.documentElement.classList.contains('is-artifact')) {
+    const a = document.createElement('a');
+    a.className = btn.className;
+    a.href = `https://www.youtube.com/watch?v=${id}`;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.dataset.cursor = 'YouTube';
+    a.setAttribute('aria-label', 'Watch the SQL Harmony demo on YouTube');
+    a.append(...btn.childNodes);
+    btn.replaceWith(a);
+    return;
+  }
   const thumb = btn.querySelector('.demo__thumb');
   const img = new Image();
   img.onload = () => {
