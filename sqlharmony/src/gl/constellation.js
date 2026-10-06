@@ -51,8 +51,8 @@ export class Constellation {
     this.hubGlow = glowSprite('#ff6a1a', 1.2);
     this.hubGlow.scale.setScalar(2.2);
     const hubLabel = makeLabel('SQL HARMONY', { color: '#ffd2ad', size: 52 });
-    hubLabel.position.set(0, -0.62, 0);
-    hubLabel.scale.multiplyScalar(0.34);
+    hubLabel.position.set(0, -0.72, 0);
+    hubLabel.scale.multiplyScalar(0.27);
     this.hubLabel = hubLabel;
     this.tilt.add(this.hubGlow, this.hub, hubLabel);
     this._q = new THREE.Quaternion();
@@ -66,8 +66,8 @@ export class Constellation {
     const ringGeo = new THREE.TorusGeometry(0.2, 0.006, 6, 64);
     NAMES.forEach((name, i) => {
       const a = (i / NAMES.length) * Math.PI * 2 + 0.35;
-      const r = 2.25 + (i % 2) * 0.35;
-      const pos = new THREE.Vector3(Math.cos(a) * r, Math.sin(i * 1.7) * 0.35, Math.sin(a) * r * 0.9);
+      const r = 2.35 + (i % 2) * 0.25;
+      const pos = new THREE.Vector3(Math.cos(a) * r, (i % 2 ? 0.28 : -0.12), Math.sin(a) * r * 0.9);
       const mat = new THREE.MeshBasicMaterial({ color: new THREE.Color('#8fb0ff') });
       const node = new THREE.Mesh(nodeGeo, mat);
       node.position.copy(pos);
@@ -82,8 +82,8 @@ export class Constellation {
       glow.position.copy(pos);
       glow.scale.setScalar(0.9);
       const label = makeLabel(name, { color: '#e6ecff', size: 56 });
-      label.position.copy(pos).add(new THREE.Vector3(0, 0.36, 0));
-      label.scale.multiplyScalar(0.36);
+      label.position.copy(pos).add(new THREE.Vector3(0, 0.34, 0));
+      label.scale.multiplyScalar(0.3);
 
       // arched beam from the hub to the node
       const mid = pos.clone().multiplyScalar(0.5).add(new THREE.Vector3(0, 0.9 + (i % 2) * 0.3, 0));

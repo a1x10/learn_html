@@ -23,6 +23,9 @@ export function initNav() {
     menu?.setAttribute('aria-hidden', String(!open));
     if (open) {
       gsap.fromTo($$('.menu__links a, .menu__foot .btn'), { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.9, stagger: 0.05, ease: 'expo.out', delay: 0.2 });
+      setTimeout(() => $('.menu__links a')?.focus({ preventScroll: true }), 250);
+    } else if (menu?.contains(document.activeElement)) {
+      burger?.focus({ preventScroll: true });
     }
   };
   burger?.addEventListener('click', () => setMenu(!root.classList.contains('menu-open')));

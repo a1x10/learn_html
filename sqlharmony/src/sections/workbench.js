@@ -123,7 +123,10 @@ export function initWorkbench(env2) {
       const x = ((tr.left + tr.width / 2 - ar.left) / k) * s;
       const y = ((tr.top - ar.top) / k) * s;
       const dy = parseFloat(c.dataset.dy || '0');
-      c.style.left = `${x}px`;
+      // keep the pill inside the window's width
+      const half = c.offsetWidth / 2 + 4;
+      const ww = dw * s;
+      c.style.left = `${Math.min(ww - half, Math.max(half, x))}px`;
       c.style.top = `${y - dy}px`;
       c.style.setProperty('--stem', `${10 + Math.max(0, dy)}px`);
     });

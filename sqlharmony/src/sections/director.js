@@ -43,7 +43,7 @@ const TONES = {
   footer: { warm: 0.18, cold: 0.08, wp: [0.0, -0.4], cp: [0.8, 0.8] },
 };
 
-export function initDirector(world, shards, { backdrop, mobile }) {
+export function initDirector(world, shards, { backdrop, mobile, reduced = false }) {
   const hero = $('.hero');
   const heroA = world.anchor($('[data-anchor="hero"]'), { margin: 2 });
   const ctaA = world.anchor($('[data-anchor="cta"]'), { margin: 1 });
@@ -101,7 +101,7 @@ export function initDirector(world, shards, { backdrop, mobile }) {
     const a = heroA;
     // sticky with a little parallax: the fox stays on screen while it breaks apart
     const docTop = a.px.top + window.scrollY;
-    const y = docTop + a.px.height * 0.5 - window.scrollY * 0.32;
+    const y = reduced ? a.px.top + a.px.height * 0.5 : docTop + a.px.height * 0.5 - window.scrollY * 0.32;
     toWorld(a.px.left + a.px.width / 2, y, p.pos);
     p.scale = (a.px.height * world.unitsPerPx(0)) / 2.25;
     const t = world.time;
@@ -194,6 +194,17 @@ export function initDirector(world, shards, { backdrop, mobile }) {
     },
     // intro: shards rush in from behind the camera and assemble the fox
     intro() {
+      if (reduced) {
+        // no flight: the fox is simply there
+        shards.A = { form: FORM.FOX, place: 'hero' };
+        shards.B = { form: FORM.FOX, place: 'hero' };
+        shards.mix = 1;
+        shards.mode = 'tween';
+        shards.tween = null;
+        shards.uniforms.uBreath.value = 0;
+        state.intro = false;
+        return;
+      }
       state.intro = true;
       shards.A = { form: FORM.SCATTER, place: 'identity' };
       shards.B = { form: FORM.SCATTER, place: 'identity' };
@@ -205,6 +216,17 @@ export function initDirector(world, shards, { backdrop, mobile }) {
       gsap.fromTo(shards.uniforms.uFlash, { value: 0 }, { value: 0.5, duration: 0.5, delay: 2.4, yoyo: true, repeat: 1, ease: 'sine.inOut' });
     },
     frame() {
+      if (reduced) {
+        // reduced motion: only the whole fox, in the hero and in the finale, no flights
+        const inCta = state.section === 'Start' || state.section === 'Contact';
+        const place = inCta ? 'cta' : 'hero';
+        shards.A = shards.B = { form: FORM.FOX, place };
+        shards.mix = 1;
+        shards.tween = null;
+        state.heroP = 0;
+        shards.mesh.visible = inCta || window.scrollY < hero.offsetHeight * 0.9;
+        return;
+      }
       // spin inertia, then a soft spring back to the nearest full turn
       const dt = 1 / 60;
       if (!state.dragging) {

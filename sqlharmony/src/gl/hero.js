@@ -104,16 +104,21 @@ export class Chips {
     this.out = 0; // 0..1 scroll-away
     this.reveal = 0;
     const words = mobile ? CHIP_WORDS.slice(0, 6) : CHIP_WORDS;
+    // three rings; chips in a ring share one speed so they keep their spacing
+    const perRing = [0, 0, 0];
+    words.forEach((_, i) => perRing[i % 3]++);
+    const ringSpeed = [0.1, -0.075, 0.13];
     words.forEach(([w, accent], i) => {
       const { texture, aspect } = chipTexture(w, { accent });
       const mat = new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthWrite: false, opacity: 1, toneMapped: false });
       const m = new THREE.Mesh(new THREE.PlaneGeometry(aspect, 1), mat);
       m.renderOrder = 5;
       const ring = i % 3;
+      const slot = Math.floor(i / 3);
       this.items.push({
         mesh: m,
-        phase: (i / words.length) * Math.PI * 2 + ring * 0.5,
-        speed: (0.11 + ring * 0.035) * (i % 2 ? 1 : -1) * 0.9,
+        phase: (slot / perRing[ring]) * Math.PI * 2 + ring * 1.1,
+        speed: ringSpeed[ring],
         rx: 1.45 + ring * 0.38,
         ry: 0.5 + ring * 0.22,
         tilt: -0.35 + ring * 0.28,
@@ -141,9 +146,9 @@ export class Chips {
       it.mesh.position.copy(this._v).multiplyScalar(s).add(c.pos);
       it.mesh.quaternion.copy(this.world.camera.quaternion);
       const depth = (z / (it.rx * 0.8) + 1) / 2; // 0 back .. 1 front
-      const k = it.size * s * (0.75 + depth * 0.4) * (0.6 + 0.4 * this.reveal);
+      const k = it.size * s * (0.9 + depth * 0.3) * (0.6 + 0.4 * this.reveal);
       it.mesh.scale.set(k, k, k);
-      it.mesh.material.opacity = (0.35 + depth * 0.65) * this.reveal * (1 - this.out);
+      it.mesh.material.opacity = (0.45 + depth * 0.55) * this.reveal * (1 - this.out);
     }
   }
 }

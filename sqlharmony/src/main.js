@@ -14,6 +14,7 @@ import { World } from './gl/world.js';
 import { Backdrop, Dust } from './gl/backdrop.js';
 import { Shards } from './gl/shards.js';
 import { HeroWord, Chips, WaveFloor } from './gl/hero.js';
+import { CursorTrail } from './gl/trail.js';
 
 import { initDirector } from './sections/director.js';
 import { initHero } from './sections/hero.js';
@@ -84,11 +85,12 @@ async function boot() {
       gl.backdrop = world.add(new Backdrop());
       gl.dust = world.add(new Dust({ count: env.mobile ? 650 : 1400 }));
       gl.shards = world.add(new Shards({ levels: 2 }));
-      gl.director = initDirector(world, gl.shards, { backdrop: gl.backdrop, mobile: env.mobile });
+      gl.director = initDirector(world, gl.shards, { backdrop: gl.backdrop, mobile: env.mobile, reduced: env.reduced });
       const getFox = () => gl.director.state.fox;
       gl.word = world.add(new HeroWord(world, getFox, { mobile: env.mobile }));
       gl.floor = world.add(new WaveFloor(world, getFox, { mobile: env.mobile }));
       gl.chips = world.add(new Chips(world, getFox, { mobile: env.mobile }));
+      if (env.fine && !env.reduced) gl.trail = world.add(new CursorTrail(world));
       pre.set(0.45);
       await initSections.gl?.(world, gl, env);
       pre.set(0.6);

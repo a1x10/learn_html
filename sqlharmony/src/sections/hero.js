@@ -31,7 +31,11 @@ export function initHero({ word, chips, floor, director }) {
 
   return {
     intro() {
-      if (env.reduced) return;
+      if (env.reduced) {
+        if (word) word.uniforms.uReveal.value = 1;
+        if (chips) chips.reveal = 1;
+        return;
+      }
       const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
       if (word) tl.to(word.uniforms.uReveal, { value: 1, duration: 2.6, ease: 'power2.inOut' }, 0.2);
       if (floor) tl.fromTo(floor.uniforms.uFade, { value: 0 }, { value: 1, duration: 2.4, ease: 'power2.out' }, 0.4);
