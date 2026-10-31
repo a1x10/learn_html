@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Cleanface — Центр клининговых технологий · Алматы</title>
+  <meta name="description" content="Cleanface — мойка фасадов, витражей и окон, уборка паркингов, коттеджей и офисов в Алматы. Первыми в Казахстане внедрили технологию Water Fed Pole. От 400 ₸/м²." />
+  <meta name="theme-color" content="#1150ef" />
+  <meta property="og:title" content="Cleanface — Центр клининговых технологий" />
+  <meta property="og:description" content="Фасады, витражи и окна без разводов. Технология Water Fed Pole, бесплатный замер, работа без посредников." />
+  <meta property="og:image" content="assets/img/facade-rope.jpg" />
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.sceneai.art" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500&family=Manrope:wght@400;500&family=Onest:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <link rel="preload" as="image" href="https://cdn.sceneai.art/Bg%20images/1dd58514-cedb-4f70-9aee-709c3f887808.png" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js" } }
+  </script>
+</head>
+
+<body class="is-loading">
+
+  <!-- ================= PRELOADER ================= -->
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="preloader__inner">
+      <svg class="preloader__mark" viewBox="0 0 40 30" fill="none">
+        <rect x="2" y="3" width="36" height="7" rx="2" fill="#8fd14f" />
+        <rect x="3.5" y="10" width="33" height="2.6" rx="1.2" fill="#0c1309" />
+        <path d="M20 13.5 26 28" stroke="#fff" stroke-width="4" stroke-linecap="round" />
+      </svg>
+      <div class="preloader__name">CLEANFACE</div>
+      <div class="preloader__count" id="preCount">000</div>
+    </div>
+    <div class="preloader__blade"></div>
+  </div>
+
+  <!-- ================= HERO + LATEST ================= -->
+  <div class="page-bg" id="top">
+    <div class="grid-lines" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+
+    <section class="hero">
+      <div class="hero-house" id="heroHouse">
+        <img src="https://cdn.sceneai.art/Bg%20images/1dd58514-cedb-4f70-9aee-709c3f887808.png" alt="" fetchpriority="high" />
+      </div>
+
+      <header class="header">
+        <a href="#top" class="logo anim anim-nav" style="animation-delay:.1s" aria-label="Cleanface — на главную">
+          <svg viewBox="0 0 40 30" fill="none" aria-hidden="true">
+            <rect x="2" y="3" width="36" height="7" rx="2" fill="#fff" />
+            <rect x="3.5" y="10" width="33" height="2.6" rx="1.2" fill="#fff" opacity=".5" />
+            <path d="M20 13.5 26 28" stroke="#fff" stroke-width="4" stroke-linecap="round" />
+          </svg>
+          <span class="logo__word">CLEANFACE</span>
+        </a>
+
+        <nav class="nav" aria-label="Основная навигация">
+          <a href="#top" class="pill pill--home anim anim-nav" style="animation-delay:.2s">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
+            <span data-i18n="nav.home">Главная</span>
+          </a>
+          <a href="#services" class="pill anim anim-nav" style="animation-delay:.28s" data-i18n="nav.services">Услуги</a>
+          <a href="#why" class="pill anim anim-nav" style="animation-delay:.36s" data-i18n="nav.why">Почему мы</a>
+          <a href="#contact" class="pill anim anim-nav" style="animation-delay:.44s" data-i18n="nav.contact">Контакты</a>
+        </nav>
+
+        <div class="header__right">
+          <div class="lang anim anim-nav" style="animation-delay:.52s" role="group" aria-label="Язык">
+            <button type="button" data-lang="ru" aria-pressed="true">RU</button>
+            <button type="button" data-lang="en" aria-pressed="false">EN</button>
+          </div>
+          <a href="#contact" class="btn-outline anim anim-nav" style="animation-delay:.6s" data-i18n="nav.cta">Заявка</a>
+          <button class="burger anim anim-nav" style="animation-delay:.65s" type="button" aria-expanded="false" aria-controls="dropdown" aria-label="Меню"><span></span></button>
+        </div>
+
+        <div class="dropdown" id="dropdown">
+          <a href="#top" class="pill pill--home">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
+            <span data-i18n="nav.home">Главная</span>
+          </a>
+          <a href="#services" class="pill" data-i18n="nav.services">Услуги</a>
+          <a href="#why" class="pill" data-i18n="nav.why">Почему мы</a>
+          <a href="#contact" class="pill" data-i18n="nav.contact">Контакты</a>
+        </div>
+      </header>
+
+      <div class="hero-row" id="heroRow">
+        <h1 class="hero-title">
+          <span class="t-line t-indent"><span class="w" style="--d:.55s;--dur:1s">Cleanface</span></span>
+          <span class="t-line"><span class="w" style="--d:.75s;--dur:1s" data-i18n="hero.l2">Чистота</span></span>
+          <span class="t-line"><span class="w" style="--d:.95s;--dur:1s" data-i18n="hero.l3">Фасадов</span></span>
+        </h1>
+        <p class="tagline" data-split data-start="1.15" data-step=".06" data-dur=".7" data-i18n="hero.tag">Центр клининговых<br>технологий: фасады, окна<br>и витражи в Алматы.</p>
+      </div>
+
+      <div class="explore">
+        <a href="#services">
+          <span class="w" style="--d:1.85s;--dur:.8s" data-i18n="hero.explore">Смотреть услуги</span>
+          <span class="w" style="--d:1.85s;--dur:.8s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10" /><path d="M7 17 17 7" /></svg></span>
+        </a>
+      </div>
+
+      <div class="video-card">
+        <div class="video-card__box">
+          <video id="heroVideo" src="https://cdn.sceneai.art/Hero%20Section%20Video/adec243d-ffda-48cf-a8a8-26e6d6bcbe9b.mp4" autoplay muted loop playsinline preload="auto"></video>
+        </div>
+        <p class="video-card__cap" data-split data-start="2.15" data-step=".06" data-dur=".7" data-i18n="hero.cap">Чистота, которую<br>видно с улицы</p>
+        <div class="bars" id="bars" role="group" aria-label="Части видео">
+          <button type="button" class="is-active" aria-label="1"></button>
+          <button type="button" aria-label="2"></button>
+          <button type="button" aria-label="3"></button>
+          <button type="button" aria-label="4"></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="latest reveal" id="projects" data-reveal>
+      <div class="latest__title-wrap" style="flex:1 1 max(200px,24.5vw)">
+        <h2 class="latest__title" data-split data-lines data-start="0" data-step=".15" data-dur=".9" data-i18n="latest.title">Наши<br>свежие<br>объекты</h2>
+        <p class="latest__sub rv" style="--d:.45s" data-i18n="latest.sub">Реальные фото с объектов Cleanface: промышленный альпинизм, Water Fed Pole и уборка паркингов.</p>
+      </div>
+      <div class="gallery" id="gallery">
+        <figure class="g-card rise" style="--d:.2s; margin:0" data-tilt>
+          <img src="assets/img/facade-rope.jpg" alt="Альпинисты Cleanface моют фасад высотного здания" loading="lazy" />
+          <figcaption class="g-card__tag"><b data-i18n="latest.c1">Мойка фасада</b><span data-i18n="latest.c1s">альпинизм</span></figcaption>
+        </figure>
+        <figure class="g-card rise" style="--d:.35s; margin:0" data-tilt>
+          <img src="assets/img/wfp-glass.jpg" alt="Мойка витража телескопической штангой Water Fed Pole" loading="lazy" />
+          <figcaption class="g-card__tag"><b data-i18n="latest.c2">Витражи</b><span>WFP</span></figcaption>
+        </figure>
+        <figure class="g-card rise" style="--d:.5s; margin:0" data-tilt>
+          <img src="assets/img/parking.jpg" alt="Подземный паркинг после уборки Cleanface" loading="lazy" />
+          <figcaption class="g-card__tag"><b data-i18n="latest.c3">Паркинг</b><span>24/7</span></figcaption>
+        </figure>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= WIPE (squeegee) ================= -->
+  <section class="wipe" id="wipe" aria-label="Технология мойки стекла">
+    <div class="wipe__sticky">
+      <div class="wipe__panel" id="wipePanel">
+        <div class="wipe__scene">
+          <img src="https://cdn.sceneai.art/Bg%20images/1dd58514-cedb-4f70-9aee-709c3f887808.png" alt="" loading="lazy" />
+          <h2 class="wipe__headline"><span data-i18n="wipe.h1">Кристально</span><br><em data-i18n="wipe.h2">чисто.</em></h2>
+          <p class="wipe__lead" data-i18n="wipe.lead">Water Fed Pole — очищенная вода и телескопические штанги. Стекло высыхает само, без химии и без разводов.</p>
+        </div>
+        <div class="wipe__glint"></div>
+        <div class="wipe__wet" id="wipeWet"></div>
+        <canvas class="wipe__drops" id="wipeDrops"></canvas>
+        <div class="squeegee" id="squeegee" aria-hidden="true">
+          <div class="squeegee__handle"></div>
+          <div class="squeegee__blade"></div>
+        </div>
+        <div class="wipe__ui">
+          <div class="wipe__top">
+            <span class="chip"><i></i><span data-i18n="wipe.chip">Мойка стекла · WFP</span></span>
+            <span class="chip wipe__meter"><span data-i18n="wipe.meter">Чисто</span>&nbsp;<b id="wipeMeter">0%</b></span>
+          </div>
+          <div class="wipe__bottom">
+            <span class="wipe__hint"><span class="mouse"></span><span data-i18n="wipe.hint">Листайте — стекло станет чистым</span></span>
+            <p class="wipe__after" data-i18n="wipe.after">Так выглядят окна после Cleanface. Ни капли, ни разводов — только вид.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WHY ================= -->
+  <section class="sec why" id="why">
+    <canvas class="why__gl" id="whyGL" aria-hidden="true"></canvas>
+    <div class="why__inner">
+      <div class="why__head reveal" data-reveal>
+        <div>
+          <span class="eyebrow rv" data-i18n="why.eyebrow">Почему именно мы</span>
+          <h2 class="h2" data-split data-lines data-start=".1" data-step=".12" data-dur=".9" data-i18n="why.title">Почему именно<br><em>Cleanface</em>, а не<br>кто-то другой?</h2>
+        </div>
+        <p class="rv" style="--d:.5s" data-i18n="why.lead">Мы не посредник, который перепродаёт заказ бригаде. Мы сами моем, сами считаем смету и сами отвечаем за результат — по стандартам Международного института ухода за зданиями.</p>
+      </div>
+
+      <div class="pillars reveal" data-reveal>
+        <article class="pillar rv" style="--d:.0s" data-tilt>
+          <span class="pillar__fact" data-i18n="p1.fact">Обучение</span>
+          <div class="pillar__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z" /><path d="M6 12v5c3 2 9 2 12 0v-5" /></svg></div>
+          <h3 data-i18n="p1.t">Профессионализм</h3>
+          <p data-i18n="p1.d">Сотрудники учатся непрерывно — знания, умения и навыки постоянно растут вместе со стандартами отрасли.</p>
+        </article>
+        <article class="pillar rv" style="--d:.12s" data-tilt>
+          <span class="pillar__fact" data-i18n="p2.fact">Первые в РК</span>
+          <div class="pillar__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7c3.2 4 6 7.3 6 10.8a6 6 0 0 1-12 0c0-3.5 2.8-6.8 6-10.8Z" /><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5" /></svg></div>
+          <h3 data-i18n="p2.t">Инновации</h3>
+          <p data-i18n="p2.d">Первыми в Казахстане освоили и внедряем технологию мойки окон Water Fed Pole (WFP).</p>
+        </article>
+        <article class="pillar rv" style="--d:.24s" data-tilt>
+          <span class="pillar__fact">PCG</span>
+          <div class="pillar__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6" /><path d="m8.5 14 -1.5 8 5-3 5 3-1.5-8" /></svg></div>
+          <h3 data-i18n="p3.t">Репутация</h3>
+          <p data-i18n="p3.d">Рекомендательные письма и отзывы клиентов, сертификат ассоциации Professional Cleaning Guild.</p>
+        </article>
+        <article class="pillar rv" style="--d:.36s" data-tilt>
+          <span class="pillar__fact" data-i18n="p4.fact">0 посредников</span>
+          <div class="pillar__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z" /><circle cx="7.5" cy="7.5" r="1.5" /></svg></div>
+          <h3 data-i18n="p4.t">Честная цена</h3>
+          <p data-i18n="p4.d">Лучшее соотношение качества и цены: в работе нет посредников — вы платите исполнителю напрямую.</p>
+        </article>
+      </div>
+
+      <div class="compare reveal" data-reveal>
+        <div class="compare__title">
+          <h3 class="rv" data-i18n="cmp.title">Cleanface против «как обычно»</h3>
+          <div class="compare__legend rv" style="--d:.15s"><span>Cleanface</span><span data-i18n="cmp.them">Обычно</span></div>
+        </div>
+        <div class="compare__rows" id="compareRows"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SERVICES ================= -->
+  <section class="sec services" id="services">
+    <div class="services__head reveal" data-reveal>
+      <div>
+        <span class="eyebrow rv" data-i18n="svc.eyebrow">Услуги и цены</span>
+        <h2 class="h2" data-split data-lines data-start=".1" data-step=".12" data-dur=".9" data-i18n="svc.title">Все услуги<br><em>Cleanface</em></h2>
+      </div>
+      <p class="rv" style="--d:.4s" data-i18n="svc.lead">Работаем с частными и корпоративными клиентами по всему Казахстану. Любая сложность и степень загрязнения — смету считаем индивидуально.</p>
+    </div>
+    <div class="svc-list reveal" id="svcList" data-reveal></div>
+    <p class="svc-note"><i></i><span data-i18n="svc.note">Также поставляем и продаём профессиональную продукцию для клининга и ухода за зданиями.</span></p>
+    <div class="svc-float" id="svcFloat" aria-hidden="true"></div>
+  </section>
+
+  <div class="strip" aria-hidden="true">
+    <div class="strip__track">
+      <img src="assets/img/banner-3.jpg" alt="" loading="lazy" /><img src="assets/img/banner-1.jpg" alt="" loading="lazy" /><img src="assets/img/banner-2.jpg" alt="" loading="lazy" /><img src="assets/img/banner-5.jpg" alt="" loading="lazy" /><img src="assets/img/banner-4.jpg" alt="" loading="lazy" />
+      <img src="assets/img/banner-3.jpg" alt="" loading="lazy" /><img src="assets/img/banner-1.jpg" alt="" loading="lazy" /><img src="assets/img/banner-2.jpg" alt="" loading="lazy" /><img src="assets/img/banner-5.jpg" alt="" loading="lazy" /><img src="assets/img/banner-4.jpg" alt="" loading="lazy" />
+    </div>
+    <span class="strip__label" data-i18n="strip">Работаем на любой высоте</span>
+  </div>
+
+  <!-- ================= PROCESS ================= -->
+  <section class="sec process" id="process">
+    <div class="reveal" data-reveal>
+      <span class="eyebrow rv" data-i18n="proc.eyebrow">Как мы работаем</span>
+      <h2 class="h2" data-split data-lines data-start=".1" data-step=".12" data-dur=".9" data-i18n="proc.title">Четыре шага<br>до <em>чистоты</em></h2>
+    </div>
+    <div class="steps reveal" id="steps" data-reveal>
+      <div class="steps__line" aria-hidden="true"><i></i><b></b></div>
+      <div class="step rv" style="--d:.0s"><span class="step__dot"></span><div class="step__n">01</div><h3 data-i18n="s1.t">Заявка</h3><p data-i18n="s1.d">Оставляете заявку через простую форму на сайте или звоните нам.</p></div>
+      <div class="step rv" style="--d:.12s"><span class="step__dot"></span><div class="step__n">02</div><h3 data-i18n="s2.t">Бесплатный замер</h3><p data-i18n="s2.d">Замерщик приезжает бесплатно и выполняет точный расчёт.</p></div>
+      <div class="step rv" style="--d:.24s"><span class="step__dot"></span><div class="step__n">03</div><h3 data-i18n="s3.t">Предоплата 50%</h3><p data-i18n="s3.d">Наличными или безналичным платежом — как вам удобнее.</p></div>
+      <div class="step rv" style="--d:.36s"><span class="step__dot"></span><div class="step__n">04</div><h3 data-i18n="s4.t">Работа и расчёт</h3><p data-i18n="s4.d">Выполняем работы в оговорённый срок, полный расчёт — после результата.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= TRUST ================= -->
+  <section class="sec trust" id="trust">
+    <div class="reveal" data-reveal>
+      <span class="eyebrow rv" data-i18n="trust.eyebrow">Репутация</span>
+      <h2 class="h2" data-split data-lines data-start=".1" data-step=".12" data-dur=".9" data-i18n="trust.title">Нам доверяют<br>и пишут об этом</h2>
+      <p class="lead rv" style="--d:.4s" data-i18n="trust.lead">Сертификат ассоциации Professional Cleaning Guild и рекомендательные письма от клиентов и партнёров. Нажмите на документ, чтобы рассмотреть его.</p>
+    </div>
+    <div class="docs reveal" id="docs" data-reveal>
+      <figure class="doc" style="margin:0" data-full="assets/img/doc-letter.jpg"><img src="assets/img/doc-letter.jpg" alt="Рекомендательное письмо" loading="lazy" /><figcaption data-i18n="doc.1">Рекомендательное письмо</figcaption></figure>
+      <figure class="doc" style="margin:0" data-full="assets/img/doc-certificate.jpg"><img src="assets/img/doc-certificate.jpg" alt="Сертификат Professional Cleaning Guild" loading="lazy" /><figcaption data-i18n="doc.2">Сертификат Professional Cleaning Guild</figcaption></figure>
+      <figure class="doc" style="margin:0" data-full="assets/img/doc-karcher.jpg"><img src="assets/img/doc-karcher.jpg" alt="Рекомендательное письмо" loading="lazy" /><figcaption data-i18n="doc.3">Рекомендательное письмо</figcaption></figure>
+    </div>
+    <dialog class="lightbox" id="lightbox"><img alt="" /><button type="button" aria-label="Закрыть">×</button></dialog>
+  </section>
+
+  <!-- ================= CONTACT ================= -->
+  <section class="sec contact" id="contact">
+    <div class="contact__grid">
+      <div class="reveal" data-reveal>
+        <span class="eyebrow rv" data-i18n="ct.eyebrow">Контакты</span>
+        <h2 class="h2" data-split data-lines data-start=".1" data-step=".1" data-dur=".9" data-i18n="ct.title">Чистота притянет<br>к вам <em>больше</em><br>клиентов</h2>
+        <div class="contact__info rv" style="--d:.4s">
+          <a href="tel:+77086243005"><span data-i18n="ct.phone">Телефон · Михаил</span><b>+7 (708) 624-30-05</b></a>
+          <a href="tel:+77071040131"><span data-i18n="ct.phone2">Телефон</span><b>+7 (707) 104-01-31</b></a>
+          <a href="mailto:idir.cleanface@yandex.kz"><span>E-mail</span><b>idir.cleanface@yandex.kz</b></a>
+          <a href="https://www.instagram.com/cleanface_kz/" target="_blank" rel="noopener"><span>Instagram</span><b>@cleanface_kz</b></a>
+          <div><span data-i18n="ct.addr">Адрес</span><b data-i18n="ct.addrv">ул. Шевченко 123, Алматы</b></div>
+          <div><span data-i18n="ct.hours">График</span><b data-i18n="ct.hoursv">Пн–Пт 10:00–18:00</b></div>
+        </div>
+      </div>
+
+      <form class="form reveal" id="form" data-reveal novalidate>
+        <h3 class="rv" data-i18n="f.title">Заказать клининг</h3>
+        <div class="form__row rv" style="--d:.1s">
+          <label><span data-i18n="f.name">Имя</span><input name="name" autocomplete="name" required data-i18n-ph="f.name_ph" placeholder="Как к вам обращаться" /></label>
+          <label><span data-i18n="f.phone">Телефон</span><input name="phone" type="tel" autocomplete="tel" required placeholder="+7 ___ ___ __ __" /></label>
+        </div>
+        <label class="rv" style="--d:.18s"><span data-i18n="f.service">Услуга</span><select name="service" id="formService"></select></label>
+        <label class="rv" style="--d:.26s"><span data-i18n="f.area">Площадь, м² (примерно)</span><input name="area" inputmode="numeric" placeholder="250" /></label>
+        <label class="rv" style="--d:.34s"><span data-i18n="f.msg">Комментарий</span><textarea name="msg" data-i18n-ph="f.msg_ph" placeholder="Адрес объекта, этажность, удобное время для замера"></textarea></label>
+        <button class="btn-solid rv" style="--d:.42s" type="submit"><span data-i18n="f.send">Отправить заявку</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10" /><path d="M7 17 17 7" /></svg></button>
+        <p class="form__note rv" style="--d:.5s" data-i18n="f.note">Заявка откроется в вашей почте с уже заполненным письмом на idir.cleanface@yandex.kz. Замер — бесплатно.</p>
+      </form>
+    </div>
+
+    <footer class="footer">
+      <span class="footer__word" id="footerWord" aria-hidden="true">CLEANFACE</span>
+      <div class="footer__bar">
+        <span data-i18n="ft.l">© Cleanface · Центр клининговых технологий</span>
+        <span data-i18n="ft.r">Алматы, Казахстан</span>
+      </div>
+    </footer>
+  </section>
+
+  <div class="fab" id="fab">
+    <a href="tel:+77086243005" data-i18n="fab.call">Позвонить</a>
+    <a href="#contact" data-i18n="fab.cta">Заявка</a>
+  </div>
+
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/wipe.js" defer></script>
+  <script type="module" src="assets/js/bubbles.js"></script>
+</body>
+</html>
