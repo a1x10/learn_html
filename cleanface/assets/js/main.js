@@ -99,6 +99,14 @@
     "f.note": "The request opens in your mail app as a ready email to idir.cleanface@yandex.kz. The survey is free.",
     "ft.l": "© Cleanface · Cleaning technology centre", "ft.r": "Almaty, Kazakhstan",
     "fab.call": "Call", "fab.cta": "Request",
+    "nav.process": "Process",
+    "badge": "FIRST IN KAZAKHSTAN · WATER FED POLE · ",
+    "st.from": "from", "st.1": "per m² — facade and glass washing", "st.2": "parking cleaning — one-off or scheduled",
+    "st.3": "deposit, the rest after the result", "st.4s": "st", "st.4": "in Kazakhstan to master Water Fed Pole cleaning",
+    "mq.1": "Facades", "mq.2": "glass walls", "mq.3": "Windows", "mq.4": "parking", "mq.5": "Domes", "mq.6": "cottages",
+    "fog.eyebrow": "Try it yourself", "fog.title": "Your windows could<br>look <em>like this</em>",
+    "fog.lead": "Survey and estimate are free. We come, calculate and clean — no middlemen, no streaks.",
+    "fog.cta": "Get a quote", "fog.hint": "Wipe the foggy glass",
   };
   const UI = {
     ru: { from: "от", unit: "₸/м²", onRequest: "по запросу", price: "Цена", any: "Другое / несколько услуг",
@@ -218,6 +226,7 @@
       el.placeholder = lang === "ru" ? RU[el.dataset.i18nPh] : (EN[el.dataset.i18nPh] ?? RU[el.dataset.i18nPh]);
     });
     renderServices(); renderCompare(); renderSelect();
+    document.dispatchEvent(new CustomEvent("cf:lang", { detail: lang }));
     try { localStorage.setItem("cf-lang", lang); } catch (e) {}
   }
   $$(".lang button").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
@@ -295,7 +304,8 @@
   // click a service → prefill the form
   const pickService = (row) => {
     select.value = row.dataset.i;
-    $("#contact").scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+    if (window.cfScrollTo) window.cfScrollTo($("#contact"));
+    else $("#contact").scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
     setTimeout(() => $("#form input[name=name]").focus({ preventScroll: true }), 900);
   };
   svcList.addEventListener("click", (e) => { const r = e.target.closest(".svc"); if (r) pickService(r); });
@@ -335,7 +345,7 @@
       done = true;
       preCount.textContent = "100";
       pre.classList.add("is-done");
-      setTimeout(() => document.body.classList.remove("is-loading"), 380);
+      setTimeout(() => { document.body.classList.remove("is-loading"); document.dispatchEvent(new Event("cf:ready")); }, 380);
       setTimeout(() => pre.remove(), 1400);
     }, 260);
   }
