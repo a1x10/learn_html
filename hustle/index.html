@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="ru" class="no-js" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>HUSTLE — биржа заработка для молодёжи</title>
+  <meta name="description" content="HUSTLE — площадка, где начинающие дизайнеры, монтажёры и программисты находят первые заказы, собирают команды и портфолио.">
+  <meta name="theme-color" content="#08080c">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="HUSTLE">
+  <meta property="og:title" content="HUSTLE — биржа заработка для молодёжи">
+  <meta property="og:description" content="Публикуй задания, откликайся на заказы, собирай команду и портфолио.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="assets/app.css">
+  <script>
+    (function () {
+      var d = document.documentElement, t = null;
+      try { t = localStorage.getItem('hustle-theme'); } catch (e) {}
+      if (!t) t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      d.setAttribute('data-theme', t);
+      d.className = d.className.replace('no-js', 'js');
+    })();
+  </script>
+</head>
+<body>
+  <!-- Прелоадер -->
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="preloader__word">
+      <span>H</span><span>U</span><span>S</span><span>T</span><span>L</span><span>E</span>
+    </div>
+    <div class="preloader__bar"><i></i></div>
+    <div class="preloader__count mono"><b id="preloadNum">0</b>%</div>
+  </div>
+
+  <div class="cursor" aria-hidden="true"><div class="cursor__dot"></div><div class="cursor__ring"></div></div>
+  <div class="noise" aria-hidden="true"></div>
+
+  <!-- Шапка -->
+  <header class="header" id="header">
+    <a class="logo" href="#top" aria-label="HUSTLE — на главную">
+      <span class="logo__mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 5h5v9h8V5h5v22h-5v-8h-8v8H7z"/></svg></span>
+      <span class="logo__text">HUSTLE</span>
+    </a>
+    <nav class="nav" id="nav" aria-label="Основное меню">
+      <a href="#market">Лоты</a>
+      <a href="#how">Как это работает</a>
+      <a href="#teams">Команды</a>
+      <a href="#pricing">Тарифы</a>
+      <a href="#faq">FAQ</a>
+      <button class="btn btn--primary nav__cta" data-open="create" type="button"><span>+ Разместить лот</span></button>
+    </nav>
+    <div class="header__actions">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Переключить тему">
+        <span class="theme-toggle__track"><span class="theme-toggle__thumb">
+          <svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        </span></span>
+      </button>
+      <button class="btn btn--primary btn--sm magnetic" data-open="create" type="button"><span>+ Разместить лот</span></button>
+      <button class="burger" id="burger" type="button" aria-label="Меню" aria-expanded="false"><i></i><i></i></button>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <canvas class="hero__canvas" id="scene" aria-hidden="true"></canvas>
+      <div class="hero__glow" aria-hidden="true"></div>
+      <div class="hero__inner">
+        <p class="eyebrow hero__eyebrow"><span class="pulse"></span>Биржа заработка для молодёжи</p>
+        <h1 class="hero__title">
+          <span class="line"><span class="word">Делай</span> <span class="word">то,</span> <span class="word">что</span></span>
+          <span class="line"><span class="word accent-grad">умеешь.</span></span>
+          <span class="line"><span class="word">Получай</span> <span class="word outline">деньги.</span></span>
+        </h1>
+        <p class="hero__lead">Дизайнеры, монтажёры, программисты и все, кто только начинает, находят здесь небольшие заказы, собирают команды и копят портфолио.</p>
+
+        <form class="search" id="heroSearch" role="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="search" name="q" placeholder="Найти: монтаж, логотип, бот для Telegram…" aria-label="Поиск по лотам">
+          <button class="btn btn--primary btn--sm" type="submit"><span>Найти</span></button>
+        </form>
+        <div class="hero__chips" id="heroChips"></div>
+
+        <div class="hero__cta">
+          <a class="btn btn--primary magnetic" href="#market"><span>Смотреть заказы</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <button class="btn btn--ghost magnetic" data-open="create" type="button"><span>Опубликовать задание</span></button>
+        </div>
+      </div>
+
+      <div class="hero__floats" aria-hidden="true">
+        <div class="float-card float-card--a" data-depth="0.6">
+          <div class="float-card__ic">🎬</div>
+          <div><b>Монтаж Reels</b><small>отклик · 2 мин назад</small></div>
+        </div>
+        <div class="float-card float-card--b" data-depth="1">
+          <div class="float-card__ic">💸</div>
+          <div><b>+2 500 ₽</b><small>заказ выполнен</small></div>
+        </div>
+        <div class="float-card float-card--c" data-depth="0.8">
+          <div class="float-card__ic">🧩</div>
+          <div><b>Команда собрана</b><small>дизайн + код</small></div>
+        </div>
+      </div>
+
+      <a class="scroll-hint" href="#market" aria-label="Прокрутить вниз"><span></span></a>
+    </section>
+
+    <!-- Бегущая строка -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Дизайн</span><i>✦</i><span>Монтаж</span><i>✦</i><span>Код</span><i>✦</i><span>Motion</span><i>✦</i><span>3D</span><i>✦</i><span>Тексты</span><i>✦</i><span>SMM</span><i>✦</i><span>Музыка</span><i>✦</i>
+        <span>Дизайн</span><i>✦</i><span>Монтаж</span><i>✦</i><span>Код</span><i>✦</i><span>Motion</span><i>✦</i><span>3D</span><i>✦</i><span>Тексты</span><i>✦</i><span>SMM</span><i>✦</i><span>Музыка</span><i>✦</i>
+      </div>
+    </div>
+
+    <!-- БИРЖА -->
+    <section class="section market" id="market">
+      <div class="section__head">
+        <p class="eyebrow reveal">Биржа</p>
+        <h2 class="section__title split">Свежие лоты</h2>
+        <p class="section__lead reveal">Заказы от тех, кому нужна помощь, и услуги от тех, кто готов её дать. Откликайся, договаривайся, делай.</p>
+      </div>
+
+      <div class="market__bar reveal">
+        <div class="tabs" id="typeTabs" role="tablist">
+          <button class="tab is-active" data-type="all" role="tab" aria-selected="true">Все</button>
+          <button class="tab" data-type="order" role="tab" aria-selected="false">Заказы</button>
+          <button class="tab" data-type="service" role="tab" aria-selected="false">Услуги</button>
+          <button class="tab" data-type="mine" role="tab" aria-selected="false">Мои лоты</button>
+          <span class="tabs__pill" aria-hidden="true"></span>
+        </div>
+        <div class="market__tools">
+          <label class="field-search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="search" id="marketSearch" placeholder="Поиск по лотам" aria-label="Поиск по лотам">
+          </label>
+          <div class="select">
+            <select id="sortSelect" aria-label="Сортировка">
+              <option value="new">Сначала новые</option>
+              <option value="cheap">Сначала дешёвые</option>
+              <option value="expensive">Сначала дорогие</option>
+              <option value="popular">По откликам</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="cats reveal" id="catFilter"></div>
+
+      <div class="grid" id="lotGrid" aria-live="polite"></div>
+      <div class="empty" id="emptyState" hidden>
+        <div class="empty__orb"></div>
+        <h3>Ничего не нашлось</h3>
+        <p>Попробуй другой запрос или размести свой лот — возможно, именно его здесь и не хватает.</p>
+        <button class="btn btn--primary" data-open="create" type="button"><span>+ Разместить лот</span></button>
+      </div>
+      <p class="market__note mono">Лоты-примеры показывают, как будет выглядеть биржа. Твои лоты сохраняются в этом браузере.</p>
+    </section>
+
+    <!-- КАК ЭТО РАБОТАЕТ -->
+    <section class="section how" id="how">
+      <div class="section__head">
+        <p class="eyebrow reveal">Как это работает</p>
+        <h2 class="section__title split">Три шага до первых денег</h2>
+      </div>
+      <div class="how__wrap">
+        <div class="how__track" id="howTrack">
+          <article class="step">
+            <div class="step__num">01</div>
+            <div class="step__art step__art--1" aria-hidden="true"><i></i><i></i><i></i></div>
+            <h3>Создай профиль</h3>
+            <p>Укажи, что умеешь, и добавь первые работы — даже учебные. Портфолио растёт с каждым заказом.</p>
+          </article>
+          <article class="step">
+            <div class="step__num">02</div>
+            <div class="step__art step__art--2" aria-hidden="true"><i></i><i></i><i></i></div>
+            <h3>Откликнись или опубликуй</h3>
+            <p>Заказчики размещают задания, исполнители откликаются. Можно и наоборот — выставить свою услугу лотом с картинками.</p>
+          </article>
+          <article class="step">
+            <div class="step__num">03</div>
+            <div class="step__art step__art--3" aria-hidden="true"><i></i><i></i><i></i></div>
+            <h3>Сделай и получи оплату</h3>
+            <p>Сдай работу, получи деньги и отзыв. Работа автоматически попадает в портфолио.</p>
+          </article>
+          <article class="step step--quote">
+            <p class="step__quote">«Заработал первые 5000&nbsp;₽ через сайт, который мы&nbsp;создали»</p>
+            <p class="step__cap mono">— так звучит история, которую мы хотим дать каждому</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- КОМАНДЫ -->
+    <section class="section teams" id="teams">
+      <div class="teams__grid">
+        <div class="teams__text">
+          <p class="eyebrow reveal">Команды</p>
+          <h2 class="section__title split">Один не&nbsp;справишься? Собери команду</h2>
+          <p class="section__lead reveal">Большой заказ — сайт, клип, запуск канала — можно взять командой. Найди дизайнера, монтажёра и разработчика прямо на площадке и делите оплату честно.</p>
+          <ul class="ticks reveal">
+            <li>Общие лоты и общий чат команды</li>
+            <li>Распределение оплаты между участниками</li>
+            <li>Командное портфолио</li>
+          </ul>
+        </div>
+        <div class="orbit" aria-hidden="true">
+          <div class="orbit__core"><span>TEAM</span></div>
+          <div class="orbit__ring orbit__ring--1">
+            <span class="orbit__node" style="--a:0deg">🎨<b>Дизайн</b></span>
+            <span class="orbit__node" style="--a:120deg">💻<b>Код</b></span>
+            <span class="orbit__node" style="--a:240deg">🎬<b>Монтаж</b></span>
+          </div>
+          <div class="orbit__ring orbit__ring--2">
+            <span class="orbit__node" style="--a:60deg">✍️<b>Тексты</b></span>
+            <span class="orbit__node" style="--a:180deg">🧊<b>3D</b></span>
+            <span class="orbit__node" style="--a:300deg">📈<b>SMM</b></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ПОРТФОЛИО / ВОЗМОЖНОСТИ -->
+    <section class="section features" id="features">
+      <div class="section__head">
+        <p class="eyebrow reveal">Возможности</p>
+        <h2 class="section__title split">Всё, чтобы начать зарабатывать</h2>
+      </div>
+      <div class="bento">
+        <article class="bento__item bento__item--wide tilt reveal">
+          <div class="bento__ic">🖼️</div>
+          <h3>Лоты с картинками</h3>
+          <p>Загружай изображения прямо в лот: примеры работ, референсы, макеты. Покупатель видит, что получит.</p>
+          <div class="bento__stack" aria-hidden="true"><i></i><i></i><i></i></div>
+        </article>
+        <article class="bento__item tilt reveal">
+          <div class="bento__ic">📁</div>
+          <h3>Портфолио</h3>
+          <p>Каждая выполненная работа — в твой профиль.</p>
+        </article>
+        <article class="bento__item tilt reveal">
+          <div class="bento__ic">⚡</div>
+          <h3>Быстрые отклики</h3>
+          <p>Небольшие задачи, которые можно сделать за вечер.</p>
+        </article>
+        <article class="bento__item tilt reveal">
+          <div class="bento__ic">🌗</div>
+          <h3>Тёмная и светлая тема</h3>
+          <p>Переключатель в шапке — попробуй.</p>
+        </article>
+        <article class="bento__item bento__item--wide tilt reveal">
+          <div class="bento__ic">🚀</div>
+          <h3>Продвижение лотов</h3>
+          <p>Подними свой лот наверх выдачи и получи больше откликов — платное размещение для тех, кто хочет быстрее.</p>
+          <div class="bento__bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ТАРИФЫ -->
+    <section class="section pricing" id="pricing">
+      <div class="section__head">
+        <p class="eyebrow reveal">Тарифы</p>
+        <h2 class="section__title split">Честно и прозрачно</h2>
+        <p class="section__lead reveal">Регистрация бесплатная. Площадка берёт комиссию 5–12% только с выполненных сделок.</p>
+      </div>
+      <div class="plans">
+        <article class="plan tilt reveal">
+          <p class="plan__name">Старт</p>
+          <p class="plan__price"><b>0 ₽</b><span>/ навсегда</span></p>
+          <ul>
+            <li>Публикация лотов и отклики</li>
+            <li>Загрузка изображений</li>
+            <li>Портфолио</li>
+            <li>Комиссия 12% со сделки</li>
+          </ul>
+          <button class="btn btn--ghost" data-open="create" type="button"><span>Начать</span></button>
+        </article>
+        <article class="plan plan--hot tilt reveal">
+          <span class="plan__badge">Для профи</span>
+          <p class="plan__name">PRO</p>
+          <p class="plan__price"><b data-price="pro">—</b><span>/ месяц</span></p>
+          <ul>
+            <li>Всё из «Старта»</li>
+            <li>Сниженная комиссия — 5%</li>
+            <li>Значок PRO и приоритет в откликах</li>
+            <li>Команды без ограничений</li>
+          </ul>
+          <button class="btn btn--primary" type="button" data-toast="Подписка PRO скоро появится 💜"><span>Хочу PRO</span></button>
+        </article>
+        <article class="plan tilt reveal">
+          <p class="plan__name">Буст</p>
+          <p class="plan__price"><b data-price="boost">—</b><span>/ лот</span></p>
+          <ul>
+            <li>Лот закреплён наверху выдачи</li>
+            <li>Яркая подсветка карточки</li>
+            <li>Больше просмотров и откликов</li>
+          </ul>
+          <button class="btn btn--ghost" type="button" data-toast="Продвижение лотов скоро появится 🚀"><span>Поднять лот</span></button>
+        </article>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section faq" id="faq">
+      <div class="section__head">
+        <p class="eyebrow reveal">FAQ</p>
+        <h2 class="section__title split">Частые вопросы</h2>
+      </div>
+      <div class="faq__list">
+        <details class="qa reveal"><summary>Кто может зарабатывать на HUSTLE?<i></i></summary><div class="qa__body"><p>Все, кто умеет делать что-то полезное: дизайн, монтаж, код, тексты, SMM, музыку, 3D. Площадка создана для молодёжи и новичков, которым нужны первые заказы.</p></div></details>
+        <details class="qa reveal"><summary>Сколько стоит размещение?<i></i></summary><div class="qa__body"><p>Публиковать лоты и откликаться — бесплатно. Площадка берёт комиссию 5–12% с выполненных сделок. Платно — только продвижение лота и подписка PRO.</p></div></details>
+        <details class="qa reveal"><summary>Можно ли добавить картинки в лот?<i></i></summary><div class="qa__body"><p>Да. При создании лота можно загрузить до 6 изображений: примеры работ, референсы или макет. Первая картинка станет обложкой.</p></div></details>
+        <details class="qa reveal"><summary>Как собрать команду?<i></i></summary><div class="qa__body"><p>Создай лот, отметь, кто нужен в команду, и приглашай исполнителей из откликов. Оплату можно распределить между участниками.</p></div></details>
+        <details class="qa reveal"><summary>Что если у меня ещё нет портфолио?<i></i></summary><div class="qa__body"><p>Начни с небольших заказов и учебных работ. Каждый выполненный заказ автоматически попадает в портфолио.</p></div></details>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta" id="cta">
+      <div class="cta__orb" aria-hidden="true"><i></i><i></i><i></i></div>
+      <h2 class="cta__title split">Хватит ждать.<br><span class="accent-grad">Начни хаслить.</span></h2>
+      <p class="cta__lead reveal">Размести первый лот за минуту — это бесплатно.</p>
+      <button class="btn btn--primary btn--lg magnetic reveal" data-open="create" type="button"><span>+ Разместить лот</span></button>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__big" aria-hidden="true">HUSTLE</div>
+    <div class="footer__row">
+      <p>© <span id="year"></span> HUSTLE — биржа заработка для молодёжи</p>
+      <nav class="footer__nav" aria-label="Ссылки в подвале">
+        <a href="#market">Лоты</a><a href="#pricing">Тарифы</a><a href="#faq">FAQ</a>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- Модалка: создать лот -->
+  <div class="modal" id="createModal" role="dialog" aria-modal="true" aria-labelledby="createTitle" hidden>
+    <div class="modal__backdrop" data-close></div>
+    <form class="modal__panel" id="createForm" novalidate>
+      <button class="modal__x" type="button" data-close aria-label="Закрыть">✕</button>
+      <h2 id="createTitle" class="modal__title">Новый лот</h2>
+
+      <div class="seg" role="radiogroup" aria-label="Тип лота">
+        <label><input type="radio" name="type" value="order" checked><span>Мне нужно сделать</span></label>
+        <label><input type="radio" name="type" value="service"><span>Я предлагаю услугу</span></label>
+      </div>
+
+      <label class="field"><span>Название</span>
+        <input name="title" required maxlength="80" placeholder="Например: смонтировать 3 ролика для TikTok">
+      </label>
+      <div class="field-row">
+        <label class="field"><span>Категория</span>
+          <div class="select"><select name="cat" id="catSelect" required></select></div>
+        </label>
+        <label class="field"><span>Цена, ₽</span>
+          <input name="price" type="number" inputmode="numeric" min="100" max="1000000" step="50" required placeholder="1500">
+        </label>
+      </div>
+      <div class="field-row">
+        <label class="field"><span>Срок</span>
+          <div class="select"><select name="deadline">
+            <option>1 день</option><option selected>3 дня</option><option>Неделя</option><option>2 недели</option><option>Без срока</option>
+          </select></div>
+        </label>
+        <label class="field"><span>Твоё имя</span>
+          <input name="author" required maxlength="30" placeholder="Как к тебе обращаться">
+        </label>
+      </div>
+      <label class="field"><span>Описание</span>
+        <textarea name="desc" rows="4" maxlength="1200" required placeholder="Что нужно сделать, какой результат ждёшь, есть ли референсы"></textarea>
+      </label>
+
+      <div class="field"><span>Изображения <small>до 6 шт., первое — обложка</small></span>
+        <label class="drop" id="drop">
+          <input type="file" id="fileInput" accept="image/*" multiple>
+          <div class="drop__ui">
+            <div class="drop__ic"><svg viewBox="0 0 24 24"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg></div>
+            <p><b>Перетащи картинки сюда</b> или нажми, чтобы выбрать</p>
+            <small>JPG, PNG, WEBP, GIF</small>
+          </div>
+        </label>
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+
+      <label class="check"><input type="checkbox" name="team"><span>Ищу команду, а не одного исполнителя</span></label>
+
+      <p class="form-error" id="createError" role="alert"></p>
+      <button class="btn btn--primary btn--block" type="submit"><span>Опубликовать</span></button>
+    </form>
+  </div>
+
+  <!-- Модалка: лот -->
+  <div class="modal" id="lotModal" role="dialog" aria-modal="true" aria-labelledby="lotTitle" hidden>
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__panel modal__panel--lot" id="lotPanel"></div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="assets/app.js" defer></script>
+</body>
+</html>
