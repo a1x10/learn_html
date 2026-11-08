@@ -3,6 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { initScene } from './scene.js';
 import { initMarket } from './market.js';
+import { initAccount } from './account.js';
 import { PRICES } from './data.js';
 import { $, $$, reduced, finePointer, tilt, modalHooks } from './ui.js';
 
@@ -204,6 +205,7 @@ function intro() {
     .from('.header', { yPercent: -100, opacity: 0, duration: 0.8, ease: 'expo.out', clearProps: 'transform,opacity' }, '-=1');
 }
 
+initAccount();
 initMarket().then(() => ScrollTrigger.refresh());
 scrollAnims();
 intro();
