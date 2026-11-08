@@ -5,9 +5,10 @@ import * as esbuild from 'esbuild';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import readline from 'node:readline';
 
-const root = path.dirname(new URL(import.meta.url).pathname);
+const root = path.dirname(fileURLToPath(import.meta.url));
 const FAST = process.argv.includes('--fast');
 const PORT = Number(process.env.PORT) || 5173;
 const LOAD_MS = 15000;
