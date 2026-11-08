@@ -128,7 +128,7 @@ function openLot(id) {
   panel.innerHTML = `
     <button class="modal__x" type="button" data-close aria-label="Закрыть">✕</button>
     <div class="gallery">
-      <div class="gallery__main"><img id="galMain" src="${imgs[0]}" alt="${esc(l.title)}"></div>
+      <div class="gallery__main"><div class="gallery__bg" style="background-image:url('${imgs[0]}')"></div><img id="galMain" src="${imgs[0]}" alt="${esc(l.title)}"></div>
       ${imgs.length > 1 ? `<div class="gallery__thumbs">${imgs.map((s, i) => `<button type="button" class="${i ? '' : 'is-on'}" data-i="${i}"><img src="${s}" alt="Изображение ${i + 1}"></button>`).join('')}</div>` : ''}
     </div>
     <div class="lotv">
@@ -159,7 +159,7 @@ function openLot(id) {
   $$('.gallery__thumbs button', panel).forEach((b) => b.addEventListener('click', () => {
     $$('.gallery__thumbs button', panel).forEach((x) => x.classList.toggle('is-on', x === b));
     if (reduced) { main.src = imgs[b.dataset.i]; return; }
-    gsap.to(main, { opacity: 0, scale: 1.04, duration: 0.18, onComplete: () => { main.src = imgs[b.dataset.i]; gsap.to(main, { opacity: 1, scale: 1, duration: 0.35 }); } });
+    gsap.to(main, { opacity: 0, scale: 1.04, duration: 0.18, onComplete: () => { main.src = imgs[b.dataset.i]; main.previousElementSibling.style.backgroundImage = `url('${imgs[b.dataset.i]}')`; gsap.to(main, { opacity: 1, scale: 1, duration: 0.35 }); } });
   }));
 
   $('#respondForm', panel).addEventListener('submit', (e) => {
