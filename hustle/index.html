@@ -60,6 +60,7 @@
           <svg class="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
         </span></span>
       </button>
+      <button class="acct" id="acctBtn" type="button"><span class="acct__label">Войти</span></button>
       <button class="btn btn--primary btn--sm magnetic" data-open="create" type="button"><span>+ Разместить лот</span></button>
       <button class="burger" id="burger" type="button" aria-label="Меню" aria-expanded="false"><i></i><i></i></button>
     </div>
@@ -342,13 +343,25 @@
   <!-- Модалка: создать лот -->
   <div class="modal" id="createModal" role="dialog" aria-modal="true" aria-labelledby="createTitle" hidden>
     <div class="modal__backdrop" data-close></div>
-    <form class="modal__panel" id="createForm" novalidate>
+    <form class="modal__panel" data-lenis-prevent id="createForm" novalidate>
       <button class="modal__x" type="button" data-close aria-label="Закрыть">✕</button>
       <h2 id="createTitle" class="modal__title">Новый лот</h2>
 
       <div class="seg" role="radiogroup" aria-label="Тип лота">
         <label><input type="radio" name="type" value="order" checked><span>Мне нужно сделать</span></label>
         <label><input type="radio" name="type" value="service"><span>Я предлагаю услугу</span></label>
+      </div>
+
+      <div class="field"><span>Фото для лота <small>до 6 шт., первое — обложка</small></span>
+        <label class="drop" id="drop">
+          <input type="file" id="fileInput" accept="image/*" multiple>
+          <div class="drop__ui">
+            <div class="drop__ic"><svg viewBox="0 0 24 24"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg></div>
+            <p><b>Выбрать фото</b><span class="drop__desk"> или перетащить сюда</span></p>
+            <small>JPG, PNG, WEBP, GIF</small>
+          </div>
+        </label>
+        <div class="thumbs" id="thumbs"></div>
       </div>
 
       <label class="field"><span>Название</span>
@@ -376,18 +389,6 @@
         <textarea name="desc" rows="4" maxlength="1200" required placeholder="Что нужно сделать, какой результат ждёшь, есть ли референсы"></textarea>
       </label>
 
-      <div class="field"><span>Изображения <small>до 6 шт., первое — обложка</small></span>
-        <label class="drop" id="drop">
-          <input type="file" id="fileInput" accept="image/*" multiple>
-          <div class="drop__ui">
-            <div class="drop__ic"><svg viewBox="0 0 24 24"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg></div>
-            <p><b>Перетащи картинки сюда</b> или нажми, чтобы выбрать</p>
-            <small>JPG, PNG, WEBP, GIF</small>
-          </div>
-        </label>
-        <div class="thumbs" id="thumbs"></div>
-      </div>
-
       <label class="check"><input type="checkbox" name="team"><span>Ищу команду, а не одного исполнителя</span></label>
 
       <p class="form-error" id="createError" role="alert"></p>
@@ -398,7 +399,61 @@
   <!-- Модалка: лот -->
   <div class="modal" id="lotModal" role="dialog" aria-modal="true" aria-labelledby="lotTitle" hidden>
     <div class="modal__backdrop" data-close></div>
-    <div class="modal__panel modal__panel--lot" id="lotPanel"></div>
+    <div class="modal__panel modal__panel--lot" data-lenis-prevent id="lotPanel"></div>
+  </div>
+
+  <!-- Модалка: регистрация -->
+  <div class="modal" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle" hidden>
+    <div class="modal__backdrop" data-close></div>
+    <form class="modal__panel" data-lenis-prevent id="authForm" novalidate>
+      <button class="modal__x" type="button" data-close aria-label="Закрыть">✕</button>
+      <div class="auth__orb" aria-hidden="true"><i></i><i></i><i></i></div>
+      <h2 id="authTitle" class="modal__title">Регистрация</h2>
+      <p class="modal__sub">Создай профиль, чтобы размещать лоты, откликаться и получать оплату на баланс.</p>
+      <label class="field"><span>Имя или ник</span>
+        <input name="name" required maxlength="30" autocomplete="nickname" placeholder="Например: Дима">
+      </label>
+      <label class="field"><span>Telegram или e-mail</span>
+        <input name="contact" required maxlength="60" autocomplete="email" placeholder="@username или mail@example.com">
+      </label>
+      <div class="field"><span>Чем занимаешься <small>можно несколько</small></span>
+        <div class="skills" id="skillPick"></div>
+      </div>
+      <label class="check"><input type="checkbox" name="agree" required><span>Мне есть 14 лет, я согласен с правилами площадки</span></label>
+      <p class="form-error" id="authError" role="alert"></p>
+      <button class="btn btn--primary btn--block" type="submit"><span>Создать аккаунт</span></button>
+      <p class="demo-note">Пока профиль хранится только в этом браузере — общий вход заработает после подключения сервера.</p>
+    </form>
+  </div>
+
+  <!-- Модалка: профиль и баланс -->
+  <div class="modal" id="walletModal" role="dialog" aria-modal="true" aria-labelledby="walletTitle" hidden>
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__panel" data-lenis-prevent id="walletPanel"></div>
+  </div>
+
+  <!-- Модалка: пополнение / вывод -->
+  <div class="modal" id="moneyModal" role="dialog" aria-modal="true" aria-labelledby="moneyTitle" hidden>
+    <div class="modal__backdrop" data-close></div>
+    <form class="modal__panel" data-lenis-prevent id="moneyForm" novalidate>
+      <button class="modal__x" type="button" data-close aria-label="Закрыть">✕</button>
+      <h2 id="moneyTitle" class="modal__title">Пополнение</h2>
+      <p class="modal__sub" id="moneySub"></p>
+      <label class="field"><span>Сумма, ₽</span>
+        <input name="amount" type="number" inputmode="numeric" min="100" step="1" required placeholder="1000" class="money__input">
+      </label>
+      <div class="quick" id="quickSums"></div>
+      <div class="field"><span>Способ</span>
+        <div class="seg seg--3" role="radiogroup" aria-label="Способ">
+          <label><input type="radio" name="method" value="card" checked><span>💳 Карта</span></label>
+          <label><input type="radio" name="method" value="sbp"><span>⚡ СБП</span></label>
+          <label><input type="radio" name="method" value="crypto"><span>🪙 Крипта</span></label>
+        </div>
+      </div>
+      <p class="form-error" id="moneyError" role="alert"></p>
+      <button class="btn btn--primary btn--block" type="submit"><span id="moneyBtn">Пополнить</span></button>
+      <p class="demo-note">Демо-режим: деньги не списываются и не зачисляются. Реальные платежи подключатся вместе с платёжным сервисом.</p>
+    </form>
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>

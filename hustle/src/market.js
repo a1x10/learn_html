@@ -3,6 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { CATS, catById, coverSVG, SEED } from './data.js';
 import { store, ls, compressImage } from './store.js';
 import { $, $$, esc, rub, ago, toast, openModal, closeModal, tilt, reduced } from './ui.js';
+import { requireAuth, getAccount } from './account.js';
 
 const MAX_IMG = 6;
 const state = { type: 'all', cat: 'all', q: '', sort: 'new', mine: [] };
@@ -215,7 +216,15 @@ function initCreate() {
 
   document.addEventListener('click', (e) => {
     const o = e.target.closest('[data-open="create"]');
-    if (o) { e.preventDefault(); openModal(modal); }
+    if (o) {
+      e.preventDefault();
+      const open = () => {
+        const a = getAccount();
+        if (a && !form.author.value) form.author.value = a.name;
+        openModal(modal);
+      };
+      if (requireAuth(open)) open();
+    }
     const t = e.target.closest('[data-toast]');
     if (t) toast(t.dataset.toast);
   });
