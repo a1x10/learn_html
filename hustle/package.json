@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "node build.mjs",
-    "dev": "node build.mjs --watch"
+    "dev": "node dev.mjs",
+    "dev:fast": "node dev.mjs --fast",
+    "watch": "node build.mjs --watch"
   },
   "devDependencies": {
     "esbuild": "^0.25.10",
