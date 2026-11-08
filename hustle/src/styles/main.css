@@ -645,3 +645,9 @@ a { color: inherit; text-decoration: none; }
   [data-theme="light"] .theme-toggle__thumb { transform: translateX(20px) rotate(360deg); }
   .acct__bal { font-size: 12px; }
 }
+
+/* Картинки-постеры: в карточке — кадр по центру, в окне лота — целиком */
+.lot__media img { object-position: 50% 55%; }
+.gallery__main { position: relative; }
+.gallery__main img { object-fit: contain; position: relative; }
+.gallery__bg { position: absolute; inset: 0; background: center / cover no-repeat; filter: blur(30px) saturate(1.3); opacity: .6; transform: scale(1.2); }
