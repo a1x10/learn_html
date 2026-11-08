@@ -2,8 +2,9 @@
 //         node build.mjs --watch  — пересборка при изменениях
 import * as esbuild from 'esbuild';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const root = path.dirname(new URL(import.meta.url).pathname);
+const root = path.dirname(fileURLToPath(import.meta.url));
 const watch = process.argv.includes('--watch');
 const common = {
   bundle: true,
