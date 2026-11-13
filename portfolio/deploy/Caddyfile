@@ -1,0 +1,17 @@
+# Caddy сам получает и продлевает HTTPS-сертификат Let's Encrypt.
+# Домен подставляется из переменной окружения SITE_DOMAIN.
+{$SITE_DOMAIN} {
+	root * /var/www/portfolio
+	file_server
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	@assets path *.css *.js
+	header @assets Cache-Control "public, max-age=3600"
+}
