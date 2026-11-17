@@ -25,6 +25,22 @@
       d.className = d.className.replace('no-js', 'js');
     })();
   </script>
+  <script>
+    // Если рядом с index.html нет папки assets (например, файл открыт прямо из ZIP-архива), показать подсказку
+    addEventListener('load', function () {
+      if (getComputedStyle(document.documentElement).getPropertyValue('--lime').trim()) return;
+      var pre = document.getElementById('preloader'); if (pre) pre.remove();
+      var b = document.createElement('div');
+      b.setAttribute('role', 'alert');
+      b.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:#08080c;color:#f3f2f7;font:16px/1.5 system-ui,sans-serif';
+      b.innerHTML = '<div style="max-width:520px"><div style="font-size:40px;font-weight:900;color:#c6ff3d;margin-bottom:12px">HUSTLE</div>'
+        + '<p style="margin:0 0 12px;font-size:20px;font-weight:700">Сайт открыт без своих файлов</p>'
+        + '<p style="margin:0 0 12px;color:#9b99ad">Рядом с index.html должна лежать папка <b style="color:#f3f2f7">assets</b> — в ней стили, анимации и 3D. Так бывает, если открыть index.html прямо из ZIP-архива.</p>'
+        + '<p style="margin:0 0 20px;color:#9b99ad">Распакуй архив целиком (правый клик → «Извлечь все»), а потом открой index.html из распакованной папки. Или запусти через <b style="color:#f3f2f7">npm run dev</b>.</p>'
+        + '<a href="https://a1x10.github.io/learn_html/hustle/" style="display:inline-block;padding:14px 22px;border-radius:999px;background:#c6ff3d;color:#0b0b10;font-weight:700;text-decoration:none">Открыть сайт онлайн</a></div>';
+      document.body.appendChild(b);
+    });
+  </script>
 </head>
 <body>
   <!-- Прелоадер -->
