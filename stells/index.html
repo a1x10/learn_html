@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07060f">
+<title>Stells</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07060f;
+    --card:rgba(22,20,40,.72);
+    --line:rgba(255,255,255,.10);
+    --text:#f3f1ff;
+    --muted:#a9a4c9;
+    --a1:#8b5cf6;
+    --a2:#22d3ee;
+    --a3:#f472b6;
+    --ok:#34d399;
+    --err:#fb7185;
+    --grad:linear-gradient(120deg,var(--a1),var(--a2) 55%,var(--a3));
+    --radius:22px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:Manrope,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    overflow-x:hidden;min-height:100dvh;
+  }
+  button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+  #stars{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+  .nebula{position:fixed;inset:-20%;z-index:0;pointer-events:none;filter:blur(60px);opacity:.55;
+    background:
+      radial-gradient(40% 35% at 20% 25%,rgba(139,92,246,.45),transparent 70%),
+      radial-gradient(35% 30% at 85% 70%,rgba(34,211,238,.30),transparent 70%),
+      radial-gradient(30% 30% at 60% 10%,rgba(244,114,182,.25),transparent 70%);
+    animation:drift 22s ease-in-out infinite alternate}
+  @keyframes drift{to{transform:translate3d(4%,-3%,0) rotate(6deg)}}
+
+  .app{position:relative;z-index:1;min-height:100dvh;display:grid;place-items:center;
+    padding:max(24px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+  .screen{grid-area:1/1;width:100%;max-width:460px;display:none;flex-direction:column;align-items:center;text-align:center;gap:22px}
+  .screen.active{display:flex;animation:enter .7s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes enter{from{opacity:0;transform:translateY(24px) scale(.98);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+
+  .card{width:100%;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:30px 22px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    box-shadow:0 30px 80px -30px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.06);
+    display:flex;flex-direction:column;gap:18px;align-items:center}
+
+  h1,h2{font-family:Unbounded,Manrope,sans-serif;font-weight:700;line-height:1.15}
+  h2{font-size:clamp(20px,5.4vw,26px)}
+  p.sub{color:var(--muted);font-size:15px;line-height:1.5}
+
+  /* ---------- welcome ---------- */
+  .hello{font-family:Unbounded,sans-serif;font-weight:500;font-size:clamp(20px,5.8vw,30px);color:#e7e3ff;letter-spacing:.01em}
+  .hello span,.brand span{display:inline-block;opacity:0;transform:translateY(.6em) rotateX(70deg);filter:blur(8px);
+    animation:letter .9s cubic-bezier(.2,.9,.2,1) forwards}
+  @keyframes letter{to{opacity:1;transform:none;filter:none}}
+  .brand{font-family:Unbounded,sans-serif;font-weight:800;font-size:clamp(44px,15vw,84px);letter-spacing:.04em;line-height:1;white-space:nowrap;
+    background:var(--grad);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:shine 6s linear infinite;filter:drop-shadow(0 8px 40px rgba(139,92,246,.45))}
+  .brand span{background:inherit;-webkit-background-clip:text;background-clip:text}
+  @keyframes shine{to{background-position:-220% 0}}
+  .logo-orb{width:74px;height:74px;border-radius:50%;position:relative;
+    background:radial-gradient(circle at 35% 30%,#fff 0 6%,#c4b5fd 14%,#8b5cf6 40%,#1e1b4b 75%);
+    box-shadow:0 0 50px rgba(139,92,246,.7),0 0 120px rgba(34,211,238,.25);animation:float 5s ease-in-out infinite}
+  .logo-orb::after{content:"";position:absolute;inset:-14px;border-radius:50%;border:1px solid rgba(255,255,255,.18);
+    transform:rotateX(70deg);animation:spin 8s linear infinite}
+  @keyframes float{50%{transform:translateY(-8px)}}
+  @keyframes spin{to{transform:rotateX(70deg) rotate(360deg)}}
+  .fade-late{opacity:0;animation:fadeup .8s ease forwards}
+  @keyframes fadeup{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  /* ---------- buttons ---------- */
+  .btn{position:relative;width:100%;padding:17px 22px;border-radius:16px;font-weight:700;font-size:16px;letter-spacing:.01em;
+    background:var(--grad);background-size:200% 100%;color:#0b0820;
+    box-shadow:0 12px 40px -10px rgba(139,92,246,.75);transition:transform .15s,box-shadow .2s,background-position .6s,opacity .2s;overflow:hidden}
+  .btn:hover{background-position:100% 0;box-shadow:0 16px 50px -10px rgba(34,211,238,.6)}
+  .btn:active{transform:scale(.97)}
+  .btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+  .btn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);
+    transform:translateX(-120%);animation:sweep 3.2s ease-in-out infinite}
+  @keyframes sweep{60%,100%{transform:translateX(120%)}}
+  .btn.ghost{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--line);box-shadow:none}
+  .btn.ghost::after{display:none}
+  .link{color:var(--a2);font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px}
+
+  /* ---------- phone ---------- */
+  .field{width:100%;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.05);border:1px solid var(--line);
+    border-radius:16px;padding:4px 16px;transition:border-color .2s,box-shadow .2s}
+  .field:focus-within{border-color:var(--a1);box-shadow:0 0 0 4px rgba(139,92,246,.2)}
+  .field .flag{font-size:20px}
+  .field input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--text);font:600 19px Manrope,sans-serif;padding:14px 0;letter-spacing:.03em}
+  .field input::placeholder{color:#5f5a80}
+  .err{color:var(--err);font-size:14px;min-height:18px;font-weight:600}
+
+  /* ---------- code ---------- */
+  .code-box{width:100%;border-radius:18px;padding:18px 14px 16px;background:rgba(139,92,246,.10);border:1px dashed rgba(139,92,246,.5);
+    display:flex;flex-direction:column;gap:12px;align-items:center}
+  .code-label{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em}
+  .code-show{display:flex;gap:10px;justify-content:center}
+  .code-show b{font:800 clamp(30px,10vw,42px) Unbounded,sans-serif;width:clamp(48px,15vw,60px);aspect-ratio:3/4;display:grid;place-items:center;border-radius:14px;
+    background:rgba(255,255,255,.07);border:1px solid var(--line);color:#fff;text-shadow:0 0 18px rgba(34,211,238,.8);
+    animation:pop .5s cubic-bezier(.2,1.4,.4,1) both;transition:filter .5s,opacity .5s}
+  .code-show.hidden b{filter:blur(12px);opacity:.35}
+  @keyframes pop{from{transform:scale(.3) rotate(-12deg);opacity:0}}
+  .timer{width:100%;height:6px;border-radius:9px;background:rgba(255,255,255,.08);overflow:hidden}
+  .timer i{display:block;height:100%;width:100%;background:var(--grad);transform-origin:left}
+  .code-note{font-size:14px;color:var(--muted)}
+  .code-note strong{color:var(--text)}
+  .otp{display:flex;gap:10px;justify-content:center}
+  .otp input{width:clamp(52px,16vw,62px);aspect-ratio:3/4;text-align:center;font:800 26px Unbounded,sans-serif;color:#fff;text-transform:uppercase;
+    background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:14px;outline:0;transition:border-color .2s,box-shadow .2s,transform .2s}
+  .otp input:focus{border-color:var(--a2);box-shadow:0 0 0 4px rgba(34,211,238,.18);transform:translateY(-2px)}
+  .otp.bad input{border-color:var(--err)}
+  .otp.good input{border-color:var(--ok);box-shadow:0 0 0 4px rgba(52,211,153,.18)}
+  .shake{animation:shake .45s}
+  @keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+
+  /* ---------- share / accept ---------- */
+  .icon-ring{width:86px;height:86px;border-radius:50%;display:grid;place-items:center;font-size:38px;position:relative;
+    background:radial-gradient(circle,rgba(139,92,246,.35),rgba(139,92,246,.05) 70%)}
+  .icon-ring::before,.icon-ring::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid rgba(139,92,246,.6);animation:ping 2.2s ease-out infinite}
+  .icon-ring::after{animation-delay:1.1s}
+  @keyframes ping{to{transform:scale(1.7);opacity:0}}
+  .share-tile{width:100%;display:flex;gap:14px;align-items:center;text-align:left;padding:14px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+  .share-tile .thumb{width:62px;height:62px;border-radius:12px;flex:none;background:var(--grad);display:grid;place-items:center;font-size:24px;color:#0b0820}
+  .share-tile small{color:var(--muted);font-size:13px}
+  .share-tile strong{display:block;font-size:15px;margin-bottom:2px}
+  .terms{width:100%;text-align:left;font-size:13.5px;line-height:1.55;color:var(--muted);background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .terms li{margin-left:18px;margin-top:4px}
+  .hint{font-size:17px;font-weight:600}
+  .hint em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* ---------- player preview ---------- */
+  .screen.wide{max-width:760px}
+  .player{width:100%;aspect-ratio:16/9;border-radius:20px;overflow:hidden;position:relative;background:#000;border:1px solid var(--line);
+    box-shadow:0 40px 100px -30px rgba(139,92,246,.6)}
+  .player video{width:100%;height:100%;object-fit:cover;opacity:.55}
+  .player .play{position:absolute;inset:0;margin:auto;width:84px;height:84px;border-radius:50%;display:grid;place-items:center;
+    background:rgba(255,255,255,.14);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3)}
+  .player .play::before{content:"";margin-left:6px;border-left:26px solid #fff;border-top:16px solid transparent;border-bottom:16px solid transparent}
+  .player .bar{position:absolute;left:16px;right:16px;bottom:14px;display:flex;align-items:center;gap:10px;font-size:12px;color:#ddd}
+  .player .bar i{flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,.25)}
+  .player .tag{position:absolute;top:14px;left:14px;font-size:12px;font-weight:700;padding:6px 10px;border-radius:99px;background:rgba(0,0,0,.5);border:1px solid var(--line)}
+  .wide .btn{max-width:420px}
+
+  /* ---------- theater ---------- */
+  #theater{position:fixed;inset:0;z-index:50;background:#000;display:none}
+  #theater.on{display:block}
+  #theater video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;opacity:0;transition:opacity .8s}
+  #theater video.show{opacity:1}
+  .layer{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 16px;gap:22px}
+  .layer.on{display:flex;animation:enter .6s ease both}
+  #disclaimer{background:radial-gradient(60% 50% at 50% 45%,rgba(139,92,246,.25),#000 75%)}
+  .disc-card{max-width:620px;display:flex;flex-direction:column;gap:18px;align-items:center}
+  .disc-badge{font:700 12px Manrope;letter-spacing:.2em;text-transform:uppercase;color:var(--a2);padding:8px 14px;border:1px solid rgba(34,211,238,.4);border-radius:99px}
+  .disc-text{font-family:Unbounded,sans-serif;font-weight:500;font-size:clamp(20px,4.6vw,34px);line-height:1.35}
+  .disc-text b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .disc-small{color:var(--muted);font-size:clamp(14px,2.6vw,17px)}
+  .disc-progress{width:min(360px,80vw);height:4px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden}
+  .disc-progress i{display:block;height:100%;background:var(--grad);width:0}
+  .disc-sec{font-size:13px;color:var(--muted)}
+  #countdown .num{font:800 clamp(140px,40vw,280px) Unbounded,sans-serif;line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 60px rgba(139,92,246,.7))}
+  #countdown .num.tick{animation:tick 1s cubic-bezier(.2,.9,.2,1) both}
+  @keyframes tick{0%{transform:scale(2.2);opacity:0;filter:blur(20px)}25%{transform:scale(1);opacity:1;filter:none}80%{opacity:1}100%{transform:scale(.6);opacity:0}}
+  #countdown .ring{position:absolute;width:min(70vw,420px);aspect-ratio:1;border-radius:50%;border:2px solid rgba(139,92,246,.35);animation:ping 1s ease-out infinite}
+  #tapPlay{background:rgba(0,0,0,.6)}
+  #endChoice{background:radial-gradient(60% 60% at 50% 50%,rgba(20,16,40,.92),rgba(0,0,0,.96))}
+  .choice-row{display:flex;gap:14px;width:min(460px,100%)}
+  .choice-row .btn{flex:1}
+
+  /* ---------- plans modal ---------- */
+  #plans{position:fixed;inset:0;z-index:80;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;
+    background:rgba(4,3,12,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    padding:max(20px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+  #plans.on{display:flex}
+  .modal{position:relative;width:100%;max-width:1040px;margin:auto 0;background:linear-gradient(180deg,rgba(26,22,50,.96),rgba(12,10,26,.98));
+    border:1px solid var(--line);border-radius:26px;padding:34px 20px 24px;animation:enter .5s cubic-bezier(.2,.8,.2,1) both}
+  .close{position:absolute;top:12px;right:12px;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:24px;line-height:1;
+    background:rgba(255,255,255,.07);border:1px solid var(--line);transition:transform .2s,background .2s}
+  .close:hover{transform:rotate(90deg);background:rgba(255,255,255,.14)}
+  .modal-head{text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center;margin-bottom:26px;padding:0 30px}
+  .lock{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;color:#fda4af;background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.35);padding:7px 12px;border-radius:99px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+  .plan{position:relative;display:flex;flex-direction:column;gap:14px;padding:22px 18px 18px;border-radius:20px;background:rgba(255,255,255,.04);
+    border:1px solid var(--line);transition:transform .25s,border-color .25s,box-shadow .25s;opacity:0;animation:fadeup .6s ease forwards}
+  .plan:hover{transform:translateY(-4px);border-color:rgba(139,92,246,.6);box-shadow:0 20px 60px -25px rgba(139,92,246,.8)}
+  .plan.hot{border-color:rgba(34,211,238,.6);background:linear-gradient(180deg,rgba(34,211,238,.10),rgba(139,92,246,.06))}
+  .plan .badge{position:absolute;top:-11px;left:18px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:99px;background:var(--grad);color:#0b0820}
+  .plan h3{font:700 19px Unbounded,sans-serif}
+  .price{font:800 28px Unbounded,sans-serif;line-height:1.1}
+  .price small{font:600 14px Manrope,sans-serif;color:var(--muted)}
+  .feat{list-style:none;display:flex;flex-direction:column;gap:8px;font-size:14px;color:#d8d4f5;flex:1}
+  .feat li{display:flex;gap:8px}
+  .feat li::before{content:"✦";color:var(--a2)}
+  .plan .btn{padding:14px}
+
+  /* ---------- misc ---------- */
+  .toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translate(-50%,30px);z-index:100;opacity:0;pointer-events:none;
+    width:max-content;max-width:calc(100% - 32px);text-align:center;
+    background:rgba(24,20,46,.96);border:1px solid var(--line);padding:13px 18px;border-radius:14px;font-weight:600;font-size:14.5px;transition:.35s}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .foot{font-size:12px;color:#6d6890}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
+    .hello span,.brand span,.fade-late,.plan{opacity:1;transform:none;filter:none}
+  }
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="nebula"></div>
+
+<main class="app">
+
+  <!-- 1. Приветствие -->
+  <section class="screen active" id="s-welcome">
+    <div class="logo-orb fade-late" style="animation-delay:.1s"></div>
+    <div>
+      <div class="hello" id="hello"></div>
+      <h1 class="brand" id="brand" aria-label="STELLS"></h1>
+    </div>
+    <p class="sub fade-late" style="animation-delay:2.1s;font-size:17px">Войдите, чтобы продолжить</p>
+    <button class="btn fade-late" style="animation-delay:2.4s;max-width:360px" id="toPhone">Войти через код</button>
+    <p class="foot fade-late" style="animation-delay:2.8s">© Stells, 2026</p>
+  </section>
+
+  <!-- 2. Телефон -->
+  <section class="screen" id="s-phone">
+    <div class="card">
+      <h2>Регистрация</h2>
+      <p class="sub">Введите свой номер телефона для регистрации</p>
+      <label class="field">
+        <span class="flag">📱</span>
+        <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__" maxlength="18">
+      </label>
+      <div class="err" id="phoneErr"></div>
+      <button class="btn" id="sendCode" disabled>Получить код</button>
+    </div>
+  </section>
+
+  <!-- 3. Код -->
+  <section class="screen" id="s-code">
+    <div class="card">
+      <h2>Ваш код входа</h2>
+      <p class="sub">Код покажется на экране всего <strong style="color:var(--text)">10 секунд</strong> — запомните и впишите его</p>
+      <div class="code-box">
+        <div class="code-label">Код для <span id="phoneShow"></span></div>
+        <div class="code-show" id="codeShow"></div>
+        <div class="timer"><i id="codeBar"></i></div>
+        <div class="code-note" id="codeNote"></div>
+      </div>
+      <div class="otp" id="otp">
+        <input maxlength="1" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" aria-label="Символ 1">
+        <input maxlength="1" autocapitalize="characters" spellcheck="false" aria-label="Символ 2">
+        <input maxlength="1" autocapitalize="characters" spellcheck="false" aria-label="Символ 3">
+        <input maxlength="1" autocapitalize="characters" spellcheck="false" aria-label="Символ 4">
+      </div>
+      <div class="err" id="codeErr"></div>
+      <button class="btn" id="checkCode" disabled>Подтвердить</button>
+      <button class="link" id="newCode" hidden>Показать новый код</button>
+    </div>
+  </section>
+
+  <!-- 4. Поделились ссылкой -->
+  <section class="screen" id="s-share">
+    <div class="card">
+      <div class="icon-ring">🔗</div>
+      <h2>С вами поделились ссылкой на видео</h2>
+      <div class="share-tile">
+        <div class="thumb">▶</div>
+        <div><strong>Фильм от Stells</strong><small>Доступ по приглашению · 1 просмотр</small></div>
+      </div>
+      <button class="btn" id="toAccept">Посмотреть видео</button>
+    </div>
+  </section>
+
+  <!-- 5. Принять -->
+  <section class="screen" id="s-accept">
+    <div class="card">
+      <h2>Почти готово</h2>
+      <p class="hint">Нажмите кнопку <em>«Принять и продолжить»</em></p>
+      <div class="terms">
+        Продолжая, вы соглашаетесь, что:
+        <ul>
+          <li>вам доступен просмотр одного фильма;</li>
+          <li>контент создан с помощью искусственного интеллекта Stells AI;</li>
+          <li>видео откроется в полноэкранном режиме.</li>
+        </ul>
+      </div>
+      <button class="btn" id="toPlayer">Принять и продолжить</button>
+    </div>
+  </section>
+
+  <!-- 6. Плеер -->
+  <section class="screen wide" id="s-player">
+    <h2>Ваш фильм готов</h2>
+    <div class="player">
+      <video id="preview" muted playsinline preload="metadata" src="https://d2ol7oe51mr4n9.cloudfront.net/user_3BFGa4gZW9JqBaAyGOEvjCz04Kh/dc862e14-0711-4d8e-bc07-975b5327f8c6.mp4#t=1"></video>
+      <span class="tag">STELLS · AI</span>
+      <span class="play"></span>
+      <div class="bar"><span>0:00</span><i></i><span>HD</span></div>
+    </div>
+    <button class="btn" id="startWatch">Начать просмотр</button>
+  </section>
+
+  <!-- 7. Ушли -->
+  <section class="screen" id="s-bye">
+    <div class="card">
+      <div class="icon-ring">👋</div>
+      <h2>До встречи!</h2>
+      <p class="sub">Спасибо, что посмотрели фильм на Stells.</p>
+      <button class="btn ghost" id="restart">На главную</button>
+    </div>
+  </section>
+
+  <!-- 8. После крестика -->
+  <section class="screen" id="s-done">
+    <div class="card">
+      <div class="icon-ring">✨</div>
+      <h2>Ничего страшного!</h2>
+      <p class="sub">Вы посмотрели свой фильм. Подписку можно оформить в любой момент — мы будем рады видеть вас снова.</p>
+      <button class="btn" id="reopenPlans">Посмотреть подписки</button>
+      <button class="btn ghost" id="restart2">На главную</button>
+    </div>
+  </section>
+</main>
+
+<!-- Кинотеатр (полный экран) -->
+<div id="theater">
+  <video id="movie" playsinline preload="auto" controls controlslist="nodownload"
+    src="https://d2ol7oe51mr4n9.cloudfront.net/user_3BFGa4gZW9JqBaAyGOEvjCz04Kh/dc862e14-0711-4d8e-bc07-975b5327f8c6.mp4"></video>
+
+  <div class="layer" id="disclaimer">
+    <div class="disc-card">
+      <span class="disc-badge">Важно</span>
+      <p class="disc-text">Данный контент сделан <b>Stells AI</b></p>
+      <p class="disc-small">ИИ может ошибаться. К разработчику никаких претензий нет.</p>
+      <div class="disc-progress"><i id="discBar"></i></div>
+      <span class="disc-sec" id="discSec">15</span>
+    </div>
+  </div>
+
+  <div class="layer" id="countdown"><span class="ring"></span><span class="num" id="cdNum">3</span></div>
+
+  <div class="layer" id="tapPlay"><button class="btn" style="max-width:320px" id="tapPlayBtn">▶ Нажмите, чтобы начать</button></div>
+
+  <div class="layer" id="endChoice">
+    <h2 style="font-size:clamp(26px,6vw,40px)">Фильм окончен</h2>
+    <p class="sub" style="font-size:17px">Уйти или остаться?</p>
+    <div class="choice-row">
+      <button class="btn ghost" id="leave">Уйти</button>
+      <button class="btn" id="stay">Остаться</button>
+    </div>
+  </div>
+</div>
+
+<!-- Подписки -->
+<div id="plans" role="dialog" aria-modal="true" aria-labelledby="plansTitle">
+  <div class="modal">
+    <button class="close" id="closePlans" aria-label="Закрыть">×</button>
+    <div class="modal-head">
+      <span class="lock">🔒 Доступ ограничен</span>
+      <h2 id="plansTitle">Вам доступен просмотр одного фильма</h2>
+      <p class="sub">К другим функциям платформы доступ запрещён. Или вы можете купить подписку и открыть всё:</p>
+    </div>
+    <div class="grid" id="planGrid"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const TG = 'Stells_help';
+  const PLANS = [
+    {name:'Старт',   price:'1 990', secs:'30 с видео',   note:'~6 роликов по 5 с'},
+    {name:'Базовый', price:'4 990', secs:'90 с видео',   note:'~18 роликов'},
+    {name:'Про',     price:'9 990', secs:'200 с видео',  note:'~40 роликов', hot:true},
+    {name:'Макс',    price:'28 300', secs:'~6 226 с видео', note:'1 ч 44 мин контента'}
+  ];
+
+  /* ---------- звёздное небо ---------- */
+  const cv = $('#stars'), cx = cv.getContext('2d');
+  let stars = [], W, H, dpr;
+  function resize(){
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = cv.width = innerWidth * dpr; H = cv.height = innerHeight * dpr;
+    const n = Math.round(innerWidth * innerHeight / 3500);
+    stars = Array.from({length:n}, () => ({x:Math.random()*W, y:Math.random()*H, r:(Math.random()*1.3+.2)*dpr, t:Math.random()*6.28, s:Math.random()*.02+.005, v:(Math.random()*.15+.03)*dpr}));
+  }
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function draw(){
+    cx.clearRect(0,0,W,H);
+    for (const s of stars){
+      s.t += s.s; if (!still){ s.y -= s.v; if (s.y < 0) { s.y = H; s.x = Math.random()*W; } }
+      cx.globalAlpha = .35 + Math.sin(s.t) * .35 + .3;
+      cx.fillStyle = '#fff'; cx.beginPath(); cx.arc(s.x, s.y, s.r, 0, 6.283); cx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  addEventListener('resize', resize); resize(); draw();
+
+  /* ---------- анимированный заголовок ---------- */
+  function spell(el, text, start, step){
+    [...text].forEach((ch, i) => {
+      const s = document.createElement('span');
+      s.textContent = ch === ' ' ? ' ' : ch;
+      s.style.animationDelay = (start + i * step) + 's';
+      el.appendChild(s);
+    });
+  }
+  spell($('#hello'), 'Добро пожаловать в', .3, .035);
+  spell($('#brand'), 'STELLS', 1.0, .12);
+
+  /* ---------- утилиты ---------- */
+  function show(id){
+    document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+    scrollTo(0, 0);
+  }
+  let toastT;
+  function toast(msg, ms = 3200){
+    const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+    clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), ms);
+  }
+  function shake(el){ el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
+
+  /* ---------- 1 → 2 ---------- */
+  $('#toPhone').onclick = () => { show('s-phone'); setTimeout(() => $('#phone').focus(), 350); };
+
+  /* ---------- телефон ---------- */
+  const phone = $('#phone');
+  let digits = '';
+  function fmtPhone(d){
+    let out = '+7';
+    if (d.length) out += ' (' + d.slice(0,3);
+    if (d.length >= 3) out += ')';
+    if (d.length > 3) out += ' ' + d.slice(3,6);
+    if (d.length > 6) out += '-' + d.slice(6,8);
+    if (d.length > 8) out += '-' + d.slice(8,10);
+    return out;
+  }
+  phone.addEventListener('input', () => {
+    let v = phone.value.trim();
+    if (v.startsWith('+7')) v = v.slice(2);
+    let d = v.replace(/\D/g, '');
+    if (d.length > 10 && (d[0] === '7' || d[0] === '8')) d = d.slice(1);
+    digits = d.slice(0, 10);
+    phone.value = digits.length ? fmtPhone(digits) : '';
+    $('#sendCode').disabled = digits.length !== 10;
+    $('#phoneErr').textContent = '';
+  });
+  phone.addEventListener('focus', () => { if (!phone.value) phone.value = '+7 '; });
+  phone.addEventListener('keydown', e => { if (e.key === 'Enter') $('#sendCode').click(); });
+  $('#sendCode').onclick = () => {
+    if (digits.length !== 10){ $('#phoneErr').textContent = 'Введите номер полностью'; shake($('.field')); return; }
+    $('#phoneShow').textContent = fmtPhone(digits);
+    show('s-code'); newCode();
+  };
+
+  /* ---------- код ---------- */
+  const ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '', codeTimer, codeStart;
+  const otp = [...document.querySelectorAll('#otp input')];
+  function newCode(){
+    code = Array.from({length:4}, () => ABC[crypto.getRandomValues(new Uint32Array(1))[0] % ABC.length]).join('');
+    const box = $('#codeShow');
+    box.classList.remove('hidden');
+    box.innerHTML = [...code].map((c, i) => `<b style="animation-delay:${i*.09}s">${c}</b>`).join('');
+    otp.forEach(i => i.value = ''); $('#otp').className = 'otp';
+    $('#codeErr').textContent = ''; $('#newCode').hidden = true; $('#checkCode').disabled = true;
+    codeStart = performance.now();
+    cancelAnimationFrame(codeTimer);
+    const tick = now => {
+      const left = Math.max(0, 10 - (now - codeStart) / 1000);
+      $('#codeBar').style.transform = `scaleX(${left / 10})`;
+      if (left > 0){
+        $('#codeNote').innerHTML = `Код исчезнет через <strong>${Math.ceil(left)} с</strong>`;
+        codeTimer = requestAnimationFrame(tick);
+      } else {
+        box.classList.add('hidden');
+        box.innerHTML = '<b>•</b><b>•</b><b>•</b><b>•</b>';
+        $('#codeNote').innerHTML = '<strong>Код скрыт.</strong> Впишите его по памяти';
+        $('#newCode').hidden = false;
+      }
+    };
+    codeTimer = requestAnimationFrame(tick);
+    setTimeout(() => otp[0].focus(), 400);
+  }
+  $('#newCode').onclick = newCode;
+  const entered = () => otp.map(i => i.value).join('').toUpperCase();
+  function fillFrom(idx, str){
+    const chars = str.toUpperCase().replace(/[^A-Z0-9]/g, '').split('');
+    let i = idx;
+    for (const c of chars){ if (i > 3) break; otp[i++].value = c; }
+    (otp[Math.min(i, 3)]).focus();
+  }
+  otp.forEach((inp, i) => {
+    inp.addEventListener('input', () => {
+      const v = inp.value; inp.value = '';
+      if (v) fillFrom(i, v);
+      $('#otp').className = 'otp'; $('#codeErr').textContent = '';
+      $('#checkCode').disabled = entered().length !== 4;
+      if (entered().length === 4) $('#checkCode').focus();
+    });
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !inp.value && i > 0){ otp[i-1].value = ''; otp[i-1].focus(); $('#checkCode').disabled = true; }
+      if (e.key === 'ArrowLeft' && i > 0) otp[i-1].focus();
+      if (e.key === 'ArrowRight' && i < 3) otp[i+1].focus();
+      if (e.key === 'Enter') $('#checkCode').click();
+    });
+    inp.addEventListener('paste', e => { e.preventDefault(); fillFrom(i, e.clipboardData.getData('text')); $('#checkCode').disabled = entered().length !== 4; });
+  });
+  $('#checkCode').onclick = () => {
+    if (entered() === code){
+      cancelAnimationFrame(codeTimer);
+      $('#otp').className = 'otp good';
+      toast('Вход выполнен ✓', 1800);
+      setTimeout(() => show('s-share'), 700);
+    } else {
+      $('#otp').className = 'otp bad'; shake($('#otp'));
+      $('#codeErr').textContent = 'Неверный код. Попробуйте ещё раз';
+    }
+  };
+
+  /* ---------- ссылка → принять → плеер ---------- */
+  $('#toAccept').onclick = () => show('s-accept');
+  $('#toPlayer').onclick = () => { show('s-player'); };
+
+  /* ---------- просмотр ---------- */
+  const theater = $('#theater'), movie = $('#movie');
+  const layers = ['disclaimer','countdown','tapPlay','endChoice'];
+  const onLayer = id => layers.forEach(l => $('#' + l).classList.toggle('on', l === id));
+
+  function goFullscreen(){
+    const el = document.documentElement;
+    const req = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (req && !document.fullscreenElement && !document.webkitFullscreenElement){
+      try { const p = req.call(el, {navigationUI:'hide'}); if (p && p.catch) p.catch(() => {}); } catch(e){}
+    }
+    try { screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape').catch(() => {}); } catch(e){}
+  }
+  function exitFullscreen(){
+    const ex = document.exitFullscreen || document.webkitExitFullscreen;
+    if ((document.fullscreenElement || document.webkitFullscreenElement) && ex){ try { const p = ex.call(document); if (p && p.catch) p.catch(() => {}); } catch(e){} }
+    try { screen.orientation && screen.orientation.unlock && screen.orientation.unlock(); } catch(e){}
+  }
+
+  $('#startWatch').onclick = () => {
+    // всё, что требует жеста пользователя, делаем прямо сейчас
+    goFullscreen();
+    movie.muted = false;
+    const p = movie.play(); movie.pause();
+    if (p && p.catch) p.catch(() => {});
+    movie.currentTime = 0;
+    movie.classList.remove('show');
+    theater.classList.add('on');
+    document.body.style.overflow = 'hidden';
+    runDisclaimer();
+  };
+
+  function runDisclaimer(){
+    onLayer('disclaimer');
+    const DUR = 15000, t0 = performance.now();
+    const bar = $('#discBar'), sec = $('#discSec');
+    const step = now => {
+      const k = Math.min(1, (now - t0) / DUR);
+      bar.style.width = (k * 100) + '%';
+      sec.textContent = Math.ceil((DUR - (now - t0)) / 1000) + ' с';
+      if (k < 1) requestAnimationFrame(step); else runCountdown();
+    };
+    requestAnimationFrame(step);
+  }
+
+  function runCountdown(){
+    onLayer('countdown');
+    const num = $('#cdNum');
+    let n = 3;
+    const tick = () => {
+      if (n === 0){ startMovie(); return; }
+      num.textContent = n; num.classList.remove('tick'); void num.offsetWidth; num.classList.add('tick');
+      n--; setTimeout(tick, 1000);
+    };
+    tick();
+  }
+
+  function startMovie(){
+    onLayer(null);
+    movie.classList.add('show');
+    movie.currentTime = 0;
+    const p = movie.play();
+    if (p && p.catch) p.catch(() => {
+      // браузер не дал включить со звуком — просим одно нажатие
+      onLayer('tapPlay');
+    });
+  }
+  $('#tapPlayBtn').onclick = () => { goFullscreen(); onLayer(null); movie.play().catch(() => { movie.muted = true; movie.play(); toast('Звук выключен браузером — включите его в плеере'); }); };
+
+  movie.addEventListener('ended', () => {
+    exitFullscreen();
+    movie.classList.remove('show');
+    onLayer('endChoice');
+  });
+  movie.addEventListener('error', () => { if (theater.classList.contains('on')) toast('Не удалось загрузить видео. Проверьте интернет', 4000); });
+
+  function closeTheater(){
+    movie.pause(); theater.classList.remove('on'); onLayer(null);
+    document.body.style.overflow = '';
+    exitFullscreen();
+  }
+  $('#leave').onclick = () => { closeTheater(); show('s-bye'); };
+  $('#stay').onclick = () => { closeTheater(); show('s-done'); openPlans(); };
+
+  /* ---------- подписки ---------- */
+  $('#planGrid').innerHTML = PLANS.map((p, i) => `
+    <article class="plan${p.hot ? ' hot' : ''}" style="animation-delay:${.08 + i*.08}s">
+      ${p.hot ? '<span class="badge">Популярный</span>' : ''}
+      <h3>${p.name}</h3>
+      <div class="price">${p.price} ₸ <small>/ мес</small></div>
+      <ul class="feat"><li>${p.secs}</li><li>${p.note}</li><li>Доступ ко всем функциям платформы</li></ul>
+      <button class="btn${p.hot ? '' : ' ghost'}" data-plan="${i}">Купить</button>
+    </article>`).join('');
+
+  function openPlans(){ $('#plans').classList.add('on'); document.body.style.overflow = 'hidden'; }
+  function closePlans(){ $('#plans').classList.remove('on'); document.body.style.overflow = ''; }
+
+  $('#planGrid').addEventListener('click', e => {
+    const b = e.target.closest('[data-plan]'); if (!b) return;
+    const p = PLANS[b.dataset.plan];
+    const text = `Здравствуйте! Я хочу купить подписку «${p.name}» — ${p.price} ₸ в месяц (${p.secs}, ${p.note}).`;
+    try { navigator.clipboard && navigator.clipboard.writeText(text).catch(() => {}); } catch(err){}
+    const url = `https://t.me/${TG}?text=${encodeURIComponent(text)}`;
+    const w = window.open(url, '_blank', 'noopener');
+    if (!w) location.href = url;
+    toast(`Открываем Telegram @${TG}… Текст сообщения скопирован`, 4000);
+  });
+  $('#closePlans').onclick = () => { closePlans(); show('s-done'); toast('Ничего страшного 🙂 Подписку можно купить в любой момент'); };
+  $('#plans').addEventListener('click', e => { if (e.target.id === 'plans') $('#closePlans').click(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && $('#plans').classList.contains('on')) $('#closePlans').click(); });
+  $('#reopenPlans').onclick = openPlans;
+  $('#restart').onclick = $('#restart2').onclick = () => location.reload();
+})();
+</script>
+</body>
+</html>
