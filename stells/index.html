@@ -292,7 +292,7 @@
         <ul>
           <li>вам доступен просмотр одного фильма;</li>
           <li>контент создан с помощью искусственного интеллекта Stells AI;</li>
-          <li>видео откроется в полноэкранном режиме.</li>
+          <li>фильм можно будет скачать на устройство.</li>
         </ul>
       </div>
       <button class="btn" id="toPlayer">Принять и продолжить</button>
@@ -335,7 +335,6 @@
 
 <!-- Кинотеатр (полный экран) -->
 <div id="theater">
-  <video id="movie" playsinline preload="none" controls controlslist="nodownload" poster="video/poster.jpg"></video>
 
   <div class="layer" id="disclaimer">
     <div class="disc-card">
@@ -349,16 +348,7 @@
 
   <div class="layer" id="countdown"><span class="ring"></span><span class="num" id="cdNum">3</span></div>
 
-  <div class="layer" id="tapPlay"><button class="btn" style="max-width:320px" id="tapPlayBtn">▶ Нажмите, чтобы начать</button></div>
 
-  <div class="layer" id="endChoice">
-    <h2 style="font-size:clamp(26px,6vw,40px)">Фильм окончен</h2>
-    <p class="sub" style="font-size:17px">Уйти или остаться?</p>
-    <div class="choice-row">
-      <button class="btn ghost" id="leave">Уйти</button>
-      <button class="btn" id="stay">Остаться</button>
-    </div>
-  </div>
 </div>
 
 <!-- Подписки -->
@@ -376,7 +366,6 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
 <script>
 (() => {
   const $ = s => document.querySelector(s);
@@ -533,59 +522,14 @@
 
   /* ---------- ссылка → принять → плеер ---------- */
   $('#toAccept').onclick = () => show('s-accept');
-  $('#toPlayer').onclick = () => { show('s-player'); loadMovie(); };
+  $('#toPlayer').onclick = () => show('s-player');
 
-  /* ---------- просмотр ---------- */
-  const theater = $('#theater'), movie = $('#movie');
-
-  /* Поток HLS: 1080p / 720p / 480p — плеер сам выбирает качество под скорость интернета */
-  const HLS_URL = 'video/master.m3u8';
-  const MP4_URL = 'https://d2ol7oe51mr4n9.cloudfront.net/user_3BFGa4gZW9JqBaAyGOEvjCz04Kh/dc862e14-0711-4d8e-bc07-975b5327f8c6.mp4';
-  let loaded = false, hls = null;
-  function loadMovie(){
-    if (loaded) return; loaded = true;
-    if (window.Hls && Hls.isSupported()){
-      hls = new Hls({capLevelToPlayerSize:true, startLevel:-1, maxBufferLength:40, abrEwmaDefaultEstimate:2000000});
-      hls.loadSource(HLS_URL); hls.attachMedia(movie);
-      hls.on(Hls.Events.ERROR, (e, d) => {
-        if (!d.fatal) return;
-        if (d.type === Hls.ErrorTypes.NETWORK_ERROR) hls.startLoad();
-        else if (d.type === Hls.ErrorTypes.MEDIA_ERROR) hls.recoverMediaError();
-        else { hls.destroy(); movie.src = MP4_URL; }
-      });
-    } else if (movie.canPlayType('application/vnd.apple.mpegurl')){
-      movie.src = HLS_URL;          // Safari / iPhone — встроенный HLS
-    } else {
-      movie.src = MP4_URL;
-    }
-    movie.preload = 'auto';
-  }
-  const layers = ['disclaimer','countdown','tapPlay','endChoice'];
+  /* ---------- просмотр: надпись 15 с → 3 2 1 → страница скачивания ---------- */
+  const theater = $('#theater');
+  const layers = ['disclaimer','countdown'];
   const onLayer = id => layers.forEach(l => $('#' + l).classList.toggle('on', l === id));
 
-  function goFullscreen(){
-    const el = document.documentElement;
-    const req = el.requestFullscreen || el.webkitRequestFullscreen;
-    if (req && !document.fullscreenElement && !document.webkitFullscreenElement){
-      try { const p = req.call(el, {navigationUI:'hide'}); if (p && p.catch) p.catch(() => {}); } catch(e){}
-    }
-    try { screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape').catch(() => {}); } catch(e){}
-  }
-  function exitFullscreen(){
-    const ex = document.exitFullscreen || document.webkitExitFullscreen;
-    if ((document.fullscreenElement || document.webkitFullscreenElement) && ex){ try { const p = ex.call(document); if (p && p.catch) p.catch(() => {}); } catch(e){} }
-    try { screen.orientation && screen.orientation.unlock && screen.orientation.unlock(); } catch(e){}
-  }
-
   $('#startWatch').onclick = () => {
-    // всё, что требует жеста пользователя, делаем прямо сейчас
-    goFullscreen();
-    loadMovie();
-    movie.muted = false;
-    const p = movie.play(); movie.pause();
-    if (p && p.catch) p.catch(() => {});
-    movie.currentTime = 0;
-    movie.classList.remove('show');
     theater.classList.add('on');
     document.body.style.overflow = 'hidden';
     runDisclaimer();
@@ -609,39 +553,12 @@
     const num = $('#cdNum');
     let n = 3;
     const tick = () => {
-      if (n === 0){ startMovie(); return; }
+      if (n === 0){ location.href = 'download.html'; return; }
       num.textContent = n; num.classList.remove('tick'); void num.offsetWidth; num.classList.add('tick');
       n--; setTimeout(tick, 1000);
     };
     tick();
   }
-
-  function startMovie(){
-    onLayer(null);
-    movie.classList.add('show');
-    movie.currentTime = 0;
-    const p = movie.play();
-    if (p && p.catch) p.catch(() => {
-      // браузер не дал включить со звуком — просим одно нажатие
-      onLayer('tapPlay');
-    });
-  }
-  $('#tapPlayBtn').onclick = () => { goFullscreen(); onLayer(null); movie.play().catch(() => { movie.muted = true; movie.play(); toast('Звук выключен браузером — включите его в плеере'); }); };
-
-  movie.addEventListener('ended', () => {
-    exitFullscreen();
-    movie.classList.remove('show');
-    onLayer('endChoice');
-  });
-  movie.addEventListener('error', () => { if (theater.classList.contains('on')) toast('Не удалось загрузить видео. Проверьте интернет', 4000); });
-
-  function closeTheater(){
-    movie.pause(); theater.classList.remove('on'); onLayer(null);
-    document.body.style.overflow = '';
-    exitFullscreen();
-  }
-  $('#leave').onclick = () => { closeTheater(); show('s-bye'); };
-  $('#stay').onclick = () => { closeTheater(); show('s-done'); openPlans(); };
 
   /* ---------- подписки ---------- */
   $('#planGrid').innerHTML = PLANS.map((p, i) => `
@@ -670,7 +587,12 @@
   $('#plans').addEventListener('click', e => { if (e.target.id === 'plans') $('#closePlans').click(); });
   addEventListener('keydown', e => { if (e.key === 'Escape' && $('#plans').classList.contains('on')) $('#closePlans').click(); });
   $('#reopenPlans').onclick = openPlans;
-  $('#restart').onclick = $('#restart2').onclick = () => location.reload();
+  $('#restart').onclick = $('#restart2').onclick = () => { location.href = 'index.html'; };
+
+  /* переходы со страницы скачивания: index.html#plans / index.html#bye */
+  if (location.hash === '#plans'){ show('s-done'); openPlans(); }
+  else if (location.hash === '#bye'){ show('s-bye'); }
+  if (location.hash) history.replaceState(null, '', location.pathname);
 })();
 </script>
 </body>
