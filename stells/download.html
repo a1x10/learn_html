@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07060f">
+<title>Stells — скачать фильм</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#07060f;--card:rgba(22,20,40,.72);--line:rgba(255,255,255,.10);--text:#f3f1ff;--muted:#a9a4c9;
+    --a1:#8b5cf6;--a2:#22d3ee;--a3:#f472b6;--ok:#34d399;--grad:linear-gradient(120deg,var(--a1),var(--a2) 55%,var(--a3))}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{background:var(--bg);color:var(--text);font-family:Manrope,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100dvh;overflow-x:hidden}
+  a{color:inherit}
+  #stars{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+  .nebula{position:fixed;inset:-20%;z-index:0;pointer-events:none;filter:blur(60px);opacity:.55;
+    background:radial-gradient(40% 35% at 20% 25%,rgba(139,92,246,.45),transparent 70%),radial-gradient(35% 30% at 85% 70%,rgba(34,211,238,.30),transparent 70%),radial-gradient(30% 30% at 60% 10%,rgba(244,114,182,.25),transparent 70%)}
+  main{position:relative;z-index:1;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+    padding:max(28px,env(safe-area-inset-top)) 16px max(28px,env(safe-area-inset-bottom));max-width:720px;margin:0 auto;text-align:center}
+  .enter{animation:enter .7s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes enter{from{opacity:0;transform:translateY(24px);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+  .brand{font:800 14px Unbounded,sans-serif;letter-spacing:.3em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  h1{font:700 clamp(24px,6vw,34px)/1.15 Unbounded,sans-serif}
+  .sub{color:var(--muted);font-size:15px;line-height:1.5}
+  .poster{width:100%;aspect-ratio:16/9;border-radius:20px;overflow:hidden;position:relative;border:1px solid var(--line);background:#000;
+    box-shadow:0 40px 100px -30px rgba(139,92,246,.6)}
+  .poster img{width:100%;height:100%;object-fit:cover;display:block;opacity:.75}
+  .poster .tag{position:absolute;top:14px;left:14px;font-size:12px;font-weight:700;padding:6px 10px;border-radius:99px;background:rgba(0,0,0,.55);border:1px solid var(--line)}
+  .poster .dl{position:absolute;inset:0;margin:auto;width:84px;height:84px;border-radius:50%;display:grid;place-items:center;font-size:34px;
+    background:rgba(255,255,255,.14);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3);animation:bob 2.4s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(6px)}}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+  .meta span{font-size:13px;font-weight:700;padding:7px 12px;border-radius:99px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+  .card{width:100%;max-width:460px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px 20px;
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:flex;flex-direction:column;gap:14px;align-items:center}
+  .btn{position:relative;display:block;width:100%;padding:17px 22px;border-radius:16px;font-weight:700;font-size:16px;text-decoration:none;border:0;cursor:pointer;font-family:inherit;
+    background:var(--grad);background-size:200% 100%;color:#0b0820;box-shadow:0 12px 40px -10px rgba(139,92,246,.75);transition:transform .15s,background-position .6s;overflow:hidden}
+  .btn:hover{background-position:100% 0}
+  .btn:active{transform:scale(.97)}
+  .btn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);transform:translateX(-120%);animation:sweep 3.2s ease-in-out infinite}
+  @keyframes sweep{60%,100%{transform:translateX(120%)}}
+  .btn.ghost{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--line);box-shadow:none}
+  .btn.ghost::after{display:none}
+  .alt{font-size:14px;color:var(--muted)}
+  .alt a{color:var(--a2);font-weight:600;text-underline-offset:3px}
+  .hint{font-size:13px;color:var(--muted);line-height:1.5;text-align:left;width:100%;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+  .hint b{color:var(--text)}
+  .ok{color:var(--ok);font-weight:700;font-size:15px}
+  #after{display:none}
+  #after.on{display:flex;animation:enter .6s ease both}
+  .row{display:flex;gap:12px;width:100%}
+  .row .btn{flex:1;text-align:center}
+  .foot{font-size:12px;color:#6d6890;max-width:460px}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="nebula"></div>
+
+<main>
+  <div class="brand enter">STELLS</div>
+  <h1 class="enter" style="animation-delay:.08s">Ваш фильм готов к скачиванию</h1>
+  <p class="sub enter" style="animation-delay:.14s">Скачайте фильм на устройство и смотрите без задержек — даже без интернета.</p>
+
+  <a class="poster enter" style="animation-delay:.2s" href="video/stells-film-720p.mp4" download="Stells-film.mp4" data-dl aria-label="Скачать фильм">
+    <img src="video/poster.jpg" alt="">
+    <span class="tag">STELLS · AI</span>
+    <span class="dl">⬇</span>
+  </a>
+  <div class="meta enter" style="animation-delay:.26s"><span>⏱ 4:16</span><span>HD 720p</span><span>MP4 · 78 МБ</span></div>
+
+  <div class="card enter" style="animation-delay:.32s">
+    <a class="btn" href="video/stells-film-720p.mp4" download="Stells-film.mp4" data-dl>⬇ Скачать фильм</a>
+    <p class="alt">Нужно лучшее качество? <a href="https://d2ol7oe51mr4n9.cloudfront.net/user_3BFGa4gZW9JqBaAyGOEvjCz04Kh/dc862e14-0711-4d8e-bc07-975b5327f8c6.mp4" target="_blank" rel="noopener" data-dl>Оригинал 1080p · 250 МБ</a></p>
+    <p class="hint"><b>iPhone:</b> файл сохранится в «Файлы» → «Загрузки».<br><b>Android:</b> в «Загрузки» или в шторке уведомлений.<br><b>Компьютер:</b> в папку «Загрузки».</p>
+  </div>
+
+  <div class="card" id="after">
+    <p class="ok">✓ Загрузка началась</p>
+    <p class="sub">Уйти или остаться?</p>
+    <div class="row">
+      <a class="btn ghost" href="index.html#bye">Уйти</a>
+      <a class="btn" href="index.html#plans">Остаться</a>
+    </div>
+  </div>
+
+  <p class="foot">Данный контент сделан Stells AI. ИИ может ошибаться. К разработчику никаких претензий нет.</p>
+</main>
+
+<script>
+(() => {
+  const cv = document.getElementById('stars'), cx = cv.getContext('2d');
+  let stars = [], W, H;
+  function resize(){
+    const d = Math.min(devicePixelRatio || 1, 2);
+    W = cv.width = innerWidth * d; H = cv.height = innerHeight * d;
+    stars = Array.from({length: Math.round(innerWidth * innerHeight / 3500)}, () => ({x:Math.random()*W, y:Math.random()*H, r:(Math.random()*1.3+.2)*d, t:Math.random()*6.28, s:Math.random()*.02+.005}));
+  }
+  (function draw(){
+    cx.clearRect(0, 0, W, H);
+    for (const s of stars){ s.t += s.s; cx.globalAlpha = .3 + Math.sin(s.t) * .35 + .35; cx.fillStyle = '#fff'; cx.beginPath(); cx.arc(s.x, s.y, s.r, 0, 6.283); cx.fill(); }
+    requestAnimationFrame(draw);
+  })();
+  addEventListener('resize', resize); resize();
+
+  document.querySelectorAll('[data-dl]').forEach(a => a.addEventListener('click', () => {
+    setTimeout(() => {
+      const el = document.getElementById('after');
+      el.classList.add('on');
+      el.scrollIntoView({behavior:'smooth', block:'center'});
+    }, 800);
+  }));
+})();
+</script>
+</body>
+</html>
